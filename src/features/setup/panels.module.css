@@ -1,0 +1,72 @@
+.panel {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.notice {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: var(--space-4);
+  display: grid;
+  gap: var(--space-2);
+}
+
+.notice[data-tone='err'] {
+  border-color: var(--err);
+}
+.notice[data-tone='warn'] {
+  border-color: var(--warn);
+}
+
+.hint {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.hint kbd {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0 4px;
+  font-family: var(--font-mono);
+  font-size: 11px;
+}
+
+.deviceList {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.device {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2) var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  cursor: pointer;
+}
+
+.device:has(input:checked) {
+  border-color: var(--accent);
+}
+
+.listen {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.hearYou {
+  font-weight: 500;
+  color: var(--text-2);
+}
+
+.hearYou[data-heard='true'] {
+  color: var(--ok);
+}
+
+.soundRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}

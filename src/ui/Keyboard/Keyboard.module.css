@@ -1,0 +1,35 @@
+.keyboard {
+  user-select: none;
+  touch-action: none;
+}
+
+.key {
+  cursor: pointer;
+}
+
+.keyRect {
+  transition:
+    fill 80ms var(--ease),
+    transform 80ms var(--ease);
+}
+
+.label {
+  font-family: var(--font-ui);
+  font-size: 9px;
+  fill: var(--text-3);
+  pointer-events: none;
+}
+
+.hintDot {
+  animation: hintPulse 1s ease-in-out infinite;
+}
+
+@keyframes hintPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}

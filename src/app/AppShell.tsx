@@ -1,8 +1,17 @@
+import { useEffect } from 'react';
 import { NavLink, Outlet, Link } from 'react-router';
 import { APP_NAME } from './brand';
 import { Icon, type IconName } from '@/ui/Icon';
 import { useSettingsStore } from '@/store/settingsStore';
+import { useMidiStore, type MidiStatus } from '@/store/midiStore';
 import styles from './AppShell.module.css';
+
+const DOT_STATUS: Partial<Record<MidiStatus, { dot: string; label: string }>> = {
+  connected: { dot: 'connected', label: 'Keyboard connected' },
+  'no-device': { dot: 'none', label: 'No keyboard' },
+  unsupported: { dot: 'unsupported', label: 'MIDI unsupported' },
+  denied: { dot: 'unsupported', label: 'MIDI blocked' },
+};
 
 const NAV: { to: string; label: string; icon: IconName }[] = [
   { to: '/practice', label: 'Today', icon: 'today' },
@@ -15,6 +24,16 @@ const NAV: { to: string; label: string; icon: IconName }[] = [
 export function AppShell() {
   const expanded = useSettingsStore((s) => s.sidebarExpanded);
   const setExpanded = useSettingsStore((s) => s.setSidebarExpanded);
+  const onboarded = useSettingsStore((s) => s.onboarded);
+  const midiStatus = useMidiStore((s) => s.status);
+  const initMidi = useMidiStore((s) => s.init);
+
+  // Onboarded users already granted MIDI access once; re-init silently.
+  useEffect(() => {
+    if (onboarded) void initMidi();
+  }, [onboarded, initMidi]);
+
+  const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: 'No keyboard' };
 
   return (
     <div className={styles['shell']}>
@@ -48,8 +67,8 @@ export function AppShell() {
             {expanded && <span>Settings</span>}
           </NavLink>
           <Link to="/setup" className={styles['midiStatus']} title="MIDI setup">
-            <span className={styles['dot']} data-status="none" />
-            {expanded && <span className={styles['midiLabel']}>No keyboard</span>}
+            <span className={styles['dot']} data-status={dot.dot} />
+            {expanded && <span className={styles['midiLabel']}>{dot.label}</span>}
           </Link>
           <button
             className={styles['collapse']}

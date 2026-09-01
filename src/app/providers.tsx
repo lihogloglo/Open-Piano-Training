@@ -1,0 +1,62 @@
+import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { ToastViewport } from '@/ui/Toast';
+import { Button } from '@/ui/Button';
+
+interface ErrorBoundaryState {
+  error: Error | null;
+}
+
+class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryState> {
+  override state: ErrorBoundaryState = { error: null };
+
+  static getDerivedStateFromError(error: Error): ErrorBoundaryState {
+    return { error };
+  }
+
+  override componentDidCatch(error: Error, info: ErrorInfo): void {
+    console.error('App crash:', error, info.componentStack);
+  }
+
+  override render() {
+    if (this.state.error) {
+      return (
+        <div style={{ display: 'grid', placeItems: 'center', height: '100%', padding: 24 }}>
+          <div style={{ maxWidth: 480, textAlign: 'center', display: 'grid', gap: 16 }}>
+            <h2>Something broke — your progress is safe.</h2>
+            <p style={{ color: 'var(--text-2)' }}>
+              Everything you've done is stored on this device. Reloading usually fixes it.
+            </p>
+            <pre
+              style={{
+                textAlign: 'left',
+                overflow: 'auto',
+                background: 'var(--surface-2)',
+                padding: 12,
+                borderRadius: 10,
+                fontSize: 12,
+                userSelect: 'all',
+              }}
+            >
+              {String(this.state.error.stack ?? this.state.error.message)}
+            </pre>
+            <div>
+              <Button variant="primary" onClick={() => window.location.reload()}>
+                Reload
+              </Button>
+            </div>
+          </div>
+        </div>
+      );
+    }
+    return this.props.children;
+  }
+}
+
+export function Providers({ children }: { children: ReactNode }) {
+  return (
+    <ErrorBoundary>
+      {children}
+      <ToastViewport />
+    </ErrorBoundary>
+  );
+}

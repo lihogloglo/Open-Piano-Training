@@ -1,8 +1,8 @@
 # Piano Learning — Master Plan
 
-*A theory-first, MIDI-native learning path: from zero to fluent in the system of the keyboard — every scale, every chord, functional harmony — so that songs become something you can reason about ("oh, it's this chord, then this chord").*
+_A theory-first, MIDI-native learning path: from zero to fluent in the system of the keyboard — every scale, every chord, functional harmony — so that songs become something you can reason about ("oh, it's this chord, then this chord")._
 
-*Research date: September 2026. All licenses and library versions verified at that time.*
+_Research date: September 2026. All licenses and library versions verified at that time._
 
 ---
 
@@ -31,7 +31,7 @@
 
 ## 1. Vision & goals
 
-**The user story:** an adult beginner with a MIDI piano who doesn't want to grind through classical repertoire or copy falling notes. They want to *understand the keyboard as a system* — scales, intervals, chords and their inversions, the circle of fifths, why V pulls to I — and to be physically at ease executing those patterns in any key. Songs are learning vehicles along the way, not the end goal. The end goal is **fluency**: comp any lead sheet in any key, figure out a pop song's chords by ear in minutes, improvise coherently over a progression.
+**The user story:** an adult beginner with a MIDI piano who doesn't want to grind through classical repertoire or copy falling notes. They want to _understand the keyboard as a system_ — scales, intervals, chords and their inversions, the circle of fifths, why V pulls to I — and to be physically at ease executing those patterns in any key. Songs are learning vehicles along the way, not the end goal. The end goal is **fluency**: comp any lead sheet in any key, figure out a pop song's chords by ear in minutes, improvise coherently over a progression.
 
 **What "done" looks like for a learner** (the terminal milestone):
 
@@ -46,7 +46,7 @@
 1. **Theory woven in, never a side-track.** Yousician bolted theory on as a skippable "Knowledge path" — users skip it. Theory must be the spine of the main path.
 2. **Sound before symbol, always relative to the key.** Scale degrees and Roman numerals (Hooktheory / Hoffman / Improvise-For-Real style), color-coded consistently, so every concept transposes to all 12 keys for free.
 3. **Application from week one.** Real songs, chord charts, and micro-improvisation appear in the first weeks on a tiny vocabulary — not as a graduation prize (the Siskind / Hooktheory model, contra classical grading).
-4. **MIDI-first is a feature, not a limitation.** No mic flakiness; per-note pitch *and* timing *and* velocity feedback; per-hand analytics (Playground Sessions and Melodics prove this).
+4. **MIDI-first is a feature, not a limitation.** No mic flakiness; per-note pitch _and_ timing _and_ velocity feedback; per-hand analytics (Playground Sessions and Melodics prove this).
 5. **The app must not teach the app.** Simply Piano's defining criticism is that graduates can't play away from the screen. We build explicit weaning: from highlighted keys → to chord symbols → to lead sheets → to playing by ear.
 
 ---
@@ -59,30 +59,30 @@ The open-source field splits cleanly into three groups, none of which does the w
 
 **Group A — drill tools (interactive MIDI, no curriculum):**
 
-| Project | What it is | Stack | License | Verdict |
-|---|---|---|---|---|
-| [ZaneH/piano-trainer](https://github.com/ZaneH/piano-trainer) | Scale/chord/circle-of-fifths practice + quiz modes, MIDI input | React + TS + Tauri (Rust) | **MIT** | ~2.2k★, alive. **Best code-borrowing target**: practice-mode UX, quiz/validation logic, circle-of-fifths component. Frontend is plain React/TS — ports to web by swapping Tauri MIDI for Web MIDI. |
-| [philippotto/Piano-Trainer](https://github.com/philippotto/Piano-Trainer) | Sheet-reading trainer ("play what you see") with stats | ES6 React + VexFlow | **MIT** | Dormant, dated code; good blueprint for the VexFlow + Web MIDI feedback loop. |
-| [TeemuKoivisto/midi-note-trainer](https://github.com/TeemuKoivisto/midi-note-trainer) | Notation-drilling games, Web MIDI | Svelte/TS monorepo | **MIT** | Small but well-factored packages (score rendering, MIDI handling, game loop) — extractable code. |
-| [elbankster/MIDI-Piano-Chord-Trainer](https://github.com/elbankster/MIDI-Piano-Chord-Trainer) | Chord drills detecting quality + **inversion** + root | web | **no license** | Idea-only: the inversion-aware chord recognition UX is the takeaway. |
-| [GNU Solfege](https://www.gnu.org/software/solfege/) | Ear trainer | Python | GPL | Idea-only: **exercises as plain-text lesson files** (exercise-as-data) — adopt the pattern, not the code. |
+| Project                                                                                       | What it is                                                     | Stack                     | License        | Verdict                                                                                                                                                                                            |
+| --------------------------------------------------------------------------------------------- | -------------------------------------------------------------- | ------------------------- | -------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [ZaneH/piano-trainer](https://github.com/ZaneH/piano-trainer)                                 | Scale/chord/circle-of-fifths practice + quiz modes, MIDI input | React + TS + Tauri (Rust) | **MIT**        | ~2.2k★, alive. **Best code-borrowing target**: practice-mode UX, quiz/validation logic, circle-of-fifths component. Frontend is plain React/TS — ports to web by swapping Tauri MIDI for Web MIDI. |
+| [philippotto/Piano-Trainer](https://github.com/philippotto/Piano-Trainer)                     | Sheet-reading trainer ("play what you see") with stats         | ES6 React + VexFlow       | **MIT**        | Dormant, dated code; good blueprint for the VexFlow + Web MIDI feedback loop.                                                                                                                      |
+| [TeemuKoivisto/midi-note-trainer](https://github.com/TeemuKoivisto/midi-note-trainer)         | Notation-drilling games, Web MIDI                              | Svelte/TS monorepo        | **MIT**        | Small but well-factored packages (score rendering, MIDI handling, game loop) — extractable code.                                                                                                   |
+| [elbankster/MIDI-Piano-Chord-Trainer](https://github.com/elbankster/MIDI-Piano-Chord-Trainer) | Chord drills detecting quality + **inversion** + root          | web                       | **no license** | Idea-only: the inversion-aware chord recognition UX is the takeaway.                                                                                                                               |
+| [GNU Solfege](https://www.gnu.org/software/solfege/)                                          | Ear trainer                                                    | Python                    | GPL            | Idea-only: **exercises as plain-text lesson files** (exercise-as-data) — adopt the pattern, not the code.                                                                                          |
 
 **Group B — song-following games (motivating, but teach imitation, not theory):**
 
-| Project | What it is | License | Verdict |
-|---|---|---|---|
-| [sightread](https://github.com/sightread/sightread) | Polished falling-notes + sheet web app, Web MIDI | **GPL-3.0**, and went **closed** in March 2026 (public snapshot frozen) | Ideas/architecture reference only (unless we go GPL). Its open→closed trajectory is a market signal: a genuinely open alternative has a niche. |
-| [PianoBooster](https://github.com/pianobooster/PianoBooster) | MIDI play-along that **listens and waits** — accompaniment follows your tempo; per-hand practice | GPL-3.0, C++ | Idea-only: the adaptive "score chasing" mechanic (music waits for the learner) is the single best pedagogical mechanic in open source. |
-| Neothesia, noterain, MIDIano | Synthesia clones | GPL-3.0 / MIT / **not open** | UX references. Do not borrow from MIDIano (no license). |
+| Project                                                      | What it is                                                                                       | License                                                                 | Verdict                                                                                                                                        |
+| ------------------------------------------------------------ | ------------------------------------------------------------------------------------------------ | ----------------------------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------- |
+| [sightread](https://github.com/sightread/sightread)          | Polished falling-notes + sheet web app, Web MIDI                                                 | **GPL-3.0**, and went **closed** in March 2026 (public snapshot frozen) | Ideas/architecture reference only (unless we go GPL). Its open→closed trajectory is a market signal: a genuinely open alternative has a niche. |
+| [PianoBooster](https://github.com/pianobooster/PianoBooster) | MIDI play-along that **listens and waits** — accompaniment follows your tempo; per-hand practice | GPL-3.0, C++                                                            | Idea-only: the adaptive "score chasing" mechanic (music waits for the learner) is the single best pedagogical mechanic in open source.         |
+| Neothesia, noterain, MIDIano                                 | Synthesia clones                                                                                 | GPL-3.0 / MIT / **not open**                                            | UX references. Do not borrow from MIDIano (no license).                                                                                        |
 
 **Group C — curriculum without interactivity:**
 
-| Resource | What it is | License | Verdict |
-|---|---|---|---|
-| [Open Music Theory (OMT2)](https://viva.pressbooks.pub/openmusictheory/) | Complete college-level theory textbook + workbook | **CC BY-SA 4.0** | The best open source of theory *sequencing and explanatory text*. Adaptable with attribution + share-alike on the adapted content (does not infect app code). |
-| [ftrain/sightreading](https://github.com/ftrain/sightreading) | Procedural sight-reading with a **23-level mastery-gated curriculum** (C-major fundamentals → rhythms → new keys by circle of fifths, each key cycling RH → LH → hands-together) | **LGPL-3.0** | Tiny but the closest thing to a guided open path. Copy the **curriculum-as-data architecture** (levels as data, mastery gates, procedural exercise generation), not the code. |
-| [Open-Piano-Skills](https://github.com/Tieck14/Open-Piano-Skills) | YAML skill taxonomy: 131 skills, prerequisite graph, mastery levels | **CC BY-SA 4.0** | Brand new, quality unproven, but the only machine-readable open piano skill tree — a starting point to critique and refine. |
-| [Mutopia Project](https://www.mutopiaproject.org/) | ~2,100 pieces as LilyPond source + MIDI | PD / CC | Programmatic pipeline for graded real repertoire later (excerpt, simplify, transpose — we have *source*, not scans). |
+| Resource                                                                 | What it is                                                                                                                                                                       | License          | Verdict                                                                                                                                                                       |
+| ------------------------------------------------------------------------ | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------- | ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| [Open Music Theory (OMT2)](https://viva.pressbooks.pub/openmusictheory/) | Complete college-level theory textbook + workbook                                                                                                                                | **CC BY-SA 4.0** | The best open source of theory _sequencing and explanatory text_. Adaptable with attribution + share-alike on the adapted content (does not infect app code).                 |
+| [ftrain/sightreading](https://github.com/ftrain/sightreading)            | Procedural sight-reading with a **23-level mastery-gated curriculum** (C-major fundamentals → rhythms → new keys by circle of fifths, each key cycling RH → LH → hands-together) | **LGPL-3.0**     | Tiny but the closest thing to a guided open path. Copy the **curriculum-as-data architecture** (levels as data, mastery gates, procedural exercise generation), not the code. |
+| [Open-Piano-Skills](https://github.com/Tieck14/Open-Piano-Skills)        | YAML skill taxonomy: 131 skills, prerequisite graph, mastery levels                                                                                                              | **CC BY-SA 4.0** | Brand new, quality unproven, but the only machine-readable open piano skill tree — a starting point to critique and refine.                                                   |
+| [Mutopia Project](https://www.mutopiaproject.org/)                       | ~2,100 pieces as LilyPond source + MIDI                                                                                                                                          | PD / CC          | Programmatic pipeline for graded real repertoire later (excerpt, simplify, transpose — we have _source_, not scans).                                                          |
 
 **Building-block libraries (the real gold — all healthy, all permissive):** tonal (MIT), WEBMIDI.js (Apache-2.0), Tone.js (MIT), VexFlow 5 (MIT), OpenSheetMusicDisplay (BSD-3), abcjs (MIT), smplr (MIT), @tonejs/midi (MIT), Dexie (Apache-2.0), ts-fsrs (MIT). Details in §4.
 
@@ -90,14 +90,14 @@ The open-source field splits cleanly into three groups, none of which does the w
 
 What each one teaches us (full research in the appendix of history; distilled here):
 
-- **Simply Piano** — lowest-friction onboarding; the Soloist-vs-Chords identity fork is smart. But it's the poster child for "the app teaches the app": shallow theory, fixed pacing, messy path after Essentials. *Anti-model for depth, model for onboarding.*
-- **Yousician** — varied content types (lessons / missions / workouts / challenges) at varied durations = strong retention. But theory as a separate skippable path fails. *Weave theory into the trunk.*
+- **Simply Piano** — lowest-friction onboarding; the Soloist-vs-Chords identity fork is smart. But it's the poster child for "the app teaches the app": shallow theory, fixed pacing, messy path after Essentials. _Anti-model for depth, model for onboarding._
+- **Yousician** — varied content types (lessons / missions / workouts / challenges) at varied durations = strong retention. But theory as a separate skippable path fails. _Weave theory into the trunk._
 - **Flowkey** — canonical **Wait Mode** (playback halts until you play the right note) + tempo ladder (wait → 50% → 75% → 100%) + section looping. Songs at 4 arrangement tiers = built-in spiral curriculum. But a library without a path leaves beginners lost.
 - **Skoove** — clean **Listen → Learn → Play** lesson grammar; adaptive waiting (tempo follows the learner rather than hard-stopping). Closest big app to musical literacy.
 - **Playground Sessions** — MIDI-only precision: per-note green/red, % scores, per-hand analytics. But improv/voicings only in the Advanced tier — we introduce them far earlier.
-- **Piano Marvel** — **SASR**: an adaptive sight-reading rating over 90 micro-levels of always-fresh material, with an 80%-promotion rule; users track it like an ELO. *The best assessment mechanic in the space — portable to chord recognition, ear, harmonization.*
+- **Piano Marvel** — **SASR**: an adaptive sight-reading rating over 90 micro-levels of always-fresh material, with an 80%-promotion rule; users track it like an ELO. _The best assessment mechanic in the space — portable to chord recognition, ear, harmonization._
 - **Melodics** — the best progression engineering: every piece decomposed into steps (parts → hands → tempo), and the most granular timing feedback anywhere (**early / late / perfect / missed** per note). Streaks with rest-day freezes.
-- **Pianote / Hoffman Academy** — proof that theory + ear + improv woven into *every* unit works pedagogically (Hoffman's spiral: hear it → name it → play it → read it → make it). Their weakness — no real-time feedback — is exactly our strength. Nobody has built the adult, MIDI-native version of Hoffman. 
+- **Pianote / Hoffman Academy** — proof that theory + ear + improv woven into _every_ unit works pedagogically (Hoffman's spiral: hear it → name it → play it → read it → make it). Their weakness — no real-time feedback — is exactly our strength. Nobody has built the adult, MIDI-native version of Hoffman.
 - **Hooktheory** — the most successful theory-first pedagogy for pop musicians: everything in scale degrees + Roman numerals with consistent colors, every concept proven immediately with a real song, chords introduced by frequency of use in real music (I → vi → IV/V → iii/ii), not by scale-degree order.
 - **Theory/ear tools** (musictheory.net/Tenuto, Teoria, EarMaster, Functional Ear Trainer) — proven drill sequences and the key ear-training insight: **functional (scale-degree) ear training transfers to real playing; isolated interval drilling doesn't.** None connect to a MIDI keyboard or a curriculum.
 - **Duolingo** (path design reference) — the 2022 single-linear-path redesign with **spaced review embedded in the forward path** and checkpoint tests measurably improved outcomes. Avoid: streak anxiety, XP grinding, hearts/lives (punishing mistakes suppresses the exploratory practice music needs).
@@ -122,10 +122,10 @@ What each one teaches us (full research in the appendix of history; distilled he
 1. **One linear path, embedded review.** Bite-size units grouped into stages; review nodes injected into the forward path so moving forward automatically means revisiting old material; checkpoint tests legitimize skipping. Kills "what do I practice next?" — the #1 reason adults stall.
 2. **Spiral strands in every unit.** Each unit touches the same five strands at rising difficulty: **Hear it** (functional ear) → **Name it** (theory) → **Play it** (keyboard) → **Read it** (symbols/notation, introduced gradually) → **Make it** (2-minute improv/harmonization micro-task). Creation is routine from Unit 1, never an advanced tier.
 3. **Relative thinking, color-coded.** Scale degrees 1–7 and Roman numerals get fixed colors used everywhere (keyboard highlights, chord charts, ear trainer). Concepts are taught relative to a key so they transpose for free.
-4. **Derive, don't memorize.** The path deliberately moves from *shapes* (Stage 1: "this grip is C major") to a *spelling engine* (Stage 2: "stack thirds from any root") — the moment the learner stops copying and starts deriving is the product's core value.
+4. **Derive, don't memorize.** The path deliberately moves from _shapes_ (Stage 1: "this grip is C major") to a _spelling engine_ (Stage 2: "stack thirds from any root") — the moment the learner stops copying and starts deriving is the product's core value.
 5. **One key deep, then twelve keys wide.** Master the system in C (then G, D, F…), and only generalize to all 12 keys once the vocabulary is mature (circle-of-fifths grouping, which reinforces key signatures as a system).
-6. **The mastery bar is the metronome, not the wait mode.** Wait mode is for first exposure only; every skill's pass criterion is the tempo-locked version. Comping *is* rhythm.
-7. **Four-part mastery test** (from Improvise For Real) for every concept: *see it, play it in the relevant keys, recognize it by ear, use it in something musical.*
+6. **The mastery bar is the metronome, not the wait mode.** Wait mode is for first exposure only; every skill's pass criterion is the tempo-locked version. Comping _is_ rhythm.
+7. **Four-part mastery test** (from Improvise For Real) for every concept: _see it, play it in the relevant keys, recognize it by ear, use it in something musical._
 8. **Interleave aggressively, and say so.** Block briefly on first exposure, then drill in random keys/qualities ("E♭ major first inversion… now A minor root… now D7"). Interleaving feels worse but wins on retention — the UI explicitly tells the learner this so they don't revert.
 9. **Wean off the screen.** Highlighted keys → note names → chord symbols → lead sheet → by ear. Every skill eventually gets re-tested at a higher weaning level.
 10. **Respect the adult.** 15–30 min daily sessions (consistency beats volume; motor consolidation is sleep-dependent); checkpoint-skipping and a free-practice sandbox preserve autonomy; no hearts, no punishment for mistakes.
@@ -134,51 +134,59 @@ What each one teaches us (full research in the appendix of history; distilled he
 
 Cross-cutting daily strands through **all** stages: (a) target 20–30 min/day; (b) 5 min functional ear training matched to the current stage; (c) spaced-repetition flashcards for declarative theory (key signatures, spellings); (d) one real song in progress at all times; (e) every item passes the four-part mastery test before being marked fluent.
 
-> The concept spine below is the chain every tradition agrees on (ABRSM/RCM, jazz methods, Hooktheory, Michael New): *scale → interval → triad → diatonic function → inversion → seventh chords → voicings*. The pacing and framing follow the goal-aligned methods: application starts in week one, at adult speed.
+> The concept spine below is the chain every tradition agrees on (ABRSM/RCM, jazz methods, Hooktheory, Michael New): _scale → interval → triad → diatonic function → inversion → seventh chords → voicings_. The pacing and framing follow the goal-aligned methods: application starts in week one, at adult speed.
 
-**Stage 0 — Orientation & the 5-finger world** *(weeks, not months)*
+**Stage 0 — Orientation & the 5-finger world** _(weeks, not months)_
+
 - Keyboard geography (find any note instantly — the octave pattern, black-key landmarks), half/whole steps, posture and relaxed hand.
 - 5-finger (pentascale) patterns in C, G, F, both hands. No thumb crossings yet.
 - Basic rhythm with metronome (quarter/half/whole), sing scale degrees 1–5 while playing.
 - **Exit:** play a 5-finger melody hands-separately in 3 keys steadily at 80 BPM; name any key on sight in <1.5s; clap and count basic rhythms.
 
 **Stage 1 — The major scale as a system + first chords in one key**
+
 - WWHWWWH formula; C major one octave with standard fingering; scale-degree names and colors.
-- I, IV, V, vi as *shapes* in C; LH roots + RH block triads.
+- I, IV, V, vi as _shapes_ in C; LH roots + RH block triads.
 - **First real song from a chord chart, in C, within the first weeks.**
 - **Exit:** C major scale hands-separately at 60 BPM; play and name I–IV–V–vi in C; accompany one real song from a chart; sing degrees 1–8 accurately.
 
 **Stage 2 — Intervals & triad construction (the spelling engine)**
+
 - Interval qualities (M/m/P) to an octave, spelled and played; build major/minor triads from **any** root by stacking thirds.
-- Keys expand to G, D, F; the circle of fifths introduced as the *explanation* of key signatures.
+- Keys expand to G, D, F; the circle of fifths introduced as the _explanation_ of key signatures.
 - Ear: major vs minor triad quality.
 - **Exit:** spell/play any major or minor triad from any root in <3s; identify M/m triads by ear >90%; G, D, F scales hands-separately with correct fingering.
 
-**Stage 3 — Diatonic harmony & the Roman-numeral lens** *(the learner's stated payoff moment)*
-- Triads on all seven degrees; the diatonic quality pattern (M–m–m–M–M–m–dim) as a transposable fact; Roman numerals; tonic/subdominant/dominant *function*.
+**Stage 3 — Diatonic harmony & the Roman-numeral lens** _(the learner's stated payoff moment)_
+
+- Triads on all seven degrees; the diatonic quality pattern (M–m–m–M–M–m–dim) as a transposable fact; Roman numerals; tonic/subdominant/dominant _function_.
 - The big pop progressions: I–V–vi–IV, I–vi–IV–V, ii–V–I preview — each proven immediately against 5–10 real songs (Hooktheory-style analysis).
 - Ear: hearing I vs IV vs V; "guess the progression of a song you know, verify at the keyboard."
 - **Exit:** harmonize a diatonic melody in C/G/F; name the Roman numerals of a played progression in a known key; explain why V pulls to I.
 
 **Stage 4 — Inversions & voice leading (the hands catch up to the theory)**
+
 - All triad inversions as physical grips, blocked and broken, interleaved across learned keys.
-- Voice leading — keep common tones, move minimally; re-play Stage-3 progressions smoothly (I–V6–vi–IV…). Inversions are taught *as the solution to a problem the learner now feels* (clunky root-position jumps).
+- Voice leading — keep common tones, move minimally; re-play Stage-3 progressions smoothly (I–V6–vi–IV…). Inversions are taught _as the solution to a problem the learner now feels_ (clunky root-position jumps).
 - LH patterns (root–fifth, octaves, broken chords) against RH chords — the first serious hand-independence rung (the only rung a comping player strictly needs).
 - **Exit:** play I–V–vi–IV and friends in 6+ keys with ≤1 hand-position shift per change, in time at 80 BPM; identify inversions visually and aurally.
 
 **Stage 5 — Seventh chords, all 12 keys, minor keys**
+
 - maj7, m7, dom7 (then m7♭5, dim7) built from interval logic; V7's pull; **ii–V–I as the cell of jazz/pop harmony**, in all 12 keys.
 - Relative minor; natural/harmonic minor; minor progressions (i–VI–III–VII…).
 - Scales completed in all 12 keys via circle-of-fifths groups. (All-12-keys waits until here deliberately: spend the interleaving budget generalizing a mature vocabulary, not fragile new material.)
 - **Exit:** spell/play the four main 7th qualities from any root; ii–V–I in all 12 keys (closed voicings); 12 major scales + relative minors hands-separately at moderate tempo; identify 7th qualities by ear.
 
-**Stage 6 — Lead-sheet comping craft** *(the integration stage)*
+**Stage 6 — Lead-sheet comping craft** _(the integration stage)_
+
 - Fluent chord-symbol reading (C, Cm, C7, Cmaj7, Cm7, Cdim, sus, slash chords).
 - Textures: LH root + RH chords; shells (1–7 / 1–3); guide tones; style patterns (pop straight-8ths, boom-chuck, ballad broken chords, basic swing); RH melody over LH chords.
 - Transpose whole songs by Roman-numeral thinking. Repertoire target: ~10 songs from lead sheets.
-- **Exit:** given an *unseen* lead sheet (diatonic + 7ths), deliver a steady, styled accompaniment at tempo on first or second pass; transpose a known song to any key.
+- **Exit:** given an _unseen_ lead sheet (diatonic + 7ths), deliver a steady, styled accompaniment at tempo on first or second pass; transpose a known song to any key.
 
-**Stage 7 — Improvisation & harmonic ear mastery** *(overlaps Stage 5–6; melodic improv over drones starts back in Stage 1)*
+**Stage 7 — Improvisation & harmonic ear mastery** _(overlaps Stage 5–6; melodic improv over drones starts back in Stage 1)_
+
 - Scale-degree melodic improv (Improvise-For-Real style: 3 notes → expand), chord-tone targeting over changes.
 - 12-bar blues + pentatonic/blues scales as the low-stakes improv sandbox.
 - Playing songs by ear end-to-end (find key → bass motion → qualities); functional transcription of simple pop songs.
@@ -197,18 +205,18 @@ Every teachable item uses the same grammar (Skoove's Listen→Learn→Play, refi
 
 **Exercise archetypes the engine must support:**
 
-| Archetype | Example | Validation |
-|---|---|---|
-| Sequence drill | "Play the D major scale, RH, 1 octave" | Ordered pitch matching, fingering-agnostic (v1), tempo-checked |
-| Grip drill | "Play E♭ major, 1st inversion" | Set matching via chord detection, inversion-aware, octave-flexible |
-| Random interleave | "Random key/quality/inversion, 20 reps" | Same as above, generated by seed |
-| Progression play | "I–V–vi–IV in G, smooth voice leading" | Per-chord set matching + voice-leading distance metric |
-| Song/comping play-along | Chord chart scrolls with metronome/backing | Per-chord matching within timing windows |
-| Ear → keyboard | Cadence establishes key; "play the degree you heard" / "play the progression you heard" | MIDI answer instead of multiple choice — our ear trainer's differentiator |
-| Theory flashcard | "Key signature of E major?" / "Spell F#m7" | On-screen answer or MIDI answer; FSRS-scheduled |
-| Quiz/checkpoint | Mixed items gating the next stage | Aggregate scoring, allows skipping ahead |
-| Sight/read drill (later) | Play the displayed measure | VexFlow-rendered generated snippets |
-| Improv sandbox | Drone/backing track + suggested palette | No scoring — safe failure; optional recording/replay |
+| Archetype                | Example                                                                                 | Validation                                                                |
+| ------------------------ | --------------------------------------------------------------------------------------- | ------------------------------------------------------------------------- |
+| Sequence drill           | "Play the D major scale, RH, 1 octave"                                                  | Ordered pitch matching, fingering-agnostic (v1), tempo-checked            |
+| Grip drill               | "Play E♭ major, 1st inversion"                                                          | Set matching via chord detection, inversion-aware, octave-flexible        |
+| Random interleave        | "Random key/quality/inversion, 20 reps"                                                 | Same as above, generated by seed                                          |
+| Progression play         | "I–V–vi–IV in G, smooth voice leading"                                                  | Per-chord set matching + voice-leading distance metric                    |
+| Song/comping play-along  | Chord chart scrolls with metronome/backing                                              | Per-chord matching within timing windows                                  |
+| Ear → keyboard           | Cadence establishes key; "play the degree you heard" / "play the progression you heard" | MIDI answer instead of multiple choice — our ear trainer's differentiator |
+| Theory flashcard         | "Key signature of E major?" / "Spell F#m7"                                              | On-screen answer or MIDI answer; FSRS-scheduled                           |
+| Quiz/checkpoint          | Mixed items gating the next stage                                                       | Aggregate scoring, allows skipping ahead                                  |
+| Sight/read drill (later) | Play the displayed measure                                                              | VexFlow-rendered generated snippets                                       |
+| Improv sandbox           | Drone/backing track + suggested palette                                                 | No scoring — safe failure; optional recording/replay                      |
 
 ### 3.4 The feedback engine
 
@@ -225,13 +233,13 @@ Three interlocking systems:
 
 1. **Mastery gates on the path.** Each unit's graded take needs ≥80% (accuracy × timing) at target tempo to unlock the next. Checkpoints every few units allow testing out (placement for not-quite-beginners).
 2. **FSRS-scheduled review** (`ts-fsrs`, the modern Anki algorithm). Every skill atom — "D major scale HS," "F#m triad 2nd inversion," "ii–V–I in B♭," "key signature of E" — is a card. Attempt quality (accuracy + tempo) maps to Again/Hard/Good/Easy. Due cards are woven into the daily session as its review third (roughly: ⅓ new, ⅓ recent, ⅓ old-material maintenance in random keys — matching the practice-science literature).
-3. **Adaptive skill ratings (the SASR mechanic, generalized).** Per-strand numeric ratings — *Scales*, *Chord fluency*, *Progressions/harmony*, *Ear*, *(later) Reading* — driven by always-fresh generated items with an 80%-promotion rule. Honest, visible progress numbers that can't be gamed by replaying known content; the anti-"teaching to the app" mechanic.
+3. **Adaptive skill ratings (the SASR mechanic, generalized).** Per-strand numeric ratings — _Scales_, _Chord fluency_, _Progressions/harmony_, _Ear_, _(later) Reading_ — driven by always-fresh generated items with an 80%-promotion rule. Honest, visible progress numbers that can't be gamed by replaying known content; the anti-"teaching to the app" mechanic.
 
 **Sessions come in shapes** (Yousician's lesson): full lesson (~15–20 min), 5-minute workout (due FSRS reviews only), challenge (rating climb), free sandbox. There is always a session that fits the available time.
 
 ### 3.6 Gamification (the humane kind)
 
-- Streaks **with** rest-day freezes; reward *what* improved (skill-rating deltas, weekly recap), never raw XP.
+- Streaks **with** rest-day freezes; reward _what_ improved (skill-rating deltas, weekly recap), never raw XP.
 - Badges tied to musical milestones ("harmonized a melody in 3 keys," "first blues chorus"), not activity counts.
 - Per-strand progress bars + the skill ratings as the primary "number that goes up."
 - No hearts/lives, no XP leaderboards, unlimited retries. Improvisation learning requires safe failure.
@@ -257,22 +265,23 @@ Three interlocking systems:
 
 **Supported platforms (v1):** desktop Chrome / Edge / Firefox. **Safari and all of iOS have no Web MIDI** (WebKit has refused it for years; no roadmap) — detect and show a friendly compatibility notice. Firefox has a quirky one-time "site permission add-on" flow — show one line of guidance.
 
-| Layer | Choice | License | Why |
-|---|---|---|---|
-| Framework | **Vite + React + TypeScript** | MIT | Pure client-side interactive tool; no SSR friction with browser-only MIDI/audio APIs; biggest example ecosystem for this exact domain |
-| State | **zustand** | MIT | Store writable from non-React MIDI callbacks; `subscribe` lets the exercise engine react to notes outside React; avoids re-render storms |
-| MIDI input | **webmidi** (v3, behind a thin adapter module) | Apache-2.0 | Parsed noteon/noteoff/CC events, normalized velocity, device hot-plug |
-| Theory engine | **tonal** (v6) | MIT | Scales, chord dictionaries, `Chord.detect` (inversion-aware), `Key`, Roman numerals, `Progression`, MIDI↔note conversion — the entire theory brain, don't reimplement any of it |
-| Piano sound | **smplr** (`SplendidGrandPiano`) | MIT | One-line realistic velocity-layered piano; successor to the archived soundfont-player. Trigger immediately (never through a scheduler) for live echo; app audio muteable (players may use keyboard's own sound) |
-| Metronome/transport | raw WebAudio click first; **Tone.js** when backing tracks arrive | MIT | Tone's Transport is excellent but overkill day 1 |
-| Keyboard UI | **Custom SVG component** (~150 lines) | ours | react-piano is dead (~6 years); the keyboard is our core UX — target/played/wrong colors, degree colors, finger numbers, velocity shading. State = `Map<midiNumber, KeyState>` |
-| Notation (later) | **VexFlow 5** (EasyScore) | MIT | Ideal for programmatically generated single-measure exercises. abcjs (MIT) is a simpler fallback; OSMD (BSD-3) only if full MusicXML scores ever arrive. Notation is *optional* for v1 — the keyboard carries the pedagogy |
-| Storage | **Dexie.js** (IndexedDB) | Apache-2.0 | Attempts, note-event logs, FSRS card state, completion; `useLiveQuery`; Dexie Cloud is the future sync path if ever needed. localStorage only for tiny prefs |
-| Spaced repetition | **ts-fsrs** | MIT | Canonical TS implementation of FSRS (modern Anki scheduler) |
-| MIDI files (if ever) | @tonejs/midi | MIT | Not needed for v1 — exercises are generated from theory |
-| Distribution | **PWA** via vite-plugin-pwa | MIT | Installable, offline (cache app + samples) |
+| Layer                | Choice                                                           | License    | Why                                                                                                                                                                                                                        |
+| -------------------- | ---------------------------------------------------------------- | ---------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Framework            | **Vite + React + TypeScript**                                    | MIT        | Pure client-side interactive tool; no SSR friction with browser-only MIDI/audio APIs; biggest example ecosystem for this exact domain                                                                                      |
+| State                | **zustand**                                                      | MIT        | Store writable from non-React MIDI callbacks; `subscribe` lets the exercise engine react to notes outside React; avoids re-render storms                                                                                   |
+| MIDI input           | **webmidi** (v3, behind a thin adapter module)                   | Apache-2.0 | Parsed noteon/noteoff/CC events, normalized velocity, device hot-plug                                                                                                                                                      |
+| Theory engine        | **tonal** (v6)                                                   | MIT        | Scales, chord dictionaries, `Chord.detect` (inversion-aware), `Key`, Roman numerals, `Progression`, MIDI↔note conversion — the entire theory brain, don't reimplement any of it                                            |
+| Piano sound          | **smplr** (`SplendidGrandPiano`)                                 | MIT        | One-line realistic velocity-layered piano; successor to the archived soundfont-player. Trigger immediately (never through a scheduler) for live echo; app audio muteable (players may use keyboard's own sound)            |
+| Metronome/transport  | raw WebAudio click first; **Tone.js** when backing tracks arrive | MIT        | Tone's Transport is excellent but overkill day 1                                                                                                                                                                           |
+| Keyboard UI          | **Custom SVG component** (~150 lines)                            | ours       | react-piano is dead (~6 years); the keyboard is our core UX — target/played/wrong colors, degree colors, finger numbers, velocity shading. State = `Map<midiNumber, KeyState>`                                             |
+| Notation (later)     | **VexFlow 5** (EasyScore)                                        | MIT        | Ideal for programmatically generated single-measure exercises. abcjs (MIT) is a simpler fallback; OSMD (BSD-3) only if full MusicXML scores ever arrive. Notation is _optional_ for v1 — the keyboard carries the pedagogy |
+| Storage              | **Dexie.js** (IndexedDB)                                         | Apache-2.0 | Attempts, note-event logs, FSRS card state, completion; `useLiveQuery`; Dexie Cloud is the future sync path if ever needed. localStorage only for tiny prefs                                                               |
+| Spaced repetition    | **ts-fsrs**                                                      | MIT        | Canonical TS implementation of FSRS (modern Anki scheduler)                                                                                                                                                                |
+| MIDI files (if ever) | @tonejs/midi                                                     | MIT        | Not needed for v1 — exercises are generated from theory                                                                                                                                                                    |
+| Distribution         | **PWA** via vite-plugin-pwa                                      | MIT        | Installable, offline (cache app + samples)                                                                                                                                                                                 |
 
 **Known gotchas** (from research, so we don't rediscover them):
+
 - `AudioContext` starts suspended — resume on a real click (MIDI note-on doesn't count as a user gesture).
 - Two clocks: score rhythm in `performance.now()` / MIDI timestamps; schedule audio in `AudioContext.currentTime`; never compare raw values.
 - Note-on velocity 0 = note-off (the #1 beginner MIDI bug).
@@ -314,6 +323,7 @@ Three interlocking systems:
 ```
 
 Key architectural commitments:
+
 - **Curriculum as data** (the GNU Solfege / ftrain-sightreading lesson): stages, units, and exercises are declarative TS/JSON with prerequisite links and generator parameters — adding a unit never means writing engine code.
 - **Generators over assets:** exercises are generated from theory (seeded for reproducibility), which is what makes the SASR-style always-fresh ratings possible.
 - **The matcher is small and ours:** expected pitch sets/sequences from tonal, compared against the event log with simultaneity/roll tolerance and timing windows. This is the heart of the app; keep it pure and unit-tested.
@@ -323,22 +333,15 @@ Key architectural commitments:
 ## 6. What we borrow, and under what license
 
 **Adopt wholesale (permissive):**
+
 1. **tonal** (MIT) — the theory brain.
 2. **webmidi** (Apache-2.0), **smplr** (MIT), **Tone.js** (MIT), **VexFlow 5** (MIT), **Dexie** (Apache-2.0), **ts-fsrs** (MIT).
 3. **ZaneH/piano-trainer** (MIT) — lift/port practice-mode components, quiz logic, circle-of-fifths UI (swap Tauri MIDI → webmidi).
 4. **TeemuKoivisto/midi-note-trainer** (MIT) — extractable MIDI/game-loop code patterns.
 
-**Adapt content (share-alike, content-only — does not infect app code):**
-5. **Open Music Theory** (CC BY-SA 4.0) — lesson sequencing and explanatory text, with attribution; adapted text stays CC BY-SA.
-6. **Open-Piano-Skills** (CC BY-SA 4.0) — starting skill-graph to critique/refine.
-7. **Mutopia** (PD/CC) — LilyPond sources for a graded-repertoire pipeline later.
+**Adapt content (share-alike, content-only — does not infect app code):** 5. **Open Music Theory** (CC BY-SA 4.0) — lesson sequencing and explanatory text, with attribution; adapted text stays CC BY-SA. 6. **Open-Piano-Skills** (CC BY-SA 4.0) — starting skill-graph to critique/refine. 7. **Mutopia** (PD/CC) — LilyPond sources for a graded-repertoire pipeline later.
 
-**Ideas only (GPL/LGPL/unlicensed — no code copying):**
-8. **PianoBooster** (GPL) — adaptive "music waits for you" following.
-9. **sightread** (GPL, closed) — falling-notes/song-following UX reference.
-10. **ftrain/sightreading** (LGPL) — curriculum-as-data architecture and mastery-gate level design.
-11. **elbankster's chord trainer** (no license) — inversion-aware chord-drill UX.
-12. **Hooktheory / Hoffman / Melodics / Piano Marvel / Duolingo** — pedagogy and mechanics as described in §2.2/§3 (patterns, not assets).
+**Ideas only (GPL/LGPL/unlicensed — no code copying):** 8. **PianoBooster** (GPL) — adaptive "music waits for you" following. 9. **sightread** (GPL, closed) — falling-notes/song-following UX reference. 10. **ftrain/sightreading** (LGPL) — curriculum-as-data architecture and mastery-gate level design. 11. **elbankster's chord trainer** (no license) — inversion-aware chord-drill UX. 12. **Hooktheory / Hoffman / Melodics / Piano Marvel / Duolingo** — pedagogy and mechanics as described in §2.2/§3 (patterns, not assets).
 
 **Never copy from:** MIDIano (explicitly not open source); any GPL project unless we decide to license the whole app GPL (see §8).
 
@@ -350,23 +353,23 @@ Milestones sized for solo "vibe-coded" development; each one is usable on a real
 
 **M0 — Spike (the walking skeleton)**
 Vite+React+TS scaffold · MIDI adapter + device picker + hot-plug · SVG keyboard rendering live input · smplr echo · deploy as static site.
-*Success: plug in the piano, see and hear your notes in the browser.*
+_Success: plug in the piano, see and hear your notes in the browser._
 
 **M1 — The matcher + first drills**
 Exercise engine (sequence + set matching, wait mode) · scale drill and chord-grip drill generated by tonal · metronome + tempo-locked graded takes with early/late/perfect timing feedback · attempt storage in Dexie.
-*Success: "play the D major scale at 80 BPM" is a real, scored exercise.*
+_Success: "play the D major scale at 80 BPM" is a real, scored exercise._
 
 **M2 — The path (Stages 0–2)**
 Curriculum data model + linear path UI with mastery gates · Stage 0–2 units authored (orientation, 5-finger, C major system, intervals/triad spelling engine) · Listen→Learn→Play→Use lesson grammar · degree color system.
-*Success: a true beginner can start at zero and be carried through their first weeks.*
+_Success: a true beginner can start at zero and be carried through their first weeks._
 
 **M3 — Memory & honest progress**
 ts-fsrs integration (skills as cards, session = new/recent/old thirds) · 5-minute workout session shape · first adaptive skill rating (chord fluency) · weekly recap.
-*Success: the app decides what you should practice today, and the number that goes up can't be gamed.*
+_Success: the app decides what you should practice today, and the number that goes up can't be gamed._
 
 **M4 — Harmony payoff (Stages 3–4)**
 Diatonic harmony + Roman numeral units · progression exercises with voice-leading scoring · functional ear trainer (cadence → play-the-degree / play-the-progression, MIDI answers) · chord-chart song play-along (first real songs) · improv sandbox with drone.
-*Success: the "oh, it's I then vi then IV" moment happens inside the app.*
+_Success: the "oh, it's I then vi then IV" moment happens inside the app._
 
 **M5 — All twelve keys (Stage 5) + polish**
 Seventh chords, minor keys, all-keys interleaved drills, ii–V–I everywhere · checkpoints/placement tests · PWA offline · streaks with freezes, badges, replay of old takes.
@@ -385,8 +388,8 @@ Lead-sheet renderer + unseen-lead-sheet challenges · style comping patterns wit
 3. **Real-song content rights.** Chord progressions aren't copyrightable, but lyrics/melodies/recordings are. v1 uses progression references ("the Axis progression — as heard in…"), public-domain melodies, and Mutopia material; no copyrighted audio.
 4. **Rhythm-first risk.** Timing windows that are too strict early will frustrate; too loose and the wait-mode deficit returns. Plan: generous windows in Stages 0–1, tightening per skill maturity; tune on real use.
 5. **Solo-learner blind spots.** MIDI can't see tension, posture, or fingering (only infer it). The app should honestly say so and point to periodic human check-ins / video self-review rather than pretend completeness.
-6. **Scope discipline.** The research shows every competitor died at the intermediate cliff or bloated before nailing the loop. The loop is: *daily session → drill with great feedback → visible mastery*. Everything else waits until that loop is genuinely good (M0–M3).
+6. **Scope discipline.** The research shows every competitor died at the intermediate cliff or bloated before nailing the loop. The loop is: _daily session → drill with great feedback → visible mastery_. Everything else waits until that loop is genuinely good (M0–M3).
 
 ---
 
-*Companion references: the four research reports behind this plan (open-source landscape, commercial app analysis, pedagogy synthesis, tech-stack evaluation) are summarized inline; primary sources are linked throughout.*
+_Companion references: the four research reports behind this plan (open-source landscape, commercial app analysis, pedagogy synthesis, tech-stack evaluation) are summarized inline; primary sources are linked throughout._

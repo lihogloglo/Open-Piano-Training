@@ -1,0 +1,10 @@
+.wrap {
+  display: grid;
+  gap: var(--space-3);
+  padding: var(--space-7);
+  max-width: 720px;
+}
+
+.note {
+  color: var(--text-2);
+}

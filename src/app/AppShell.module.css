@@ -1,0 +1,114 @@
+.shell {
+  display: flex;
+  height: 100%;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  width: 72px;
+  flex-shrink: 0;
+  border-right: 1px solid var(--border);
+  background: var(--surface);
+  padding: var(--space-3);
+  gap: var(--space-4);
+  transition: width var(--dur-med) var(--ease);
+}
+
+.sidebar[data-expanded='true'] {
+  width: 220px;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  padding: var(--space-2);
+  font-weight: 650;
+  font-size: var(--fs-l);
+}
+
+.logoMark {
+  color: var(--accent);
+}
+
+.navList {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  flex: 1;
+}
+
+.navItem {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  color: var(--text-2);
+  font-weight: 500;
+  transition: background var(--dur-fast) var(--ease);
+}
+
+.navItem:hover {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.active {
+  background: var(--surface-2);
+  color: var(--text);
+}
+
+.bottom {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.midiStatus {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.dot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--text-3);
+  flex-shrink: 0;
+}
+
+.dot[data-status='connected'] {
+  background: var(--ok);
+}
+.dot[data-status='none'] {
+  background: var(--warn);
+}
+.dot[data-status='unsupported'] {
+  background: var(--err);
+}
+
+.collapse {
+  border: none;
+  background: transparent;
+  color: var(--text-3);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-m);
+  align-self: flex-start;
+}
+
+.collapse:hover {
+  background: var(--surface-2);
+}
+
+.main {
+  flex: 1;
+  overflow-y: auto;
+  min-width: 0;
+}

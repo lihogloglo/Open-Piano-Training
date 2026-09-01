@@ -2,23 +2,23 @@
 
 ## Stack (pin these; do not substitute)
 
-| Concern | Package | Version policy |
-|---|---|---|
-| Build | `vite` + `@vitejs/plugin-react` | latest stable at start; then locked |
-| UI | `react`, `react-dom` | 19.x |
-| Language | `typescript` | 5.x, `"strict": true` |
-| Routing | `react-router` (data router, `createBrowserRouter`) | 7.x |
-| State | `zustand` | 5.x |
-| MIDI | `webmidi` | 3.x |
-| Theory | `tonal` | 6.x |
-| Piano sound | `smplr` | 0.16+ |
-| Notation (Phase 8+) | `vexflow` | 5.x |
-| Storage | `dexie`, `dexie-react-hooks` | 4.x |
-| Spaced repetition | `ts-fsrs` | 5.x |
-| PWA | `vite-plugin-pwa` | latest |
-| Unit tests | `vitest` | latest |
-| E2E | `@playwright/test` | latest (browser at `/opt/pw-browsers/chromium` in CI containers) |
-| Lint/format | `eslint` (flat config, typescript-eslint), `prettier` | latest |
+| Concern             | Package                                               | Version policy                                                   |
+| ------------------- | ----------------------------------------------------- | ---------------------------------------------------------------- |
+| Build               | `vite` + `@vitejs/plugin-react`                       | latest stable at start; then locked                              |
+| UI                  | `react`, `react-dom`                                  | 19.x                                                             |
+| Language            | `typescript`                                          | 5.x, `"strict": true`                                            |
+| Routing             | `react-router` (data router, `createBrowserRouter`)   | 7.x                                                              |
+| State               | `zustand`                                             | 5.x                                                              |
+| MIDI                | `webmidi`                                             | 3.x                                                              |
+| Theory              | `tonal`                                               | 6.x                                                              |
+| Piano sound         | `smplr`                                               | 0.16+                                                            |
+| Notation (Phase 8+) | `vexflow`                                             | 5.x                                                              |
+| Storage             | `dexie`, `dexie-react-hooks`                          | 4.x                                                              |
+| Spaced repetition   | `ts-fsrs`                                             | 5.x                                                              |
+| PWA                 | `vite-plugin-pwa`                                     | latest                                                           |
+| Unit tests          | `vitest`                                              | latest                                                           |
+| E2E                 | `@playwright/test`                                    | latest (browser at `/opt/pw-browsers/chromium` in CI containers) |
+| Lint/format         | `eslint` (flat config, typescript-eslint), `prettier` | latest                                                           |
 
 No CSS framework. Styling = CSS Modules (`*.module.css`) + design tokens as CSS custom properties (see 05). No Tailwind, no styled-components (keeps the styling system fully specified by 05-ui-ux.md).
 
@@ -126,13 +126,13 @@ React must never sit between the device and sound. Subscriptions from `ui/Keyboa
 
 ## Testing strategy
 
-| Layer | Tool | What |
-|---|---|---|
-| `theory/` | Vitest | Table-driven: every scale/chord/key helper vs known-good values (incl. enharmonics: F♯ vs G♭ handling per key context) |
-| `engine/` | Vitest | Matcher FSMs fed scripted `NoteEvent[]` streams (fixtures in `src/test/streams/`) — correct/wrong/extra/rolled/early/late cases; scoring formulas exact-value tests |
-| `progress/` | Vitest | Session builder scenarios; gate logic; rating ladder promote/demote; FSRS grade mapping (mock ts-fsrs clock) |
-| `curriculum/` | Vitest | Zod validation of ALL content; referential integrity (every prerequisite/atom/generator id exists); path is a DAG; every unit reachable |
-| UI | Playwright | Smoke: boot with `?midi=fake`, run through Unit 0.1 end-to-end using scripted fake-MIDI input, assert pass screen + Dexie rows. One test per screen renders without console errors |
+| Layer         | Tool       | What                                                                                                                                                                               |
+| ------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `theory/`     | Vitest     | Table-driven: every scale/chord/key helper vs known-good values (incl. enharmonics: F♯ vs G♭ handling per key context)                                                             |
+| `engine/`     | Vitest     | Matcher FSMs fed scripted `NoteEvent[]` streams (fixtures in `src/test/streams/`) — correct/wrong/extra/rolled/early/late cases; scoring formulas exact-value tests                |
+| `progress/`   | Vitest     | Session builder scenarios; gate logic; rating ladder promote/demote; FSRS grade mapping (mock ts-fsrs clock)                                                                       |
+| `curriculum/` | Vitest     | Zod validation of ALL content; referential integrity (every prerequisite/atom/generator id exists); path is a DAG; every unit reachable                                            |
+| UI            | Playwright | Smoke: boot with `?midi=fake`, run through Unit 0.1 end-to-end using scripted fake-MIDI input, assert pass screen + Dexie rows. One test per screen renders without console errors |
 
 The fake adapter is selected by URL param `?midi=fake` (dev/E2E) and exposes `window.__fakeMidi.play(script)` for Playwright.
 
@@ -141,7 +141,7 @@ The fake adapter is selected by URL param `?midi=fake` (dev/E2E) and exposes `wi
 - Named exports only (no default), except route components where the router needs lazy defaults.
 - IDs are lowercase kebab/colon strings, never auto-increment (see 02 §IDs).
 - Times: `tPerf` = `performance.now()` ms (input domain); `tAudio` = `AudioContext.currentTime` s (output domain). Suffix every time variable; never mix domains (convert via `audio/clock.ts`).
-- MIDI numbers are the canonical pitch representation everywhere; note *names* are a display concern resolved through `theory/notes.ts` with key context (spell C♯ vs D♭ correctly).
+- MIDI numbers are the canonical pitch representation everywhere; note _names_ are a display concern resolved through `theory/notes.ts` with key context (spell C♯ vs D♭ correctly).
 - Feature folders own their screens; anything used twice moves to `ui/`.
 - Comments: only for invariants and gotchas (e.g., "velocity 0 note-on = note-off").
 - Commits: conventional commits (`feat:`, `fix:`, `content:` for curriculum data).

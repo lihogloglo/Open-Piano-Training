@@ -1,0 +1,42 @@
+.viewport {
+  position: fixed;
+  bottom: var(--space-5);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 100;
+}
+
+.toast {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  box-shadow: var(--elev-2);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-s);
+  max-width: 420px;
+  transition:
+    opacity var(--dur-med) var(--ease),
+    transform var(--dur-med) var(--ease);
+}
+
+.toast[data-kind='ok'] {
+  border-color: var(--ok);
+}
+.toast[data-kind='warn'] {
+  border-color: var(--warn);
+}
+.toast[data-kind='err'] {
+  border-color: var(--err);
+}
+
+.in {
+  opacity: 1;
+  transform: translateY(0);
+}
+.out {
+  opacity: 0;
+  transform: translateY(8px);
+}

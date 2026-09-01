@@ -1,0 +1,17 @@
+.wrap {
+  display: grid;
+  place-items: center;
+  height: 100%;
+}
+
+.inner {
+  display: grid;
+  gap: var(--space-4);
+  text-align: center;
+  justify-items: center;
+}
+
+.tagline {
+  color: var(--text-2);
+  font-size: var(--fs-l);
+}

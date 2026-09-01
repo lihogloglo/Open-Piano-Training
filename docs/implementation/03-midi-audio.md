@@ -5,6 +5,7 @@
 Three implementations of `MidiAdapter` (interface in 02):
 
 ### `webmidiAdapter.ts`
+
 - Lazy `import('webmidi')` on first `init()` (keeps it out of the boot bundle).
 - `WebMidi.enable({ sysex: false })`. Map results: unsupported browser → `'unsupported'`; permission refusal → `'denied'`.
 - Normalization rules (apply here so downstream never thinks about them):
@@ -16,12 +17,14 @@ Three implementations of `MidiAdapter` (interface in 02):
 - Hot-plug: forward `connected`/`disconnected` via `onDevicesChanged`; if the selected device disappears, fall back to all-inputs and toast "Keyboard disconnected".
 
 ### `computerKeyboardAdapter.ts` (fallback + dev)
+
 - QWERTY mapping (hold Shift for velocity 1.0, else 0.7):
   `a w s e d f t g y h u j k` → C4 C#4 D4 D#4 E4 F4 F#4 G4 G#4 A4 A#4 B4 C5; `z`/`x` shift octave −/+ (range clamp A0..C8).
 - Key repeat suppressed (track held keys).
 - Active automatically when no MIDI adapter is available or in exercises with `rung !== 'keys-lit'`? No — always active as a supplement (harmless), except disabled inside text inputs.
 
 ### `fakeAdapter.ts` (E2E/dev)
+
 - Selected by `?midi=fake`.
 - `window.__fakeMidi = { play(script: {midi:number; at:number; dur:number; vel?:number}[]) }` — schedules events on the perf clock relative to call time. Also `pressNow(midi)`, `releaseAll()`.
 

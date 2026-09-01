@@ -1,4 +1,4 @@
-import { createBrowserRouter, Navigate } from 'react-router';
+import { createBrowserRouter, Navigate, useLocation } from 'react-router';
 import { AppShell } from './AppShell';
 import { useSettingsStore } from '@/store/settingsStore';
 import { WelcomeScreen } from '@/features/welcome/WelcomeScreen';
@@ -13,7 +13,9 @@ import { Placeholder } from '@/features/shared/Placeholder';
 
 function RootRedirect() {
   const onboarded = useSettingsStore((s) => s.onboarded);
-  return <Navigate to={onboarded ? '/practice' : '/welcome'} replace />;
+  // Preserve the query string (?midi=fake selects the test adapter).
+  const { search } = useLocation();
+  return <Navigate to={{ pathname: onboarded ? '/practice' : '/welcome', search }} replace />;
 }
 
 export const router = createBrowserRouter([

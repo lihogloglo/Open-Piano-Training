@@ -1,0 +1,10 @@
+.wrap {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-7);
+  max-width: 820px;
+}
+
+.section {
+  margin-top: var(--space-4);
+}

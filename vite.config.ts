@@ -8,6 +8,11 @@ export default defineConfig({
   resolve: {
     alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
   },
+  optimizeDeps: {
+    // Pre-bundle lazily-imported deps; otherwise vite discovers them mid-session
+    // and force-reloads every connected page (breaks dev flow and e2e runs).
+    include: ['react', 'react-dom/client', 'react-router', 'zustand', 'webmidi', 'smplr'],
+  },
   test: {
     include: ['src/**/*.test.ts', 'src/**/*.test.tsx'],
     environment: 'node',

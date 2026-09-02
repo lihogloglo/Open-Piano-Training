@@ -75,9 +75,7 @@ export function TodayScreen() {
   const suggestions =
     ratingRows === null || atomRows === null
       ? []
-      : suggestedStrands(new Map(ratingRows.map((r) => [r.strand, r])), today, (s) =>
-          trackedByStrand(s),
-        );
+      : suggestedStrands(new Map(ratingRows.map((r) => [r.strand, r])), today, (s) => trackedByStrand(s));
 
   return (
     <div className={styles['wrap']}>
@@ -216,8 +214,8 @@ export function TodayScreen() {
         <Card className={styles['smallCard'] ?? ''}>
           <h3>Rating challenge</h3>
           <p className={styles['sub']}>
-            Optional, never required. Ten items at your level in{' '}
-            {STRAND_LABEL[suggestions[0]!].toLowerCase()}.
+            Optional, never required. Ten items at your level in {STRAND_LABEL[suggestions[0]!].toLowerCase()}
+            .
           </p>
           <Button onClick={() => void navigate(`/rating/${suggestions[0]}`)}>Take the challenge</Button>
         </Card>

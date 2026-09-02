@@ -301,7 +301,7 @@ function ProgressionLooper() {
         } else {
           // Broken comp: bass on 1, upper chord tones answering on 2-4.
           const note =
-            beat.beatInBar === 0 ? voicing[0] : voicing[(beat.beatInBar - 1) % (voicing.length - 1) + 1];
+            beat.beatInBar === 0 ? voicing[0] : voicing[((beat.beatInBar - 1) % (voicing.length - 1)) + 1];
           if (beat.beatInBar === 0) {
             for (const m of soundingRef.current) stopNote(m);
             soundingRef.current = [];

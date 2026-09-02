@@ -51,7 +51,9 @@ test('placement lands a "knows C major basics" profile at Stage 2 start', async 
       import(/* @vite-ignore */ String('/src/curriculum/path.ts')),
       import(/* @vite-ignore */ String('/src/progress/db.ts')),
     ]);
-    const progress = await (dbMod as { getUnitProgressMap(): Promise<Map<string, never>> }).getUnitProgressMap();
+    const progress = await (
+      dbMod as { getUnitProgressMap(): Promise<Map<string, never>> }
+    ).getUnitProgressMap();
     return (pathMod as { nextUnit(p: Map<string, never>): { id: string } | null }).nextUnit(progress)?.id;
   });
   expect(next).toBe('s2.u1');

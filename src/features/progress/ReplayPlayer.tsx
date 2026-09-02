@@ -85,8 +85,7 @@ export function ReplayPlayer({
           {playing ? 'Stop' : 'Play'}
         </Button>
         <span className={styles['muted']}>
-          {Math.round(take.result.score * 100)}%
-          {take.bpm !== null ? ` · ${take.bpm} BPM` : ''}
+          {Math.round(take.result.score * 100)}%{take.bpm !== null ? ` · ${take.bpm} BPM` : ''}
         </span>
       </div>
     </div>

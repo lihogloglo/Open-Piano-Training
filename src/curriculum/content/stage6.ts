@@ -125,11 +125,12 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'You do not need all four notes. A **shell** is two: the **root** and the one note that decides the chord\'s identity — the **7th**, or the **3rd**. Everything else is decoration.',
+            md: "You do not need all four notes. A **shell** is two: the **root** and the one note that decides the chord's identity — the **7th**, or the **3rd**. Everything else is decoration.",
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Dm7 · G7 · Cmaj7 as 1-7 shells in the left hand. Two notes each, and it still says ii-V-I.',
+            caption:
+              'Dm7 · G7 · Cmaj7 as 1-7 shells in the left hand. Two notes each, and it still says ii-V-I.',
             demo: {
               bpm: 60,
               loop: false,
@@ -273,7 +274,8 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'keyboardDemo',
-            caption: 'One bar of straight eighths over C: bass on 1 and 3, stabs on 2, the "and" of 3, and 4.',
+            caption:
+              'One bar of straight eighths over C: bass on 1 and 3, stabs on 2, the "and" of 3, and 4.',
             demo: {
               bpm: 88,
               loop: true,
@@ -473,7 +475,7 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'The workflow: name the progression by degree (I-vi-ii-V), find the new key\'s I, and let the shapes follow. You did this in Stage 3 without knowing it was a professional skill.',
+            md: "The workflow: name the progression by degree (I-vi-ii-V), find the new key's I, and let the shapes follow. You did this in Stage 3 without knowing it was a professional skill.",
           },
           {
             kind: 'progressionCard',

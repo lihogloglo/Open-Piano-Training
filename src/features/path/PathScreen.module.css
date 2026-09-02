@@ -27,7 +27,7 @@
 }
 
 .tagline {
-  color: var(--accent);
+  color: var(--accent-text);
   font-weight: 500;
   margin-top: var(--space-1);
 }

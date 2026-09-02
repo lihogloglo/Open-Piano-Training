@@ -22,9 +22,7 @@ function result(over: Partial<TakeResult> = {}): TakeResult {
   };
 }
 
-function take(
-  over: Omit<Partial<Take>, 'exercise'> & { exercise?: Partial<ExerciseDef> } = {},
-): Take {
+function take(over: Omit<Partial<Take>, 'exercise'> & { exercise?: Partial<ExerciseDef> } = {}): Take {
   const { exercise, ...rest } = over;
   return {
     id: `t${Math.random()}`,

@@ -64,9 +64,7 @@ export function LabScreen() {
   const [voiceLead, setVoiceLead] = useState<'free' | 'smooth'>('free');
   const [style, setStyle] = useState<'block' | 'brokenLH'>('block');
   const [voicing, setVoicing] = useState<'triad' | 'shell17' | 'shell13' | 'guidetones'>('triad');
-  const [compPattern, setCompPattern] = useState<'straight8' | 'ballad' | 'boomchuck' | 'swing'>(
-    'straight8',
-  );
+  const [compPattern, setCompPattern] = useState<'straight8' | 'ballad' | 'boomchuck' | 'swing'>('straight8');
 
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const phase = useRunStore((s) => s.phase);
@@ -288,10 +286,7 @@ export function LabScreen() {
           {(generator === 'comp-pattern' || generator === 'unseen-chart') && (
             <label>
               Voicing
-              <select
-                value={voicing}
-                onChange={(e) => setVoicing(e.target.value as typeof voicing)}
-              >
+              <select value={voicing} onChange={(e) => setVoicing(e.target.value as typeof voicing)}>
                 <option value="triad">triad</option>
                 <option value="shell17">shell 1-7</option>
                 <option value="shell13">shell 1-3</option>

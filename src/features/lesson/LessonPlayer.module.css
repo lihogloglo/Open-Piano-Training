@@ -52,7 +52,7 @@
 
 .chip[data-kind='graded'] {
   background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
-  color: var(--accent);
+  color: var(--accent-text);
 }
 
 .chip[data-kind='create'] {

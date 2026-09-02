@@ -33,12 +33,12 @@
   cursor: pointer;
 }
 
-.cardButton:disabled {
+.cardButton[aria-disabled='true'] {
   opacity: 0.45;
   cursor: not-allowed;
 }
 
-.cardButton:hover:not(:disabled) {
+.cardButton:hover:not([aria-disabled='true']) {
   background: var(--surface-2);
 }
 
@@ -60,5 +60,5 @@
 .romans {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
-  color: var(--accent);
+  color: var(--accent-text);
 }

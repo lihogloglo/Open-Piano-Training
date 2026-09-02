@@ -86,12 +86,7 @@ export function earnedBadges(input: BadgeInputs): Set<string> {
   const keysigTracked = atoms.filter((a) => a.atomId.startsWith('keysig:')).length;
   if (keysigTracked >= 12) earned.add('circle-complete');
 
-  if (
-    passedTakeFor(
-      takes,
-      (t) => t.result.stars === 3 && t.exercise.params['voiceLead'] === 'smooth',
-    )
-  ) {
+  if (passedTakeFor(takes, (t) => t.result.stars === 3 && t.exercise.params['voiceLead'] === 'smooth')) {
     earned.add('smooth-operator');
   }
 

@@ -37,11 +37,7 @@ export function ProgressScreen() {
   const navigate = useNavigate();
   const atomRows = useLiveQuery(() => db.atomProgress.toArray(), [], null);
   const ratingRows = useLiveQuery(() => db.ratings.toArray(), [], null);
-  const takes = useLiveQuery(
-    () => db.takes.orderBy('startedAt').reverse().limit(120).toArray(),
-    [],
-    null,
-  );
+  const takes = useLiveQuery(() => db.takes.orderBy('startedAt').reverse().limit(120).toArray(), [], null);
   const badges = useLiveQuery(() => loadBadges(), [], null);
   const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
   const [openPair, setOpenPair] = useState<ReplayPair | null>(null);
@@ -148,9 +144,7 @@ export function ProgressScreen() {
                   {HEATMAP_KEYS.map((key) => {
                     const cell = cells.find((c) => c.key === key && c.family === family.id)!;
                     const state =
-                      cell.tracked === 0
-                        ? 'not started'
-                        : `${cell.fluent} of ${cell.tracked} fluent`;
+                      cell.tracked === 0 ? 'not started' : `${cell.fluent} of ${cell.tracked} fluent`;
                     return (
                       <td key={key}>
                         <button
@@ -219,9 +213,7 @@ export function ProgressScreen() {
       <section className={styles['section']}>
         <h2>Best takes</h2>
         {starred.length === 0 ? (
-          <p className={styles['muted']}>
-            Three-star takes get saved here so you can hear them again.
-          </p>
+          <p className={styles['muted']}>Three-star takes get saved here so you can hear them again.</p>
         ) : (
           <div className={styles['replayList']}>
             {starred.map((take) => (

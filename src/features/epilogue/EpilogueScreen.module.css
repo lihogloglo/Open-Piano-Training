@@ -18,7 +18,7 @@
 }
 
 .eyebrow {
-  color: var(--accent);
+  color: var(--accent-text);
   font-size: var(--fs-s);
   font-weight: 600;
   letter-spacing: 0.04em;

@@ -62,11 +62,7 @@ function improvTint(
 ): { tonic: string; degrees?: readonly number[] } | null {
   if (!params?.key) return null;
   const degrees =
-    params.palette === 'degrees123'
-      ? [1, 2, 3]
-      : params.palette === 'pentatonic'
-        ? [1, 2, 3, 5, 6]
-        : null;
+    params.palette === 'degrees123' ? [1, 2, 3] : params.palette === 'pentatonic' ? [1, 2, 3, 5, 6] : null;
   return degrees ? { tonic: params.key.tonic, degrees } : { tonic: params.key.tonic };
 }
 
@@ -259,8 +255,7 @@ function CreateStep({
   // A create step carrying an improv exercise gets a looping backing track.
   const improv = step.exercise?.generator === 'improv' ? step.exercise : null;
   const improvParams = improv?.params as
-    | { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string }
-    | undefined;
+    { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string } | undefined;
 
   const stopBacking = useCallback(() => {
     backing.current?.stop();

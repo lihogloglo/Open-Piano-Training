@@ -15,11 +15,7 @@ export function EpilogueScreen() {
   const navigate = useNavigate();
   const practiced = useLiveQuery(() => getPracticedDates(), [], null);
   const atomCount = useLiveQuery(() => db.atomProgress.count(), [], null);
-  const fluentCount = useLiveQuery(
-    () => db.atomProgress.filter((a) => a.fluent).count(),
-    [],
-    null,
-  );
+  const fluentCount = useLiveQuery(() => db.atomProgress.filter((a) => a.fluent).count(), [], null);
   const takeCount = useLiveQuery(() => db.takes.count(), [], null);
 
   return (
@@ -28,9 +24,9 @@ export function EpilogueScreen() {
         <p className={styles['eyebrow']}>Stage 7 complete</p>
         <h1>The path is yours</h1>
         <p className={styles['lede']}>
-          You started by finding C. You can now read a chart you have never seen, play it in a key
-          nobody warned you about, hear a progression and name it, and make something up over the
-          top. That is not a beginner&apos;s skill set.
+          You started by finding C. You can now read a chart you have never seen, play it in a key nobody
+          warned you about, hear a progression and name it, and make something up over the top. That is not a
+          beginner&apos;s skill set.
         </p>
 
         <div className={styles['stats']}>
@@ -43,26 +39,24 @@ export function EpilogueScreen() {
         <h2>What happens now</h2>
         <ul className={styles['list']}>
           <li>
-            <strong>Reviews keep running.</strong> The daily session no longer has new units to
-            teach, so it becomes maintenance — the schedule keeps what you have earned.
+            <strong>Reviews keep running.</strong> The daily session no longer has new units to teach, so it
+            becomes maintenance — the schedule keeps what you have earned.
           </li>
           <li>
-            <strong>Ratings are the new ladder.</strong> Keys, theory and ear challenges are always
-            open, and they are the honest measure from here.
+            <strong>Ratings are the new ladder.</strong> Keys, theory and ear challenges are always open, and
+            they are the honest measure from here.
           </li>
           <li>
-            <strong>The sandbox and songs have no ceiling.</strong> Transpose anything, loop
-            anything, improvise over anything.
+            <strong>The sandbox and songs have no ceiling.</strong> Transpose anything, loop anything,
+            improvise over anything.
           </li>
           <li>
-            <strong>Your replays are worth revisiting.</strong> Compare a take from today with one
-            from your first month. That is what all of this was for.
+            <strong>Your replays are worth revisiting.</strong> Compare a take from today with one from your
+            first month. That is what all of this was for.
           </li>
         </ul>
 
-        <p className={styles['sendoff']}>
-          {APP_NAME} taught you the system. The playing was always yours.
-        </p>
+        <p className={styles['sendoff']}>{APP_NAME} taught you the system. The playing was always yours.</p>
 
         <div className={styles['actions']}>
           <Button variant="primary" size="l" onClick={() => void navigate('/progress')}>

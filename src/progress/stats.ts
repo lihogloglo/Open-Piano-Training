@@ -96,9 +96,7 @@ export function computeRecap(input: RecapInputs): WeeklyRecap {
 
   const fromMs = Date.parse(`${from}T00:00:00`);
   const toMs = Date.parse(`${weekEnding}T23:59:59`);
-  const introducedThisWeek = input.atoms.filter(
-    (a) => a.introducedAt >= fromMs && a.introducedAt <= toMs,
-  );
+  const introducedThisWeek = input.atoms.filter((a) => a.introducedAt >= fromMs && a.introducedAt <= toMs);
 
   const ratingDeltas = input.ratings.flatMap((r) => {
     const before = [...r.history].reverse().find((h) => h.date < from);

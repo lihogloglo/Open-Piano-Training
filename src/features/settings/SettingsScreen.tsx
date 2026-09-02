@@ -164,9 +164,9 @@ export function SettingsScreen() {
       <Card>
         <h3>Reading music</h3>
         <p className={styles['note']}>
-          {APP_NAME} teaches the keyboard by ear and by symbol, not from the page. The reading
-          strand is a separate, optional track: short generated phrases on a staff, plus its own
-          rating. Turn it on whenever you want it — nothing else changes.
+          {APP_NAME} teaches the keyboard by ear and by symbol, not from the page. The reading strand is a
+          separate, optional track: short generated phrases on a staff, plus its own rating. Turn it on
+          whenever you want it — nothing else changes.
         </p>
         <div className={styles['row']}>
           <span>Reading strand</span>

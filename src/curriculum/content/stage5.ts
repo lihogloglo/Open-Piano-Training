@@ -42,18 +42,7 @@ export const stage5: Stage = {
   tagline: 'Sevenths, minor, all 12 keys',
   summary:
     'Everything so far has lived in a few friendly keys with three-note chords. Now the map opens: a fourth note turns triads into colours, minor gets its own gravity, and the twelve keys stop being twelve separate problems.',
-  unitIds: [
-    's5.u1',
-    's5.u2',
-    's5.u3',
-    's5.u4',
-    's5.u5',
-    's5.u6',
-    's5.u7',
-    's5.u8',
-    's5.u9',
-    's5.cp',
-  ],
+  unitIds: ['s5.u1', 's5.u2', 's5.u3', 's5.u4', 's5.u5', 's5.u6', 's5.u7', 's5.u8', 's5.u9', 's5.cp'],
 };
 
 export const stage5Units: Unit[] = [
@@ -309,7 +298,7 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'A minor is C major\'s **relative minor** — the exact same white keys, started from a different note. Nothing changes under your hands; what changes is which note feels like home.',
+            md: "A minor is C major's **relative minor** — the exact same white keys, started from a different note. Nothing changes under your hands; what changes is which note feels like home.",
           },
           {
             kind: 'keyboardDemo',
@@ -649,7 +638,7 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Which spelling a chart uses is a scribe\'s choice, not a musical one: D♭ needs 5 flats, C♯ needs 7 sharps, so most writers pick D♭. Your hands do not care. **Enharmonic** is the word for two names, one sound.',
+            md: "Which spelling a chart uses is a scribe's choice, not a musical one: D♭ needs 5 flats, C♯ needs 7 sharps, so most writers pick D♭. Your hands do not care. **Enharmonic** is the word for two names, one sound.",
           },
           {
             kind: 'circleOfFifths',
@@ -657,7 +646,7 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Good news: D♭ is many pianists\' favourite key. Five black keys under the long fingers, thumbs on the two whites — it almost plays itself.',
+            md: "Good news: D♭ is many pianists' favourite key. Five black keys under the long fingers, thumbs on the two whites — it almost plays itself.",
           },
         ],
       },

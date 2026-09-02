@@ -102,8 +102,8 @@ export function LicensesScreen() {
     <div className={styles['wrap']}>
       <h1>Licenses &amp; credits</h1>
       <p className={styles['note']}>
-        {APP_NAME} is built on open source. These are the projects it depends on, and the terms
-        they are offered under.
+        {APP_NAME} is built on open source. These are the projects it depends on, and the terms they are
+        offered under.
       </p>
       <Card>
         <ul className={styles['creditList']}>
@@ -122,8 +122,8 @@ export function LicensesScreen() {
         </ul>
       </Card>
       <p className={styles['note']}>
-        Songs in {APP_NAME} are original charts written for this app. Style references name genres
-        and eras, never a specific artist&apos;s recording.
+        Songs in {APP_NAME} are original charts written for this app. Style references name genres and eras,
+        never a specific artist&apos;s recording.
       </p>
       <Button onClick={() => void navigate('/settings')}>Back to settings</Button>
     </div>

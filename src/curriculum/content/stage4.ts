@@ -334,7 +334,14 @@ export const stage4Units: Unit[] = [
         passScore: 0.8,
         exercise: tempo(
           'progression-play',
-          { key: C, roman: ['I', 'V', 'vi', 'IV'], beatsPerChord: 4, loops: 1, style: 'brokenLH', voiceLead: 'smooth' },
+          {
+            key: C,
+            roman: ['I', 'V', 'vi', 'IV'],
+            beatsPerChord: 4,
+            loops: 1,
+            style: 'brokenLH',
+            voiceLead: 'smooth',
+          },
           72,
           'both',
         ),
@@ -388,7 +395,14 @@ export const stage4Units: Unit[] = [
         id: 's4.u6.g1',
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['V', 'I'], ['IV', 'I']], count: 2 },
+          {
+            key: C,
+            pool: [
+              ['V', 'I'],
+              ['IV', 'I'],
+            ],
+            count: 2,
+          },
           'rh',
           'by-ear',
         ),
@@ -399,7 +413,15 @@ export const stage4Units: Unit[] = [
         passScore: 0.75,
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['V', 'I'], ['IV', 'I'], ['I', 'V']], count: 3 },
+          {
+            key: C,
+            pool: [
+              ['V', 'I'],
+              ['IV', 'I'],
+              ['I', 'V'],
+            ],
+            count: 3,
+          },
           'rh',
           'by-ear',
         ),
@@ -521,7 +543,15 @@ export const stage4Units: Unit[] = [
         passScore: 0.75,
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['V', 'I'], ['IV', 'I'], ['I', 'V']], count: 3 },
+          {
+            key: C,
+            pool: [
+              ['V', 'I'],
+              ['IV', 'I'],
+              ['I', 'V'],
+            ],
+            count: 3,
+          },
           'rh',
           'by-ear',
         ),
@@ -532,7 +562,14 @@ export const stage4Units: Unit[] = [
         passScore: 0.8,
         exercise: tempo(
           'progression-play',
-          { key: C, roman: ['I', 'V', 'vi', 'IV'], beatsPerChord: 4, loops: 1, style: 'brokenLH', voiceLead: 'smooth' },
+          {
+            key: C,
+            roman: ['I', 'V', 'vi', 'IV'],
+            beatsPerChord: 4,
+            loops: 1,
+            style: 'brokenLH',
+            voiceLead: 'smooth',
+          },
           76,
           'both',
         ),

@@ -4,6 +4,7 @@ import { generateFiveFinger } from './fiveFinger';
 import { generateChordGrip } from './chordGrip';
 import { generateGripInterleave } from './gripInterleave';
 import { generateFlashcard } from './flashcard';
+import { generateNoteFind } from './noteFind';
 
 export type Generator = (def: ExerciseDef, seed: number) => ExerciseInstance;
 
@@ -13,6 +14,7 @@ export const GENERATORS: Record<string, Generator> = {
   'chord-grip': generateChordGrip,
   'grip-interleave': generateGripInterleave,
   flashcard: generateFlashcard,
+  'note-find': generateNoteFind,
 };
 
 export function generate(def: ExerciseDef, seed: number): ExerciseInstance {

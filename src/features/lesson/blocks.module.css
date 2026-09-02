@@ -1,0 +1,77 @@
+.text {
+  font-size: var(--fs-l);
+  line-height: 1.6;
+  max-width: 560px;
+}
+
+.demo {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  padding: var(--space-4);
+  background: var(--surface);
+  max-width: 560px;
+}
+
+.demoRow {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+}
+
+.caption {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.progression {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.chips {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.chip {
+  display: grid;
+  justify-items: center;
+  gap: 2px;
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+  cursor: pointer;
+  min-width: 64px;
+  transition: transform var(--dur-fast) var(--ease);
+}
+
+.chip:hover {
+  transform: translateY(-2px);
+}
+
+.chip[data-degree='1'] .roman { color: var(--deg-1); }
+.chip[data-degree='2'] .roman { color: var(--deg-2); }
+.chip[data-degree='3'] .roman { color: var(--deg-3); }
+.chip[data-degree='4'] .roman { color: var(--deg-4); }
+.chip[data-degree='5'] .roman { color: var(--deg-5); }
+.chip[data-degree='6'] .roman { color: var(--deg-6); }
+.chip[data-degree='7'] .roman { color: var(--deg-7); }
+
+.roman {
+  font-size: var(--fs-xl);
+  font-weight: 650;
+}
+
+.chipRoot {
+  font-size: var(--fs-s);
+  color: var(--text-2);
+}
+
+.circle {
+  width: 240px;
+  height: 240px;
+}

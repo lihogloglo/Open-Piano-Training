@@ -1,0 +1,67 @@
+.overlay {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  background: color-mix(in srgb, var(--bg) 75%, transparent);
+  backdrop-filter: blur(2px);
+  animation: fadeIn var(--dur-med) var(--ease);
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  box-shadow: var(--elev-2);
+  padding: var(--space-6);
+  display: grid;
+  gap: var(--space-4);
+  min-width: 380px;
+  animation: slideUp var(--dur-med) var(--ease);
+}
+
+@keyframes slideUp {
+  from {
+    transform: translateY(12px);
+  }
+}
+
+.top {
+  display: flex;
+  gap: var(--space-5);
+  align-items: center;
+}
+
+.summary {
+  display: grid;
+  gap: var(--space-2);
+}
+
+.split {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.strip {
+  display: flex;
+  gap: 5px;
+  flex-wrap: wrap;
+}
+
+.dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.actions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}

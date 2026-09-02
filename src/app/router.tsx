@@ -13,6 +13,7 @@ import { Placeholder } from '@/features/shared/Placeholder';
 import { LabScreen } from '@/features/lab/LabScreen';
 import { LessonPlayer } from '@/features/lesson/LessonPlayer';
 import { DrillPlayer } from '@/features/drill/DrillPlayer';
+import { SongPlayer } from '@/features/songs/SongPlayer';
 
 function RootRedirect() {
   const onboarded = useSettingsStore((s) => s.onboarded);
@@ -39,7 +40,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/songs/:songId',
-    element: <Placeholder title="Song player" note="Arrives in Phase 5." />,
+    element: <SongPlayer />,
   },
   {
     element: <AppShell />,

@@ -6,6 +6,8 @@ import { setSatisfied, noteBelongsToTarget, targetMidis } from './matcher/setMat
 import { scoreTake } from './scoring';
 import { createRng, resolveSeed } from './rng';
 import { generate } from './generators';
+// Registers the song provider chart-play depends on.
+import '@/curriculum/content';
 import { makeTakeId, TakeRecorder } from './replay';
 import type { ExerciseDef, ExerciseInstance, MatchEvent, NoteJudgment, Target } from './types';
 
@@ -400,6 +402,76 @@ describe('generators', () => {
     }
   });
 
+  it('progression-play: I-V-vi-IV in G with root-in-bass voicings', () => {
+    const inst = generate(
+      def('progression-play', {
+        key: { tonic: 'G', mode: 'major' },
+        roman: ['I', 'V', 'vi', 'IV'],
+        beatsPerChord: 4,
+        loops: 1,
+      }),
+      1,
+    );
+    expect(inst.targets).toHaveLength(4);
+    const labels = inst.targets.map((t) => (t.kind === 'set' ? t.label : ''));
+    expect(labels).toEqual(['G', 'D', 'Em', 'C']);
+    expect(inst.targets.map((t) => t.atBeat)).toEqual([0, 4, 8, 12]);
+    const first = inst.targets[0];
+    if (first?.kind === 'set') expect(first.inversionOf).toEqual({ root: 'G', quality: 'maj', inversion: 0 });
+  });
+
+  it('chart-play: first-light transposes to G', () => {
+    const c = generate(def('chart-play', { songId: 'first-light' }), 1);
+    const g = generate(def('chart-play', { songId: 'first-light', transposeTo: 'G' }), 1);
+    const labelsC = c.targets.slice(0, 4).map((t) => (t.kind === 'set' ? t.label : ''));
+    const labelsG = g.targets.slice(0, 4).map((t) => (t.kind === 'set' ? t.label : ''));
+    expect(labelsC).toEqual(['C', 'G', 'Am', 'F']);
+    expect(labelsG).toEqual(['G', 'D', 'Em', 'C']);
+    expect(c.targets).toHaveLength(16);
+    expect(() => generate(def('chart-play', { songId: 'nope' }), 1)).toThrow('Unknown song');
+  });
+
+  it('ear-degree: cadence preview, per-target probes, keyboard answers', () => {
+    const inst = generate(
+      def('ear-degree', { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 5 }),
+      3,
+    );
+    expect(inst.targets).toHaveLength(5);
+    expect(inst.audioPreview?.notes.length).toBeGreaterThan(8); // cadence chords
+    expect(inst.perTargetPreview).toHaveLength(5);
+    const DEGREE_PC: Record<number, number> = { 1: 0, 3: 4, 5: 7 }; // in C major
+    for (let i = 0; i < inst.targets.length; i++) {
+      const t = inst.targets[i];
+      expect(t?.kind).toBe('any-of-degree');
+      if (t?.kind === 'any-of-degree') {
+        expect([1, 3, 5]).toContain(t.degree);
+        const probe = inst.perTargetPreview?.[i]?.notes[0]?.midi ?? -1;
+        // The probe really sounds the asked degree.
+        expect(probe % 12).toBe(DEGREE_PC[t.degree]);
+      }
+    }
+  });
+
+  it('ear-quality: preview chord matches the expected answer', () => {
+    const inst = generate(def('ear-quality', { qualityPool: ['maj', 'min'], roots: ['C'], count: 4 }), 5);
+    expect(inst.targets).toHaveLength(4);
+    for (let i = 0; i < inst.targets.length; i++) {
+      const t = inst.targets[i];
+      if (t?.kind === 'set') {
+        const previewMidis = (inst.perTargetPreview?.[i]?.notes ?? []).map((n) => n.midi).sort((a, b) => a - b);
+        expect(previewMidis).toEqual([...t.midis].sort((a, b) => a - b));
+      }
+    }
+  });
+
+  it('flashcard interval cards build two-note targets', () => {
+    const inst = generate(def('flashcard', { kind: 'interval', roots: ['C'], intervals: ['M3'], count: 2 }), 1);
+    const t = inst.targets[0];
+    expect(t?.kind).toBe('set');
+    if (t?.kind === 'set') expect(t.midis).toEqual([60, 64]);
+    expect(inst.prompt.perTarget?.[0]?.label).toContain('major 3rd above C');
+  });
+
   it('unknown generator throws', () => {
     expect(() => generate(def('nope', {}), 1)).toThrow('Unknown generator');
   });
@@ -432,6 +504,19 @@ describe('replay', () => {
     ]);
     expect(take.exercise.resolvedSeed).toBe(42);
     expect(take.bpm).toBe(80);
+  });
+});
+
+describe('calibration', () => {
+  it('takes the median and clamps to ±80ms', async () => {
+    const { calibrationOffset } = await import('./matcher/timing');
+    expect(calibrationOffset([20, 25, 30, 22, 28])).toBe(25);
+    expect(calibrationOffset([10, 20])).toBe(15);
+    expect(calibrationOffset([200, 210, 190])).toBe(80); // clamped
+    expect(calibrationOffset([-120, -130, -110])).toBe(-80);
+    expect(calibrationOffset([])).toBe(0);
+    // One wild outlier doesn't drag the median.
+    expect(calibrationOffset([20, 22, 24, 21, 500])).toBe(22);
   });
 });
 

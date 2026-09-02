@@ -60,7 +60,10 @@ export interface ExerciseInstance {
   prompt: PromptModel;
   /** Tempo-mode grid spacing when targets carry no explicit atBeat (default 1). */
   beatsPerTarget?: number;
-  audioPreview?: { notes: DemoNote[]; bpm: number };
+  /** Played once before the run starts (e.g. a cadence establishing the key). */
+  audioPreview?: { notes: DemoNote[]; bpm: number } | undefined;
+  /** Ear exercises: played when the target gains focus; input gated until done. */
+  perTargetPreview?: { notes: DemoNote[]; bpm: number }[] | undefined;
 }
 
 export type JudgeVerdict = 'perfect' | 'good' | 'ok' | 'wrong' | 'missed' | 'extra';

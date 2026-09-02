@@ -7,6 +7,7 @@ import { targetMidis } from '@/engine/matcher/setMatch';
 import { TakeRecorder, type Take } from '@/engine/replay';
 import { startMetronome, stopMetronome, onBeat, type BeatInfo } from '@/audio/metronome';
 import { unlockAudio } from '@/audio/clock';
+import { playNote, stopNote } from '@/audio/sampler';
 import { subscribeMidiEvents } from './midiStore';
 import { useSettingsStore } from './settingsStore';
 
@@ -27,6 +28,8 @@ interface RunState {
   beatsPerBar: number;
   /** perf-clock time of beat 0 (tempo mode) — lets tools schedule against the grid. */
   anchorT0Perf: number | null;
+  /** Ear exercises: a preview is playing; input is ignored until it ends. */
+  listening: boolean;
   result: TakeResult | null;
   lastTake: Take | null;
   startRun(instance: ExerciseInstance): Promise<void>;
@@ -40,6 +43,40 @@ let unsubBeat: (() => void) | null = null;
 let finishTimer: ReturnType<typeof setTimeout> | undefined;
 let tempoStartGate = 0; // ignore input earlier than this (count-in)
 const flashTimers = new Map<number, ReturnType<typeof setTimeout>>();
+let previewTimers: ReturnType<typeof setTimeout>[] = [];
+let previewUntilPerf = 0;
+
+function clearPreview(): void {
+  for (const t of previewTimers) clearTimeout(t);
+  previewTimers = [];
+  previewUntilPerf = 0;
+}
+
+/** Play a demo (ear prompts) through the sampler; gates input until done. */
+function schedulePreview(
+  preview: { notes: { midi: number; atBeat: number; durBeats: number }[]; bpm: number },
+  set: (partial: Partial<RunState>) => void,
+  leadMs = 150,
+): void {
+  const beatMs = 60_000 / preview.bpm;
+  let end = leadMs;
+  for (const n of preview.notes) {
+    const at = leadMs + n.atBeat * beatMs;
+    const until = at + n.durBeats * beatMs;
+    end = Math.max(end, until);
+    previewTimers.push(
+      setTimeout(() => playNote(n.midi, 0.7), at),
+      setTimeout(() => stopNote(n.midi), until),
+    );
+  }
+  previewUntilPerf = performance.now() + end + 120;
+  set({ listening: true });
+  previewTimers.push(
+    setTimeout(() => {
+      set({ listening: false });
+    }, end + 120),
+  );
+}
 
 function computeHighlights(
   instance: ExerciseInstance,
@@ -74,6 +111,7 @@ export const useRunStore = create<RunState>((set, get) => ({
   beatIndex: null,
   beatsPerBar: 4,
   anchorT0Perf: null,
+  listening: false,
   result: null,
   lastTake: null,
 
@@ -96,8 +134,19 @@ export const useRunStore = create<RunState>((set, get) => ({
         fingerMap,
         beatIndex: null,
         anchorT0Perf: null,
+        listening: false,
         result: null,
       });
+      if (instance.audioPreview || instance.perTargetPreview) {
+        await unlockAudio();
+        let lead = 150;
+        if (instance.audioPreview) {
+          schedulePreview(instance.audioPreview, set, lead);
+          lead = previewUntilPerf - performance.now() + 350;
+        }
+        const first = instance.perTargetPreview?.[0];
+        if (first) schedulePreview(first, set, lead);
+      }
       processEvents(waitMatcher.start(), set, get);
       return;
     }
@@ -119,6 +168,7 @@ export const useRunStore = create<RunState>((set, get) => ({
       fingerMap,
       beatIndex: null,
       anchorT0Perf: anchor.t0Perf,
+      listening: false,
       result: null,
     });
 
@@ -131,6 +181,7 @@ export const useRunStore = create<RunState>((set, get) => ({
 
   abortRun() {
     stopMetronome();
+    clearPreview();
     unsubBeat?.();
     unsubBeat = null;
     clearTimeout(finishTimer);
@@ -149,6 +200,7 @@ export const useRunStore = create<RunState>((set, get) => ({
       fingerMap: new Map(),
       beatIndex: null,
       anchorT0Perf: null,
+      listening: false,
       result: null,
     });
   },
@@ -195,6 +247,8 @@ function processEvents(events: MatchEvent[], set: Set, get: Get): void {
       const { instance } = get();
       if (instance) {
         set({ targetIndex: ev.index, targets: computeHighlights(instance, ev.index, false) });
+        const preview = instance.perTargetPreview?.[ev.index];
+        if (preview && ev.index > 0) schedulePreview(preview, set, 500);
       }
     } else if (ev.type === 'hintEligible') {
       const { instance } = get();
@@ -226,6 +280,8 @@ subscribeMidiEvents((e) => {
   const set = useRunStore.setState.bind(useRunStore) as Set;
   const get = useRunStore.getState.bind(useRunStore) as Get;
   if (waitMatcher && !waitMatcher.isDone) {
+    // Ear exercises: ignore input while a preview is sounding.
+    if (e.tPerf < previewUntilPerf) return;
     processEvents(waitMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);
   } else if (tempoMatcher && !tempoMatcher.isDone && e.tPerf >= tempoStartGate) {
     processEvents(tempoMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);

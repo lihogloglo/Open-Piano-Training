@@ -219,6 +219,7 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
   const beatIndex = useRunStore((s) => s.beatIndex);
   const bpmLive = useRunStore((s) => s.bpm);
   const result = useRunStore((s) => s.result);
+  const listening = useRunStore((s) => s.listening);
   const startRun = useRunStore((s) => s.startRun);
   const abortRun = useRunStore((s) => s.abortRun);
 
@@ -313,7 +314,9 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
           <p className={styles['promptDetail']}>{prompt?.title ?? '…'}</p>
-          <h2 className={styles['promptMain']}>{perTarget?.label ?? prompt?.detail ?? ''}</h2>
+          <h2 className={styles['promptMain']}>
+            {listening ? '🔊 Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
+          </h2>
           {instance && (
             <p className={styles['targetCount']}>
               <span className="tabular">

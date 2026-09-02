@@ -1,0 +1,64 @@
+.wrap {
+  max-width: 860px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sub {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  gap: var(--space-4);
+}
+
+.card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.cardButton {
+  display: grid;
+  gap: var(--space-2);
+  padding: var(--space-5);
+  width: 100%;
+  border: none;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.cardButton:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.cardButton:hover:not(:disabled) {
+  background: var(--surface-2);
+}
+
+.title {
+  font-size: var(--fs-l);
+  font-weight: 650;
+}
+
+.style {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.meta {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
+.romans {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  color: var(--accent);
+}

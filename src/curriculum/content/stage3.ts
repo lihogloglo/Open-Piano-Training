@@ -69,7 +69,7 @@ export const stage3Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: "That pattern is the same in *every* major key. Learn it once, own it everywhere. The odd one out is the seventh: **B diminished** — two minor 3rds, tense on purpose.",
+            md: 'That pattern is the same in *every* major key. Learn it once, own it everywhere. The odd one out is the seventh: **B diminished** — two minor 3rds, tense on purpose.',
           },
         ],
       },
@@ -192,7 +192,14 @@ export const stage3Units: Unit[] = [
         id: 's3.u3.g1',
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['I', 'IV', 'I'], ['I', 'V', 'I']], count: 2 },
+          {
+            key: C,
+            pool: [
+              ['I', 'IV', 'I'],
+              ['I', 'V', 'I'],
+            ],
+            count: 2,
+          },
           'rh',
           'by-ear',
         ),
@@ -203,7 +210,15 @@ export const stage3Units: Unit[] = [
         passScore: 0.75,
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['I', 'IV', 'I'], ['I', 'V', 'I'], ['I', 'IV', 'V', 'I']], count: 3 },
+          {
+            key: C,
+            pool: [
+              ['I', 'IV', 'I'],
+              ['I', 'V', 'I'],
+              ['I', 'IV', 'V', 'I'],
+            ],
+            count: 3,
+          },
           'rh',
           'by-ear',
         ),
@@ -278,7 +293,8 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u4.c1',
-        prompt: 'Pick a door: start the four-chord loop on vi, then on IV. Which entrance feels saddest? Loop your favorite.',
+        prompt:
+          'Pick a door: start the four-chord loop on vi, then on IV. Which entrance feels saddest? Loop your favorite.',
       },
     ],
   },
@@ -393,7 +409,7 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "Four chords play. Answer them back in order — the whole chord, or just its bass note. Hunt the **bass motion** first; it gives most of the answer away.",
+            md: 'Four chords play. Answer them back in order — the whole chord, or just its bass note. Hunt the **bass motion** first; it gives most of the answer away.',
           },
         ],
       },
@@ -402,7 +418,14 @@ export const stage3Units: Unit[] = [
         id: 's3.u7.g1',
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['I', 'IV', 'V', 'I'], ['I', 'V', 'vi', 'IV']], count: 2 },
+          {
+            key: C,
+            pool: [
+              ['I', 'IV', 'V', 'I'],
+              ['I', 'V', 'vi', 'IV'],
+            ],
+            count: 2,
+          },
           'rh',
           'by-ear',
         ),
@@ -508,7 +531,15 @@ export const stage3Units: Unit[] = [
         passScore: 0.75,
         exercise: wait(
           'ear-progression',
-          { key: C, pool: [['I', 'IV', 'I'], ['I', 'V', 'I'], ['I', 'IV', 'V', 'I']], count: 3 },
+          {
+            key: C,
+            pool: [
+              ['I', 'IV', 'I'],
+              ['I', 'V', 'I'],
+              ['I', 'IV', 'V', 'I'],
+            ],
+            count: 3,
+          },
           'rh',
           'by-ear',
         ),

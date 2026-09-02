@@ -347,7 +347,10 @@ function earDrill(parts: string[]): ExerciseDef | null {
   const byEar = { mode: 'wait', rung: 'by-ear', hand: 'rh', seedPolicy: 'random' } as const;
   const sub = parts[1];
   if (sub === 'degree') {
-    const digits = (parts[2] ?? '135').split('').map(Number).filter((n) => n >= 1 && n <= 7);
+    const digits = (parts[2] ?? '135')
+      .split('')
+      .map(Number)
+      .filter((n) => n >= 1 && n <= 7);
     return {
       generator: 'ear-degree',
       params: { key: C_MAJOR, degreePool: digits.length > 0 ? digits : [1, 3, 5], count: 6 },
@@ -412,9 +415,7 @@ function progDrill(kind: string, parts: string[]): ExerciseDef | null {
   if (!progId) return null;
   // A minor key segment (`am`) must pick the minor entry: `i-iv-v` names both.
   const minor = keySeg.endsWith('m');
-  const lookup = minor
-    ? [`min-${progId}`, progId]
-    : [progId, `min-${progId}`];
+  const lookup = minor ? [`min-${progId}`, progId] : [progId, `min-${progId}`];
   const entry = lookup.reduce<(typeof PROGRESSION_CATALOG)[number] | undefined>(
     (found, id) => found ?? PROGRESSION_CATALOG.find((p) => p.id === id),
     undefined,
@@ -469,9 +470,12 @@ function labelFor(id: string): string {
   if (kind === 'spell') {
     if (parts[1] === 'triad') {
       const what =
-        { maj: 'major triads', min: 'minor triads', allroots: 'triads from any root', inversions: 'triad inversions' }[
-          parts[2] ?? ''
-        ] ?? 'triads';
+        {
+          maj: 'major triads',
+          min: 'minor triads',
+          allroots: 'triads from any root',
+          inversions: 'triad inversions',
+        }[parts[2] ?? ''] ?? 'triads';
       return `Spell ${what}`;
     }
     return `Spell ${parts[1] ?? ''} chords`;
@@ -504,10 +508,7 @@ function buildRegistry(): Map<string, SkillAtom> {
     unit.concepts.map((id) => [id, unit.id] as const),
   );
   // The notation atoms are not on any unit's concept list — they are opt-in.
-  const entries = [
-    ...fromUnits,
-    ...READ_STRAND_ATOMS.map((id) => [id, 's6.u1'] as const),
-  ];
+  const entries = [...fromUnits, ...READ_STRAND_ATOMS.map((id) => [id, 's6.u1'] as const)];
   for (const [id, unitId] of entries) {
     if (registry.has(id)) continue;
     const kind = id.split(':')[0] ?? '';

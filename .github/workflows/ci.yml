@@ -18,8 +18,12 @@ jobs:
       - run: npm run lint
       - run: npm run typecheck
       - run: npm run format:check
+      - name: Contrast (WCAG AA)
+        run: npm run check:contrast
       - run: npm run test
       - run: npm run build
+      - name: Bundle budget
+        run: npm run check:bundle
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
       - name: E2E

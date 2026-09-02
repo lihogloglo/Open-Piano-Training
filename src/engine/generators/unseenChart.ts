@@ -51,20 +51,7 @@ const MINOR_PHRASES: string[][] = [
 ];
 
 /** 12-bar blues: dominant everywhere, the standard turnaround. */
-const BLUES: string[] = [
-  'I7',
-  'IV7',
-  'I7',
-  'I7',
-  'IV7',
-  'IV7',
-  'I7',
-  'I7',
-  'V7',
-  'IV7',
-  'I7',
-  'V7',
-];
+const BLUES: string[] = ['I7', 'IV7', 'I7', 'I7', 'IV7', 'IV7', 'I7', 'I7', 'V7', 'IV7', 'I7', 'V7'];
 
 /** Add sevenths where they belong: ii/iii/vi get m7, V gets 7, I/IV get maj7. */
 function withSevenths(roman: string): string {

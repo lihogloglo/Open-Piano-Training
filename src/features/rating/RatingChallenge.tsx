@@ -77,8 +77,8 @@ export function RatingChallenge() {
           <div className={styles['card']}>
             <h1>Not yet</h1>
             <p>
-              A {STRAND_LABEL[strand].toLowerCase()} challenge draws only on what your path has
-              already taught you. Work through a few more units and it will open up.
+              A {STRAND_LABEL[strand].toLowerCase()} challenge draws only on what your path has already taught
+              you. Work through a few more units and it will open up.
             </p>
             <Button variant="primary" onClick={() => void navigate('/path')}>
               Back to the path
@@ -192,13 +192,12 @@ function Challenge({
             </div>
             <h1>{STRAND_LABEL[strand]} challenge</h1>
             <p>
-              {CHALLENGE_ITEMS} items at your current level. One shot each — no retries, no clock
-              pressure beyond the exercise itself. Pass 8 and you move up two.
+              {CHALLENGE_ITEMS} items at your current level. One shot each — no retries, no clock pressure
+              beyond the exercise itself. Pass 8 and you move up two.
             </p>
             {range && level >= range.max && (
               <p className={styles['sub']}>
-                You&apos;re at the top of what your path has taught. Learn new material to raise the
-                ceiling.
+                You&apos;re at the top of what your path has taught. Learn new material to raise the ceiling.
               </p>
             )}
             <div className={styles['actions']}>
@@ -223,11 +222,7 @@ function Challenge({
           ? styles['deltaDown']
           : styles['deltaHold'];
     const headline =
-      outcome.verdict === 'up'
-        ? 'Level up'
-        : outcome.verdict === 'down'
-          ? 'Down a step'
-          : 'Holding steady';
+      outcome.verdict === 'up' ? 'Level up' : outcome.verdict === 'down' ? 'Down a step' : 'Holding steady';
     return (
       <div className={styles['player']}>
         <div className={styles['center']}>
@@ -238,9 +233,7 @@ function Challenge({
             <h1>{headline}</h1>
             <p className={deltaClass}>
               {outcome.delta > 0 ? '+' : ''}
-              {outcome.delta === 0
-                ? `${levelDisplay(outcome.after)}`
-                : `${levelDisplay(outcome.delta)}`}
+              {outcome.delta === 0 ? `${levelDisplay(outcome.after)}` : `${levelDisplay(outcome.delta)}`}
             </p>
             <p>
               {outcome.passedCount} of {outcome.total} clean.{' '}

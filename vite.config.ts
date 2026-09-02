@@ -60,6 +60,12 @@ export default defineConfig({
     include: ['react', 'react-dom/client', 'react-router', 'zustand', 'webmidi', 'smplr'],
   },
   build: {
+    // VexFlow is ~1.1 MB and deliberately lazy (notation strand only), so the
+    // default 500 kB warning fires on a chunk that is working as intended.
+    // `npm run check:bundle` is the real guard: it enforces the eager-bundle
+    // budget from 08-build-order and fails the build if vexflow stops being
+    // its own chunk.
+    chunkSizeWarningLimit: 1200,
     rolldownOptions: {
       output: {
         // Keep the music-theory layer out of the boot path's critical chunk:

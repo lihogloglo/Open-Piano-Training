@@ -5,7 +5,14 @@ import { diatonicTriads } from '@/theory/keys';
 import { namePc } from '@/theory/notes';
 import { createRng } from '../rng';
 import { smoothVoicings } from '../voiceLeading';
-import { COMP_PATTERNS, VOICING_LABEL, swingBeat, voiceChord, type CompPattern, type VoicingStyle } from '../comp';
+import {
+  COMP_PATTERNS,
+  VOICING_LABEL,
+  swingBeat,
+  voiceChord,
+  type CompPattern,
+  type VoicingStyle,
+} from '../comp';
 import type { DemoNote, ExerciseDef, ExerciseInstance, Target } from '../types';
 
 const keySchema = z.object({ tonic: z.string(), mode: z.enum(['major', 'minor']) });
@@ -121,7 +128,8 @@ export function progressionTargets(
     const e = events[i];
     if (!e) continue;
     const voicing = smooth?.[i];
-    const symbol = voicing && voicing.inversion > 0 ? slashChordSymbol(e.root, e.quality, voicing.inversion) : e.symbol;
+    const symbol =
+      voicing && voicing.inversion > 0 ? slashChordSymbol(e.root, e.quality, voicing.inversion) : e.symbol;
 
     if (isCompPattern(opts.style)) {
       const comp = compTargets(e, opts, symbol);

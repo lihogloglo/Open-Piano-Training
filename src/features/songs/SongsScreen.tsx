@@ -37,10 +37,14 @@ export function SongsScreen() {
           const bars = song.romanized.length;
           return (
             <Card key={song.id} className={styles['card'] ?? ''}>
+              {/* Locked cards stay focusable (aria-disabled, not disabled) so a
+                  keyboard user can reach them, read why, and scroll the list. */}
               <button
                 className={styles['cardButton']}
-                disabled={locked}
-                onClick={() => void navigate(`/songs/${song.id}`)}
+                aria-disabled={locked}
+                onClick={() => {
+                  if (!locked) void navigate(`/songs/${song.id}`);
+                }}
               >
                 <span className={styles['title']}>{song.title}</span>
                 <span className={styles['style']}>{song.styleRef}</span>

@@ -140,9 +140,7 @@ describe('unseen chart', () => {
   it('is deterministic per seed but different across seeds', () => {
     const d = def({ generator: 'unseen-chart', params: { form: 'aaba' } });
     expect(unseenChartBars(d, 7)).toEqual(unseenChartBars(d, 7));
-    const seen = new Set(
-      Array.from({ length: 20 }, (_, i) => JSON.stringify(unseenChartBars(d, i + 1))),
-    );
+    const seen = new Set(Array.from({ length: 20 }, (_, i) => JSON.stringify(unseenChartBars(d, i + 1))));
     expect(seen.size).toBeGreaterThan(3);
   });
 

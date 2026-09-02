@@ -36,16 +36,18 @@ export function Sparkline({
   const first = values[0]!;
   const stroke = last > first ? 'var(--ok)' : last < first ? 'var(--err)' : 'var(--text-3)';
   return (
-    <svg
-      width={width}
-      height={height}
-      role="img"
-      aria-label={label ?? `Trend from ${first} to ${last}`}
-    >
+    <svg width={width} height={height} role="img" aria-label={label ?? `Trend from ${first} to ${last}`}>
       {values.length === 1 ? (
         <circle cx={width / 2} cy={height / 2} r="3" fill={stroke} />
       ) : (
-        <polyline points={points} fill="none" stroke={stroke} strokeWidth="2" strokeLinejoin="round" strokeLinecap="round" />
+        <polyline
+          points={points}
+          fill="none"
+          stroke={stroke}
+          strokeWidth="2"
+          strokeLinejoin="round"
+          strokeLinecap="round"
+        />
       )}
     </svg>
   );

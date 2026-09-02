@@ -124,7 +124,8 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
     targets,
     beatsPerTarget: 2,
     prompt: {
-      title: p.kind === 'spell' ? 'Spelling drill' : p.kind === 'roman' ? 'Roman numeral drill' : 'Interval drill',
+      title:
+        p.kind === 'spell' ? 'Spelling drill' : p.kind === 'roman' ? 'Roman numeral drill' : 'Interval drill',
       detail:
         p.kind === 'spell'
           ? 'Build each chord from its symbol'

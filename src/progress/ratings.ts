@@ -58,11 +58,7 @@ export function eligibleAtoms(strand: RatingStrand, tracked: ReadonlySet<string>
 }
 
 /** The atoms sitting inside `level`'s difficulty band. */
-export function bandAtoms(
-  strand: RatingStrand,
-  level: number,
-  tracked: ReadonlySet<string>,
-): SkillAtom[] {
+export function bandAtoms(strand: RatingStrand, level: number, tracked: ReadonlySet<string>): SkillAtom[] {
   return eligibleAtoms(strand, tracked).filter(
     (a) => a.difficulty >= level - BAND && a.difficulty <= level + BAND,
   );
@@ -81,9 +77,7 @@ export function supportedLevelRange(
   let min = -1;
   let max = -1;
   for (let level = MIN_LEVEL; level <= MAX_LEVEL; level++) {
-    const count = atoms.filter(
-      (a) => a.difficulty >= level - BAND && a.difficulty <= level + BAND,
-    ).length;
+    const count = atoms.filter((a) => a.difficulty >= level - BAND && a.difficulty <= level + BAND).length;
     if (count >= MIN_BAND_ATOMS) {
       if (min === -1) min = level;
       max = level;

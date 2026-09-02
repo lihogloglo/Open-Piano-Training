@@ -6,9 +6,7 @@ import styles from './AppShell.module.css';
  * assets are cached, so this is information, not an error — the copy says so.
  */
 export function ConnectionBanner() {
-  const [online, setOnline] = useState(() =>
-    typeof navigator === 'undefined' ? true : navigator.onLine,
-  );
+  const [online, setOnline] = useState(() => (typeof navigator === 'undefined' ? true : navigator.onLine));
 
   useEffect(() => {
     const goOnline = (): void => setOnline(true);

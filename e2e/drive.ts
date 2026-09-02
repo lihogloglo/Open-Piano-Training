@@ -68,6 +68,15 @@ export interface Snap {
   spacing: number;
 }
 
+/** Wait for the app to boot and install its test bridge. */
+export async function waitForApp(page: Page): Promise<void> {
+  await page.waitForFunction(
+    () => (window as unknown as { __runTest?: unknown }).__runTest !== undefined,
+    undefined,
+    { timeout: 20_000 },
+  );
+}
+
 export const snap = (page: Page): Promise<Snap> =>
   page.evaluate(
     () => (window as unknown as { __runTest: { snapshot(): unknown } }).__runTest.snapshot() as never,
@@ -103,6 +112,7 @@ export async function scheduleTempoRun(page: Page, s: Snap): Promise<void> {
 /** Drive whatever lesson is open until we are back on /path or /practice
  *  (or, when given, until `until(url)` — e.g. a placement chain boundary). */
 export async function driveLesson(page: Page, until?: (url: string) => boolean): Promise<void> {
+  await waitForApp(page);
   const scheduledAnchors = new Set<number>();
   for (let guard = 0; guard < 900; guard++) {
     if (!page.url().includes('/lesson/')) return;
@@ -155,6 +165,7 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
  * different chrome — and no retries, so every item is one pass.
  */
 export async function driveChallenge(page: Page): Promise<void> {
+  await waitForApp(page);
   const scheduledAnchors = new Set<number>();
   for (let guard = 0; guard < 900; guard++) {
     const heading = await page

@@ -77,12 +77,7 @@ export const stage7Units: Unit[] = [
         id: 's7.u1.c1',
         prompt:
           'Over the drone, play only 1, 2 and 3. Make a four-bar phrase, then answer it with another that ends on 1. Call and response — with yourself.',
-        exercise: wait(
-          'improv',
-          { key: C, palette: 'degrees123', roman: ['I'], loops: 4 },
-          'rh',
-          'by-ear',
-        ),
+        exercise: wait('improv', { key: C, palette: 'degrees123', roman: ['I'], loops: 4 }, 'rh', 'by-ear'),
       },
     ],
   },
@@ -557,7 +552,7 @@ export const stage7Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'And one look further down the road: **rootless voicings**. Once a bass player has the root, your left hand is free to play only 3rd, 7th and colour tones. That is where jazz piano goes next — Mark Levine\'s *The Jazz Piano Book* and PianoWithJonny are the usual next stops.',
+            md: "And one look further down the road: **rootless voicings**. Once a bass player has the root, your left hand is free to play only 3rd, 7th and colour tones. That is where jazz piano goes next — Mark Levine's *The Jazz Piano Book* and PianoWithJonny are the usual next stops.",
           },
         ],
       },

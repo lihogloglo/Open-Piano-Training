@@ -39,7 +39,7 @@
   font-variant-numeric: tabular-nums;
   font-weight: 650;
   font-size: var(--fs-s);
-  color: var(--accent);
+  color: var(--accent-text);
   background: color-mix(in srgb, var(--accent) 12%, transparent);
   border-radius: 999px;
   padding: 2px var(--space-3);

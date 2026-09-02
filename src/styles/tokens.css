@@ -6,8 +6,11 @@
   --border: #dededa;
   --text: #1a1b1e;
   --text-2: #5c5f66;
-  --text-3: #8b8d98;
+  --text-3: #656873;
   --accent: #3e63dd;
+  /* The accent as TEXT (links, eyebrows). Kept separate from --accent so the
+     fill colour can stay vivid while the text tint clears AA on the surface. */
+  --accent-text: #3355cc;
   --accent-contrast: #ffffff;
 
   /* feedback */
@@ -71,7 +74,8 @@
   --border: #2a2e36;
   --text: #edeef0;
   --text-2: #a7abb4;
-  --text-3: #6e7480;
+  --text-3: #9096a3;
+  --accent-text: #8aa4f2;
   --key-white: #e8e8e4;
   --key-black: #17181b;
   --key-border: #3a3e46;

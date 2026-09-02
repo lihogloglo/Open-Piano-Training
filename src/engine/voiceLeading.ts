@@ -59,7 +59,10 @@ export function smoothVoicings(
     const maxInv = Math.min(3, size - 1);
     for (let inv = 0; inv <= maxInv; inv++) {
       for (const bass of [anchorBass - 12, anchorBass - 5, anchorBass, anchorBass + 7]) {
-        const midis = buildChord({ root: chord.root, quality: chord.quality, inversion: inv as Inversion }, bass);
+        const midis = buildChord(
+          { root: chord.root, quality: chord.quality, inversion: inv as Inversion },
+          bass,
+        );
         const cost = movementCost(prev, midis);
         if (cost < bestCost) {
           bestCost = cost;
@@ -67,7 +70,10 @@ export function smoothVoicings(
         }
       }
     }
-    const chosen = best ?? { midis: buildChord({ ...chord, inversion: 0 }, anchorBass), inversion: 0 as Inversion };
+    const chosen = best ?? {
+      midis: buildChord({ ...chord, inversion: 0 }, anchorBass),
+      inversion: 0 as Inversion,
+    };
     out.push(chosen);
     prev = chosen.midis;
   }
@@ -118,10 +124,7 @@ export function applyVoiceLeading(
   const idealAligned = ideal.map((v, i) => (played[i] ? v : null));
   const idealSeq = sequenceCost(idealAligned);
   const vl = playedSeq.transitions === 0 ? 0 : vlScore(playedSeq.cost, idealSeq.cost);
-  const score = Math.max(
-    0,
-    Math.min(1, 0.5 * result.pitchAccuracy + 0.3 * result.timingAccuracy + 0.2 * vl),
-  );
+  const score = Math.max(0, Math.min(1, 0.5 * result.pitchAccuracy + 0.3 * result.timingAccuracy + 0.2 * vl));
   const stars: TakeResult['stars'] = score >= 0.97 ? 3 : score >= 0.9 ? 2 : score >= 0.8 ? 1 : 0;
   return { ...result, score, stars, passed: score >= passScore, vlScore: vl };
 }

@@ -74,7 +74,14 @@ describe('voice-leading metric', () => {
     expect(perfect.vlScore).toBe(1);
     expect(perfect.score).toBe(1);
 
-    const clunky = applyVoiceLeading(base, [[60, 64, 67], [65, 69, 72]], ideal);
+    const clunky = applyVoiceLeading(
+      base,
+      [
+        [60, 64, 67],
+        [65, 69, 72],
+      ],
+      ideal,
+    );
     expect(clunky.vlScore).toBeLessThan(1);
     expect(clunky.score).toBeCloseTo(0.5 + 0.3 + 0.2 * clunky.vlScore);
   });
@@ -155,7 +162,13 @@ describe('progression-play style:brokenLH', () => {
     const inst = generate(
       def(
         'progression-play',
-        { key: { tonic: 'C', mode: 'major' }, roman: ['I', 'IV'], beatsPerChord: 4, loops: 1, style: 'brokenLH' },
+        {
+          key: { tonic: 'C', mode: 'major' },
+          roman: ['I', 'IV'],
+          beatsPerChord: 4,
+          loops: 1,
+          style: 'brokenLH',
+        },
         'tempo',
       ),
       42,
@@ -171,7 +184,13 @@ describe('progression-play style:brokenLH', () => {
       {
         ...def(
           'progression-play',
-          { key: { tonic: 'C', mode: 'major' }, roman: ['I', 'IV'], beatsPerChord: 4, loops: 1, style: 'brokenLH' },
+          {
+            key: { tonic: 'C', mode: 'major' },
+            roman: ['I', 'IV'],
+            beatsPerChord: 4,
+            loops: 1,
+            style: 'brokenLH',
+          },
           'tempo',
         ),
         hand: 'both',

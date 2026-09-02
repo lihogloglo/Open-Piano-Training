@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
-import { useNavigate, useParams } from 'react-router';
+import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { getUnit } from '@/curriculum/content';
 import type { LessonStep, Unit } from '@/curriculum/schema';
 import type { ExerciseDef, ExerciseInstance } from '@/engine/types';
@@ -7,7 +7,9 @@ import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
 import { useMidiStore } from '@/store/midiStore';
 import { useRunStore } from '@/store/runStore';
-import { markUnitInProgress, markUnitPassed, saveTake } from '@/progress/db';
+import { markUnitInProgress, saveTake } from '@/progress/db';
+import { addPracticeMinutes, completeUnit, markBlockComplete } from '@/progress/service';
+import { localDateString } from '@/progress/sessionBuilder';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
@@ -41,6 +43,9 @@ export function LessonPlayer() {
 
 function LessonPlayerInner({ unit }: { unit: Unit }) {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const sessionId = searchParams.get('session');
+  const sessionBlock = searchParams.get('block');
   const [stepIdx, setStepIdx] = useState(0);
   const gradedScores = useRef<number[]>([]);
   const flaggedRef = useRef(false);
@@ -58,10 +63,17 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
   const finishUnit = useCallback(async () => {
     const scores = gradedScores.current;
     const score = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
-    await markUnitPassed(unit.id, score, flaggedRef.current);
+    await completeUnit(unit, score, flaggedRef.current);
+    await addPracticeMinutes(localDateString(new Date()), unit.minutes);
     toast(`${unit.title} — complete!`, 'ok');
+    if (sessionId && sessionBlock !== null) {
+      // Minutes already counted above; the block just gets ticked off.
+      await markBlockComplete(sessionId, Number(sessionBlock), 0);
+      void navigate('/practice');
+      return;
+    }
     void navigate('/path');
-  }, [unit.id, unit.title, navigate]);
+  }, [unit, sessionId, sessionBlock, navigate]);
 
   const advance = useCallback(() => {
     if (stepIdx + 1 >= unit.steps.length) {

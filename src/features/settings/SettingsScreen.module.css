@@ -32,3 +32,16 @@
   background: var(--accent);
   color: var(--accent-contrast);
 }
+
+.note {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+  margin: var(--space-3) 0;
+}
+
+.dataRow {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-3);
+}

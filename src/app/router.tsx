@@ -12,6 +12,7 @@ import { SettingsScreen } from '@/features/settings/SettingsScreen';
 import { Placeholder } from '@/features/shared/Placeholder';
 import { LabScreen } from '@/features/lab/LabScreen';
 import { LessonPlayer } from '@/features/lesson/LessonPlayer';
+import { DrillPlayer } from '@/features/drill/DrillPlayer';
 
 function RootRedirect() {
   const onboarded = useSettingsStore((s) => s.onboarded);
@@ -29,8 +30,8 @@ export const router = createBrowserRouter([
     element: <LessonPlayer />,
   },
   {
-    path: '/drill/:blockId',
-    element: <Placeholder title="Drill" note="Arrives in Phase 4." />,
+    path: '/drill/:sessionId/:blockIdx',
+    element: <DrillPlayer />,
   },
   {
     path: '/rating/:strand',

@@ -48,7 +48,7 @@ test('song library unlocks First Light after Stage 1 opens, and it plays in G', 
   await card.click();
   await expect(page).toHaveURL(/\/songs\/first-light/);
 
-  await page.getByLabel('Key').selectOption('G');
+  await page.getByLabel('Key', { exact: true }).selectOption('G');
   await page.getByRole('button', { name: 'Play the chart' }).click();
   await expect(page.getByText('Em').first()).toBeVisible(); // transposed chart rendered
 

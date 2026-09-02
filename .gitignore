@@ -3,5 +3,6 @@ dist
 coverage
 playwright-report
 test-results
+screenshots
 *.local
 .DS_Store

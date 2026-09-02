@@ -73,7 +73,6 @@ const screens: { path: string; heading: string }[] = [
   { path: '/progress', heading: 'Progress' },
   { path: '/settings', heading: 'Settings' },
   { path: '/setup', heading: 'Setup' },
-  { path: '/lesson/s0.u1', heading: 'Lesson player' },
 ];
 
 for (const { path, heading } of screens) {
@@ -85,6 +84,15 @@ for (const { path, heading } of screens) {
     expect(errors).toEqual([]);
   });
 }
+
+test('renders the lesson player without console errors', async ({ page }) => {
+  const errors = collectErrors(page);
+  await seedOnboarded(page);
+  await page.goto('/lesson/s0.u1?midi=fake');
+  await expect(page.getByText('Meet the keyboard')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Continue' })).toBeVisible();
+  expect(errors).toEqual([]);
+});
 
 test('theme toggle switches and persists', async ({ page }) => {
   await seedOnboarded(page);

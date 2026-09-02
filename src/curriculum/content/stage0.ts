@@ -1,7 +1,11 @@
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
-const wait = (generator: string, params: Record<string, unknown>, hand: 'rh' | 'lh' | 'both' = 'rh'): ExerciseDef => ({
+const wait = (
+  generator: string,
+  params: Record<string, unknown>,
+  hand: 'rh' | 'lh' | 'both' = 'rh',
+): ExerciseDef => ({
   generator,
   params,
   mode: 'wait',
@@ -92,7 +96,8 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u1.c1',
-        prompt: 'Free play: wander the keys for a minute. Try playing only Cs and Fs — low, high, both hands.',
+        prompt:
+          'Free play: wander the keys for a minute. Try playing only Cs and Fs — low, high, both hands.',
       },
     ],
   },
@@ -118,7 +123,11 @@ export const stage0Units: Unit[] = [
         ],
       },
       { kind: 'guided', id: 's0.u2.g1', exercise: wait('note-find', { notes: ['C', 'D', 'E'], count: 6 }) },
-      { kind: 'guided', id: 's0.u2.g2', exercise: wait('note-find', { notes: ['F', 'G', 'A', 'B'], count: 8 }) },
+      {
+        kind: 'guided',
+        id: 's0.u2.g2',
+        exercise: wait('note-find', { notes: ['F', 'G', 'A', 'B'], count: 8 }),
+      },
       {
         kind: 'graded',
         id: 's0.u2.q1',
@@ -220,7 +229,8 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u4.c1',
-        prompt: 'Make a tiny melody using only these five keys. Start and end on C — hear how that feels like home.',
+        prompt:
+          'Make a tiny melody using only these five keys. Start and end on C — hear how that feels like home.',
       },
     ],
   },

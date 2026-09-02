@@ -121,7 +121,8 @@ export function validateCurriculum(content: CurriculumContent): void {
     }
   }
   for (const unit of content.units) {
-    if (!stageIds.has(unit.stageId)) throw new Error(`Unit ${unit.id} references missing stage ${unit.stageId}`);
+    if (!stageIds.has(unit.stageId))
+      throw new Error(`Unit ${unit.id} references missing stage ${unit.stageId}`);
     for (const p of unit.prerequisites) {
       if (!unitIds.has(p)) throw new Error(`Unit ${unit.id} has missing prerequisite ${p}`);
     }

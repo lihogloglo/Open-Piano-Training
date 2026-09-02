@@ -43,6 +43,11 @@ export const STRAND_LABEL: Record<RatingStrand, string> = {
   read: 'Read',
 };
 
+/** Label for a strand id that may come from stored data (recap rows, exports). */
+export function strandLabel(strand: string): string {
+  return STRAND_LABEL[strand as RatingStrand] ?? strand;
+}
+
 /** Display number reads like an ELO: level 34 shows as 340. */
 export function levelDisplay(level: number): number {
   return level * 10;

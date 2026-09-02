@@ -12,7 +12,7 @@ import {
 } from '@/progress/service';
 import { computeStreak, weekDots } from '@/progress/stats';
 import { db } from '@/progress/db';
-import { STRAND_LABEL, levelDisplay, suggestedStrands } from '@/progress/ratings';
+import { STRAND_LABEL, levelDisplay, strandLabel, suggestedStrands } from '@/progress/ratings';
 import { ATOMS } from '@/progress/atoms';
 import { localDateString, type SessionBlock, type SessionPlan } from '@/progress/sessionBuilder';
 import { Card } from '@/ui/Card';
@@ -194,7 +194,7 @@ export function TodayScreen() {
               {recap.ratingDeltas
                 .map(
                   (d) =>
-                    `${STRAND_LABEL[d.strand as 'keys'] ?? d.strand} ${levelDisplay(d.from)} → ${levelDisplay(d.to)}`,
+                    `${strandLabel(d.strand)} ${levelDisplay(d.from)} → ${levelDisplay(d.to)}`,
                 )
                 .join(' · ')}
             </p>

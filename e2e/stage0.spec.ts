@@ -118,7 +118,8 @@ test('a fresh profile completes all of Stage 0 with fake MIDI', async ({ page })
 
   // Assert persisted progress in Dexie.
   const rows = await page.evaluate(async () => {
-    const mod = (await import('/src/progress/db.ts')) as unknown as {
+    // Vite dev-serves source modules by URL; keep the specifier opaque to tsc.
+    const mod = (await import(/* @vite-ignore */ String('/src/progress/db.ts'))) as {
       db: { unitProgress: { toArray(): Promise<{ unitId: string; status: string; bestScore: number }[]> } };
     };
     return mod.db.unitProgress.toArray();

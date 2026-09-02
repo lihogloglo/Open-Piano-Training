@@ -1,4 +1,3 @@
-import { useEffect } from 'react';
 import { NavLink, Outlet, Link } from 'react-router';
 import { APP_NAME } from './brand';
 import { Icon, type IconName } from '@/ui/Icon';
@@ -24,14 +23,7 @@ const NAV: { to: string; label: string; icon: IconName }[] = [
 export function AppShell() {
   const expanded = useSettingsStore((s) => s.sidebarExpanded);
   const setExpanded = useSettingsStore((s) => s.setSidebarExpanded);
-  const onboarded = useSettingsStore((s) => s.onboarded);
   const midiStatus = useMidiStore((s) => s.status);
-  const initMidi = useMidiStore((s) => s.init);
-
-  // Onboarded users already granted MIDI access once; re-init silently.
-  useEffect(() => {
-    if (onboarded) void initMidi();
-  }, [onboarded, initMidi]);
 
   const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: 'No keyboard' };
 

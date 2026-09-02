@@ -12,8 +12,9 @@ export interface ExerciseDef {
   generator: string;
   params: Record<string, unknown>;
   mode: MatchMode;
-  bpm?: number;
-  timingTier?: TimingTier;
+  // `| undefined` keeps zod-inferred content assignable under exactOptionalPropertyTypes.
+  bpm?: number | undefined;
+  timingTier?: TimingTier | undefined;
   rung: WeaningRung;
   hand: Hand;
   seedPolicy: 'fixed' | 'daily' | 'random';

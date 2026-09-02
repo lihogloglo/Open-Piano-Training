@@ -8,8 +8,10 @@ import '@/styles/global.css';
 import { router } from './router';
 import { Providers } from './providers';
 import { initTheme } from '@/store/settingsStore';
+import { installRunTestBridge } from '@/store/runTestBridge';
 
 initTheme();
+installRunTestBridge();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

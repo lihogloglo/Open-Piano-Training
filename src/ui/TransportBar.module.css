@@ -1,0 +1,66 @@
+.bar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-5);
+  padding: var(--space-3) var(--space-5);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+  min-height: 64px;
+}
+
+.bpm {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.beats {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.beatDot {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.beatDot[data-active='true'] {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.countinLabel {
+  font-size: var(--fs-xs);
+  color: var(--warn);
+  margin-left: var(--space-2);
+}
+
+.pips {
+  display: inline-flex;
+  gap: var(--space-2);
+  margin-left: auto;
+}
+
+.pip {
+  border: 1px solid var(--border);
+  background: var(--surface-2);
+  color: var(--text-2);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: var(--fs-xs);
+  cursor: pointer;
+}
+
+.pip[data-lit='true'] {
+  background: var(--ok);
+  border-color: var(--ok);
+  color: #fff;
+}
+
+.pip[data-current='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}

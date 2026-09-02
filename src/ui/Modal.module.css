@@ -1,0 +1,29 @@
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgb(0 0 0 / 0.45);
+  display: grid;
+  place-items: center;
+  z-index: 50;
+  padding: var(--space-5);
+}
+
+.panel {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  box-shadow: var(--elev-2);
+  padding: var(--space-6);
+  max-width: 480px;
+  width: 100%;
+  display: grid;
+  gap: var(--space-4);
+  animation: modalIn var(--dur-med) var(--ease);
+}
+
+@keyframes modalIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}

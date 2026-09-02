@@ -1,0 +1,121 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  height: 56px;
+  padding: 0 var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-shrink: 0;
+}
+
+.close {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-m);
+  display: grid;
+  place-items: center;
+}
+
+.close:hover {
+  background: var(--surface-2);
+}
+
+.unitTitle {
+  font-weight: 600;
+}
+
+.stepCount {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.chip {
+  margin-left: auto;
+  font-size: var(--fs-xs);
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.chip[data-kind='graded'] {
+  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+  color: var(--accent);
+}
+
+.chip[data-kind='create'] {
+  background: color-mix(in srgb, var(--deg-4) 18%, var(--surface-2));
+  color: var(--deg-4);
+}
+
+.promptZone {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+  position: relative;
+}
+
+.blocks {
+  display: grid;
+  gap: var(--space-5);
+  justify-items: start;
+  max-width: 640px;
+}
+
+.createPrompt {
+  display: grid;
+  gap: var(--space-3);
+  max-width: 560px;
+  text-align: center;
+  justify-items: center;
+}
+
+.hintText {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.exercisePrompt {
+  display: grid;
+  gap: var(--space-2);
+  text-align: center;
+  justify-items: center;
+}
+
+.promptDetail {
+  color: var(--text-2);
+}
+
+.promptMain {
+  font-size: 42px;
+  font-weight: 650;
+  letter-spacing: -0.01em;
+}
+
+.targetCount {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.footer {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-4);
+  border-top: 1px solid var(--border);
+  background: var(--surface);
+}

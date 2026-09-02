@@ -11,6 +11,7 @@ import { ProgressScreen } from '@/features/progress/ProgressScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
 import { Placeholder } from '@/features/shared/Placeholder';
 import { LabScreen } from '@/features/lab/LabScreen';
+import { LessonPlayer } from '@/features/lesson/LessonPlayer';
 
 function RootRedirect() {
   const onboarded = useSettingsStore((s) => s.onboarded);
@@ -25,7 +26,7 @@ export const router = createBrowserRouter([
   // Focus-mode routes render without the sidebar shell.
   {
     path: '/lesson/:unitId',
-    element: <Placeholder title="Lesson player" note="Arrives in Phase 3." />,
+    element: <LessonPlayer />,
   },
   {
     path: '/drill/:blockId',

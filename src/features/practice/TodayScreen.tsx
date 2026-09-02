@@ -6,6 +6,7 @@ import {
   getPracticedDates,
   getRecap,
   getTodaySession,
+  readRecap,
   readTodaySession,
   startWorkout,
 } from '@/progress/service';
@@ -43,13 +44,15 @@ function blockRoute(plan: SessionPlan, idx: number): string {
 export function TodayScreen() {
   const navigate = useNavigate();
   const today = localDateString(new Date());
-  // Build today's plan once (liveQuery must stay read-only), then observe it.
+  // Build today's plan and this week's recap once (liveQuery must stay
+  // read-only), then observe them.
   useEffect(() => {
     void getTodaySession();
+    void getRecap();
   }, []);
   const plan = useLiveQuery(() => readTodaySession(), [], null);
   const practiced = useLiveQuery(() => getPracticedDates(), [], null);
-  const recap = useLiveQuery(() => getRecap(), [], null);
+  const recap = useLiveQuery(() => readRecap(), [], null);
   const ratingRows = useLiveQuery(() => db.ratings.toArray(), [], null);
   const atomRows = useLiveQuery(() => db.atomProgress.toArray(), [], null);
   const [recapHidden, setRecapHidden] = useState(false);

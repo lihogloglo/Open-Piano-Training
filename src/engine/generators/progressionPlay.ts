@@ -5,6 +5,7 @@ import { diatonicTriads } from '@/theory/keys';
 import { namePc } from '@/theory/notes';
 import { createRng } from '../rng';
 import { smoothVoicings } from '../voiceLeading';
+import { COMP_PATTERNS, VOICING_LABEL, swingBeat, voiceChord, type CompPattern, type VoicingStyle } from '../comp';
 import type { DemoNote, ExerciseDef, ExerciseInstance, Target } from '../types';
 
 const keySchema = z.object({ tonic: z.string(), mode: z.enum(['major', 'minor']) });
@@ -15,7 +16,11 @@ export const progressionPlayParams = z.object({
   beatsPerChord: z.number().int().min(1).max(8).default(4),
   loops: z.number().int().min(1).max(4).default(2),
   voiceLead: z.enum(['free', 'smooth']).default('free'),
-  style: z.enum(['block', 'brokenLH']).default('block'),
+  style: z.enum(['block', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing']).default('block'),
+  /** Comping voicing (Stage 6): shells and guide tones instead of full triads. */
+  voicing: z.enum(['triad', 'shell17', 'shell13', 'guidetones']).default('triad'),
+  /** Swing ratio for the eighth-note grid; 0.5 = straight. */
+  swing: z.number().min(0.5).max(0.7).default(0.5),
   /** Harmonization mode: a generated melody note per bar; any fitting diatonic
    *  chord passes (contains the melody note OR matches the bar's function). */
   acceptAlternatives: z.boolean().default(false),
@@ -43,9 +48,52 @@ const FUNCTION_GROUPS: Record<number, number[]> = {
 };
 
 export interface ProgressionStyleOpts {
-  style: 'block' | 'brokenLH';
+  style: 'block' | 'brokenLH' | CompPattern;
   voiceLead: 'free' | 'smooth';
   hand: 'rh' | 'lh' | 'both';
+  voicing?: VoicingStyle;
+  swing?: number;
+}
+
+function isCompPattern(style: string): style is CompPattern {
+  return style in COMP_PATTERNS;
+}
+
+/**
+ * Comping targets: the pattern says when each hand lands, the voicing says
+ * what it plays. Hits outside the requested hand are dropped so an LH-only
+ * shell drill does not silently demand the right hand too.
+ */
+function compTargets(
+  event: ChordEvent,
+  opts: ProgressionStyleOpts,
+  symbol: string,
+): { targets: Target[]; labels: string[] } {
+  const pattern = COMP_PATTERNS[opts.style as CompPattern];
+  const voiced = voiceChord(event.root, event.quality, opts.voicing ?? 'triad');
+  const targets: Target[] = [];
+  const labels: string[] = [];
+  for (const hit of pattern.hits) {
+    if (hit.beat >= event.beats) continue;
+    if (opts.hand !== 'both' && hit.hand !== opts.hand) continue;
+    // A triad voicing has no LH notes of its own: use the root.
+    const midis =
+      hit.hand === 'lh'
+        ? voiced.lh.length > 0
+          ? voiced.lh
+          : [lowRoot(event.root)]
+        : voiced.rh.length > 0
+          ? voiced.rh
+          : buildChord({ root: event.root, quality: event.quality, inversion: 0 }, 60);
+    const atBeat = event.atBeat + swingBeat(hit.beat, opts.swing ?? 0.5);
+    if (midis.length === 1) {
+      targets.push({ kind: 'note', midi: midis[0]!, atBeat });
+    } else {
+      targets.push({ kind: 'set', midis, atBeat, label: symbol, octaveFlexible: false });
+    }
+    labels.push(symbol);
+  }
+  return { targets, labels };
 }
 
 /**
@@ -75,7 +123,14 @@ export function progressionTargets(
     const voicing = smooth?.[i];
     const symbol = voicing && voicing.inversion > 0 ? slashChordSymbol(e.root, e.quality, voicing.inversion) : e.symbol;
 
-    if (opts.style === 'brokenLH') {
+    if (isCompPattern(opts.style)) {
+      const comp = compTargets(e, opts, symbol);
+      for (let k = 0; k < comp.targets.length; k++) {
+        targets.push(comp.targets[k]!);
+        ideal.push([]);
+        labels.push(comp.labels[k] ?? symbol);
+      }
+    } else if (opts.style === 'brokenLH') {
       // LH broken pattern: root · fifth · root+octave · fifth, one per beat.
       const lhRoot = lowRoot(e.root);
       const pattern = [lhRoot, lhRoot + 7, lhRoot + 12, lhRoot + 7];
@@ -91,6 +146,13 @@ export function progressionTargets(
         ideal.push(midis);
         labels.push(symbol);
       }
+    } else if (opts.voicing && opts.voicing !== 'triad') {
+      // Shells / guide tones held as one block per bar (no rhythm pattern).
+      const voiced = voiceChord(e.root, e.quality, opts.voicing);
+      const midis = [...voiced.lh, ...(opts.hand === 'lh' ? [] : voiced.rh)].sort((a, b) => a - b);
+      targets.push({ kind: 'set', midis, atBeat: e.atBeat, label: symbol, octaveFlexible: false });
+      ideal.push([]);
+      labels.push(symbol);
     } else if (voicing) {
       targets.push({
         kind: 'set',
@@ -154,9 +216,17 @@ export function generateProgressionPlay(def: ExerciseDef, seed: number): Exercis
     style: p.style,
     voiceLead: p.voiceLead,
     hand: def.hand,
+    voicing: p.voicing,
+    swing: p.swing,
   });
 
-  const styleNote = p.style === 'brokenLH' ? 'LH broken pattern' : 'block chords';
+  const styleNote = isCompPattern(p.style)
+    ? `${COMP_PATTERNS[p.style].label} · ${VOICING_LABEL[p.voicing]}`
+    : p.style === 'brokenLH'
+      ? 'LH broken pattern'
+      : p.voicing !== 'triad'
+        ? VOICING_LABEL[p.voicing]
+        : 'block chords';
   const leadNote = p.voiceLead === 'smooth' ? ' · smallest possible moves' : '';
   return {
     def,

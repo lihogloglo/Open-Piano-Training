@@ -11,6 +11,7 @@ import { ProgressScreen } from '@/features/progress/ProgressScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
 import { LicensesScreen } from '@/features/settings/LicensesScreen';
 import { RatingChallenge } from '@/features/rating/RatingChallenge';
+import { EpilogueScreen } from '@/features/epilogue/EpilogueScreen';
 import { LabScreen } from '@/features/lab/LabScreen';
 import { LessonPlayer } from '@/features/lesson/LessonPlayer';
 import { DrillPlayer } from '@/features/drill/DrillPlayer';
@@ -39,6 +40,7 @@ export const router = createBrowserRouter([
     path: '/rating/:strand',
     element: <RatingChallenge />,
   },
+  { path: '/epilogue', element: <EpilogueScreen /> },
   {
     path: '/songs/:songId',
     element: <SongPlayer />,

@@ -141,6 +141,22 @@ function drillFor(id: string): ExerciseDef | null {
   if (kind === 'keysig' && parts[1]) return keysigDrill(parts);
   if (kind === 'ear') return earDrill(parts);
   if (kind === 'prog' || kind === 'prog-smooth') return progDrill(kind, parts);
+  if (kind === 'voicing') return voicingDrill(parts);
+  if (kind === 'comp') return compDrill(parts);
+  if (kind === 'improv') return improvDrill(parts);
+  if (kind === 'skill' && (parts[1] === 'sightcomp' || parts[1] === 'transpose')) {
+    return {
+      generator: 'unseen-chart',
+      params: { form: 'aaba', sevenths: true, voicing: 'shell17' },
+      mode: 'tempo',
+      bpm: 66,
+      timingTier: 'relaxed',
+      rung: 'lead-sheet',
+      hand: 'both',
+      seedPolicy: 'random',
+    };
+  }
+  if (kind === 'read') return readDrill(parts);
   if (kind === 'song' && parts[1]) {
     return {
       generator: 'chart-play',
@@ -154,6 +170,118 @@ function drillFor(id: string): ExerciseDef | null {
     };
   }
   return null;
+}
+
+const II_V_I = ['ii7', 'V7', 'Imaj7'];
+
+/**
+ * The optional notation strand (08). These atoms hang off Stage 6 but only
+ * become tracked when the learner turns the strand on in Settings, so the
+ * default path never asks anyone to read a staff.
+ *
+ * `read:symbols:*` is the exception: chord-symbol literacy is core curriculum,
+ * and it is drilled on the keyboard like every other spelling skill.
+ */
+export const READ_STRAND_ATOMS: readonly string[] = [
+  'read:staff:treble:c',
+  'read:staff:treble:g',
+  'read:staff:treble:f',
+  'read:staff:bass:c',
+  'read:staff:bass:g',
+  'read:staff:bass:f',
+];
+
+function readDrill(parts: string[]): ExerciseDef | null {
+  // Chord-symbol reading is a spelling drill, not a notation drill.
+  if (parts[1] === 'symbols') {
+    return spellCard(CHROMATIC_ROOTS, ['maj7', '7', 'm7', 'm7b5', 'sus4', '6', 'add9'], 10);
+  }
+  if (parts[1] !== 'staff') return null;
+  const clef = parts[2] === 'bass' ? 'bass' : 'treble';
+  const tonic = cap(parts[3] ?? 'c');
+  return {
+    generator: 'read-snippet',
+    params: { key: { tonic, mode: 'major' }, clef, bars: 2 },
+    mode: 'tempo',
+    bpm: 60,
+    timingTier: 'relaxed',
+    rung: 'note-names',
+    hand: clef === 'bass' ? 'lh' : 'rh',
+    seedPolicy: 'random',
+  };
+}
+
+/** `voicing:shell17` · `voicing:guidetones` · `voicing:colors` — drilled on a ii-V-I. */
+function voicingDrill(parts: string[]): ExerciseDef | null {
+  const style = parts[1] ?? '';
+  if (style === 'colors' || style === 'rootless-preview') {
+    return spellCard(CHROMATIC_ROOTS, ['add9', 'sus4', '6'], 8);
+  }
+  const known = ['shell17', 'shell13', 'guidetones'];
+  if (!known.includes(style)) return null;
+  return {
+    generator: 'progression-play',
+    params: {
+      key: { tonic: 'C', mode: 'major' },
+      roman: II_V_I,
+      beatsPerChord: 4,
+      loops: 2,
+      voicing: style,
+    },
+    mode: 'tempo',
+    bpm: 66,
+    timingTier: 'relaxed',
+    rung: 'chord-symbols',
+    hand: style === 'guidetones' ? 'both' : 'lh',
+    seedPolicy: 'random',
+  };
+}
+
+/** `comp:straight8` · `comp:swing` — the pattern over a four-chord loop. */
+function compDrill(parts: string[]): ExerciseDef | null {
+  const pattern = parts[1] ?? '';
+  if (!['straight8', 'ballad', 'boomchuck', 'swing'].includes(pattern)) return null;
+  return {
+    generator: 'progression-play',
+    params: {
+      key: { tonic: 'C', mode: 'major' },
+      roman: pattern === 'swing' ? II_V_I : ['I', 'V', 'vi', 'IV'],
+      beatsPerChord: 4,
+      loops: 1,
+      style: pattern,
+      voicing: 'shell17',
+      ...(pattern === 'swing' ? { swing: 0.667 } : {}),
+    },
+    mode: 'tempo',
+    bpm: 80,
+    timingTier: 'relaxed',
+    rung: 'chord-symbols',
+    hand: 'both',
+    seedPolicy: 'random',
+  };
+}
+
+/** Improv atoms are practised, never scored — a free-play drill over changes. */
+function improvDrill(parts: string[]): ExerciseDef | null {
+  const palette =
+    { degrees123: 'degrees123', pent: 'pentatonic', blues: 'blues', chordtones: 'chordtones' }[
+      parts[1] ?? ''
+    ] ?? null;
+  if (!palette) return null;
+  return {
+    generator: 'improv',
+    params: {
+      key: { tonic: 'C', mode: palette === 'blues' ? 'major' : 'major' },
+      palette,
+      roman: palette === 'blues' ? ['I7', 'IV7', 'I7', 'V7'] : ['I', 'V', 'vi', 'IV'],
+      loops: 1,
+      targetDownbeats: palette === 'chordtones',
+    },
+    mode: 'wait',
+    rung: 'by-ear',
+    hand: 'rh',
+    seedPolicy: 'random',
+  };
 }
 
 const ALL_ROOTS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
@@ -349,6 +477,10 @@ function labelFor(id: string): string {
     return `Spell ${parts[1] ?? ''} chords`;
   }
   if (kind === 'keysig') return `Key of ${pretty(parts[1] ?? '?')} ${parts[2] ?? 'major'}`;
+  if (kind === 'read') {
+    if (parts[1] === 'symbols') return 'Read chord symbols';
+    return `Read ${parts[2] ?? ''} clef in ${pretty(parts[3] ?? 'c')}`;
+  }
   if (kind === 'ear') {
     if (parts[1] === 'degree') return `Hear degrees ${parts[2] ?? ''}`;
     if (parts[1] === 'quality') return `Hear chord quality (${parts[2] ?? ''})`;
@@ -368,20 +500,26 @@ function labelFor(id: string): string {
 
 function buildRegistry(): Map<string, SkillAtom> {
   const registry = new Map<string, SkillAtom>();
-  for (const unit of CURRICULUM.units as Unit[]) {
-    for (const id of unit.concepts) {
-      if (registry.has(id)) continue;
-      const kind = id.split(':')[0] ?? '';
-      registry.set(id, {
-        id,
-        kind,
-        strand: KIND_STRAND[kind] ?? 'keys',
-        label: labelFor(id),
-        difficulty: atomDifficulty(id),
-        introducedIn: unit.id,
-        drill: drillFor(id),
-      });
-    }
+  const fromUnits = (CURRICULUM.units as Unit[]).flatMap((unit) =>
+    unit.concepts.map((id) => [id, unit.id] as const),
+  );
+  // The notation atoms are not on any unit's concept list — they are opt-in.
+  const entries = [
+    ...fromUnits,
+    ...READ_STRAND_ATOMS.map((id) => [id, 's6.u1'] as const),
+  ];
+  for (const [id, unitId] of entries) {
+    if (registry.has(id)) continue;
+    const kind = id.split(':')[0] ?? '';
+    registry.set(id, {
+      id,
+      kind,
+      strand: KIND_STRAND[kind] ?? 'keys',
+      label: labelFor(id),
+      difficulty: atomDifficulty(id),
+      introducedIn: unitId,
+      drill: drillFor(id),
+    });
   }
   return registry;
 }

@@ -15,6 +15,10 @@ import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { TransportBar } from '@/ui/TransportBar';
+import { StaffSnippet } from '@/ui/StaffSnippet';
+import { startBacking, type BackingHandle } from '@/audio/backing';
+import type { KeyContext } from '@/theory/keys';
+import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import { playNote, stopNote } from '@/audio/sampler';
 import { ExplainBlockView } from './blocks';
@@ -44,6 +48,27 @@ export function LessonPlayer() {
 
 /** Onboarding placement: checkpoints taken back-to-back until one fails (05 §Welcome). */
 const PLACEMENT_CHAIN = ['s0.cp', 's1.cp', 's2.cp'];
+
+/** Passing this finishes the path (06 s7.cp → epilogue). */
+const FINAL_CHECKPOINT = 's7.cp';
+
+/**
+ * Keyboard tint for an improv palette: the notes the learner is invited to
+ * use. Blues and chord-tone palettes have no clean diatonic subset, so they
+ * tint the whole key rather than lying about which notes are "in".
+ */
+function improvTint(
+  params: { key?: KeyContext; palette?: string } | undefined,
+): { tonic: string; degrees?: readonly number[] } | null {
+  if (!params?.key) return null;
+  const degrees =
+    params.palette === 'degrees123'
+      ? [1, 2, 3]
+      : params.palette === 'pentatonic'
+        ? [1, 2, 3, 5, 6]
+        : null;
+  return degrees ? { tonic: params.key.tonic, degrees } : { tonic: params.key.tonic };
+}
 
 function LessonPlayerInner({ unit }: { unit: Unit }) {
   const navigate = useNavigate();
@@ -79,6 +104,11 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
       }
       toast('Placement complete — the path opens well ahead!', 'ok');
       void navigate('/path');
+      return;
+    }
+    // The final checkpoint ends the path; the epilogue does the celebrating.
+    if (unit.id === FINAL_CHECKPOINT) {
+      void navigate('/epilogue');
       return;
     }
     toast(`${unit.title} — complete!`, 'ok');
@@ -213,6 +243,9 @@ function CreateStep({
 }) {
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const recorder = useRef<TakeRecorder | null>(null);
+  const backing = useRef<BackingHandle | null>(null);
+  const [backingOn, setBackingOn] = useState(false);
+  const [barIdx, setBarIdx] = useState(-1);
 
   // Everything played during the step is captured for the replay shelf.
   useEffect(() => {
@@ -223,7 +256,42 @@ function CreateStep({
     });
   }, [step.id]);
 
+  // A create step carrying an improv exercise gets a looping backing track.
+  const improv = step.exercise?.generator === 'improv' ? step.exercise : null;
+  const improvParams = improv?.params as
+    | { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string }
+    | undefined;
+
+  const stopBacking = useCallback(() => {
+    backing.current?.stop();
+    backing.current = null;
+    setBackingOn(false);
+    setBarIdx(-1);
+  }, []);
+
+  useEffect(() => stopBacking, [stopBacking]);
+
+  const toggleBacking = (): void => {
+    if (backingOn) {
+      stopBacking();
+      return;
+    }
+    if (!improvParams?.key) return;
+    setBackingOn(true);
+    void startBacking({
+      key: improvParams.key,
+      romans: improvParams.roman?.length ? improvParams.roman : ['I'],
+      bpm: improv?.bpm ?? 84,
+      beatsPerChord: improvParams.beatsPerChord ?? 4,
+      pattern: 'block',
+      onBar: setBarIdx,
+    }).then((handle) => {
+      backing.current = handle;
+    });
+  };
+
   const finish = () => {
+    stopBacking();
     const rec = recorder.current;
     if (rec) {
       const def: ExerciseDef = {
@@ -247,12 +315,25 @@ function CreateStep({
           <h2>Make something</h2>
           <p>{step.prompt}</p>
           <p className={styles['hintText']}>There's no score here — just play. Your take lands in Replays.</p>
+          {improvParams?.key && (
+            <>
+              <Button variant={backingOn ? 'primary' : 'secondary'} onClick={toggleBacking}>
+                {backingOn ? '◼ Stop backing' : '▶ Play backing'}
+              </Button>
+              {backingOn && barIdx >= 0 && improvParams.roman && improvParams.roman.length > 0 && (
+                <p className={styles['hintText']} aria-live="off">
+                  {improvParams.roman[barIdx % improvParams.roman.length]}
+                </p>
+              )}
+            </>
+          )}
         </div>
       </div>
       <Keyboard
         range={[48, 84]}
         pressed={activeNotes}
         height={190}
+        degreeTint={improvTint(improvParams)}
         onKeyDown={(m) => playNote(m)}
         onKeyUp={(m) => stopNote(m)}
       />
@@ -383,9 +464,19 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
           <p className={styles['promptDetail']}>{prompt?.title ?? '…'}</p>
-          <h2 className={styles['promptMain']}>
-            {listening ? '🔊 Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
-          </h2>
+          {instance?.def.generator === 'read-snippet' && prompt?.key ? (
+            // Notation reading: the staff IS the prompt.
+            <StaffSnippet
+              midis={snippetNotes(instance)}
+              keyContext={prompt.key}
+              clef={instance.def.params['clef'] === 'bass' ? 'bass' : 'treble'}
+              highlightIndex={targetIndex}
+            />
+          ) : (
+            <h2 className={styles['promptMain']}>
+              {listening ? '🔊 Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
+            </h2>
+          )}
           {instance && (
             <p className={styles['targetCount']}>
               <span className="tabular">

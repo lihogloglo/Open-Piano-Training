@@ -12,12 +12,18 @@ interface SettingsState {
   dailyMinutes: number;
   latencyOffsetMs: number;
   sidebarExpanded: boolean;
+  /** Opt-in notation strand (08): adds read-snippet drills and the read rating. */
+  readStrandEnabled: boolean;
+  /** Honour the OS reduced-motion preference, or force it on. */
+  reducedMotion: boolean;
   setTheme(theme: ThemeSetting): void;
   setOnboarded(v: boolean): void;
   setDeviceId(id: string | null): void;
   setAudioEnabled(v: boolean): void;
   setSidebarExpanded(v: boolean): void;
   setLatencyOffsetMs(ms: number): void;
+  setReadStrandEnabled(v: boolean): void;
+  setReducedMotion(v: boolean): void;
 }
 
 const LS_KEY = 'ks.settings.v1';
@@ -32,6 +38,10 @@ interface PersistedSettings {
   dailyMinutes: number;
   latencyOffsetMs: number;
   sidebarExpanded: boolean;
+  /** Opt-in notation strand (08): adds read-snippet drills and the read rating. */
+  readStrandEnabled: boolean;
+  /** Honour the OS reduced-motion preference, or force it on. */
+  reducedMotion: boolean;
 }
 
 const defaults: PersistedSettings = {
@@ -44,6 +54,8 @@ const defaults: PersistedSettings = {
   dailyMinutes: 20,
   latencyOffsetMs: 0,
   sidebarExpanded: true,
+  readStrandEnabled: false,
+  reducedMotion: false,
 };
 
 function load(): PersistedSettings {
@@ -59,6 +71,7 @@ function load(): PersistedSettings {
 function persist(state: SettingsState): void {
   const { theme, onboarded, deviceId, audioEnabled, masterVolume, metronomeVolume } = state;
   const { dailyMinutes, latencyOffsetMs, sidebarExpanded } = state;
+  const { readStrandEnabled, reducedMotion } = state;
   const data: PersistedSettings = {
     theme,
     onboarded,
@@ -69,6 +82,8 @@ function persist(state: SettingsState): void {
     dailyMinutes,
     latencyOffsetMs,
     sidebarExpanded,
+    readStrandEnabled,
+    reducedMotion,
   };
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
@@ -85,6 +100,8 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setAudioEnabled: (audioEnabled) => set({ audioEnabled }),
   setSidebarExpanded: (sidebarExpanded) => set({ sidebarExpanded }),
   setLatencyOffsetMs: (latencyOffsetMs) => set({ latencyOffsetMs }),
+  setReadStrandEnabled: (readStrandEnabled) => set({ readStrandEnabled }),
+  setReducedMotion: (reducedMotion) => set({ reducedMotion }),
 }));
 
 useSettingsStore.subscribe((state) => persist(state));
@@ -99,5 +116,20 @@ export function initTheme(): void {
   };
   apply();
   media.addEventListener('change', apply);
+  useSettingsStore.subscribe(apply);
+}
+
+/**
+ * Mirrors the reduced-motion preference onto <html> so CSS can honour a user
+ * who wants stillness even when the OS is not set that way. The OS preference
+ * still wins on its own through the media query.
+ */
+export function initMotionPreference(): void {
+  const apply = (): void => {
+    const { reducedMotion } = useSettingsStore.getState();
+    if (reducedMotion) document.documentElement.dataset['reducedMotion'] = 'true';
+    else delete document.documentElement.dataset['reducedMotion'];
+  };
+  apply();
   useSettingsStore.subscribe(apply);
 }

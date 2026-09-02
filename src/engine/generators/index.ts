@@ -8,6 +8,9 @@ import { generateNoteFind } from './noteFind';
 import { generateEarDegree, generateEarProgression, generateEarQuality } from './ear';
 import { generateProgressionPlay } from './progressionPlay';
 import { generateChartPlay } from './chartPlay';
+import { generateUnseenChart } from './unseenChart';
+import { generateImprov } from './improv';
+import { generateReadSnippet } from './readSnippet';
 
 export type Generator = (def: ExerciseDef, seed: number) => ExerciseInstance;
 
@@ -23,6 +26,9 @@ export const GENERATORS: Record<string, Generator> = {
   'ear-progression': generateEarProgression,
   'progression-play': generateProgressionPlay,
   'chart-play': generateChartPlay,
+  'unseen-chart': generateUnseenChart,
+  improv: generateImprov,
+  'read-snippet': generateReadSnippet,
 };
 
 export function generate(def: ExerciseDef, seed: number): ExerciseInstance {

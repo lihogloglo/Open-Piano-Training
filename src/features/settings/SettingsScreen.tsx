@@ -2,6 +2,7 @@ import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSettingsStore, type ThemeSetting } from '@/store/settingsStore';
 import { exportAll, importAll, db } from '@/progress/db';
+import { syncReadStrand } from '@/progress/service';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { toast } from '@/ui/Toast';
@@ -24,6 +25,10 @@ export function SettingsScreen() {
   const dailyMinutes = useSettingsStore((s) => s.dailyMinutes);
   const audioEnabled = useSettingsStore((s) => s.audioEnabled);
   const setAudioEnabled = useSettingsStore((s) => s.setAudioEnabled);
+  const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
+  const setReadStrandEnabled = useSettingsStore((s) => s.setReadStrandEnabled);
+  const reducedMotion = useSettingsStore((s) => s.reducedMotion);
+  const setReducedMotion = useSettingsStore((s) => s.setReducedMotion);
   const fileRef = useRef<HTMLInputElement>(null);
   const [wipeArmed, setWipeArmed] = useState(false);
 
@@ -131,6 +136,63 @@ export function SettingsScreen() {
                 {t.label}
               </button>
             ))}
+          </div>
+        </div>
+        <div className={styles['row']}>
+          <span>Reduce motion</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label="Reduce motion">
+            <button
+              role="radio"
+              aria-checked={reducedMotion}
+              data-selected={reducedMotion}
+              onClick={() => setReducedMotion(true)}
+            >
+              On
+            </button>
+            <button
+              role="radio"
+              aria-checked={!reducedMotion}
+              data-selected={!reducedMotion}
+              onClick={() => setReducedMotion(false)}
+            >
+              Follow system
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <h3>Reading music</h3>
+        <p className={styles['note']}>
+          {APP_NAME} teaches the keyboard by ear and by symbol, not from the page. The reading
+          strand is a separate, optional track: short generated phrases on a staff, plus its own
+          rating. Turn it on whenever you want it — nothing else changes.
+        </p>
+        <div className={styles['row']}>
+          <span>Reading strand</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label="Reading strand">
+            <button
+              role="radio"
+              aria-checked={readStrandEnabled}
+              data-selected={readStrandEnabled}
+              onClick={() => {
+                setReadStrandEnabled(true);
+                void syncReadStrand(true).then(() => toast('Reading strand on', 'ok'));
+              }}
+            >
+              On
+            </button>
+            <button
+              role="radio"
+              aria-checked={!readStrandEnabled}
+              data-selected={!readStrandEnabled}
+              onClick={() => {
+                setReadStrandEnabled(false);
+                void syncReadStrand(false);
+              }}
+            >
+              Off
+            </button>
           </div>
         </div>
       </Card>

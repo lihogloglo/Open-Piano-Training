@@ -116,7 +116,7 @@ export function PathScreen() {
         );
       })}
       <p className={styles['moreSoon']}>
-        Stage 1 — “One key, whole system” is being written. The path grows from here.
+        Stage 5 — “The whole map” is being written. The path grows from here.
       </p>
 
       {selected?.unit && (

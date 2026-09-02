@@ -31,17 +31,6 @@ export interface ChordEvent {
   beats: number;
 }
 
-export function chordTargets(events: ChordEvent[]): Target[] {
-  return events.map((e) => ({
-    kind: 'set',
-    midis: buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 48),
-    atBeat: e.atBeat,
-    label: e.symbol,
-    octaveFlexible: true,
-    inversionOf: { root: e.root, quality: e.quality, inversion: 0 },
-  }));
-}
-
 /** Tonic/subdominant/dominant families by scale degree (functional matching). */
 const FUNCTION_GROUPS: Record<number, number[]> = {
   1: [1, 6, 3],
@@ -53,23 +42,103 @@ const FUNCTION_GROUPS: Record<number, number[]> = {
   7: [5, 7],
 };
 
+export interface ProgressionStyleOpts {
+  style: 'block' | 'brokenLH';
+  voiceLead: 'free' | 'smooth';
+  hand: 'rh' | 'lh' | 'both';
+}
+
+/**
+ * Turn a chord-event timeline into playable targets under a texture/voice-lead
+ * choice. Shared by progression-play and chart-play. Returns targets sorted on
+ * the beat grid, the reference voicings for vl scoring (smooth only), and a
+ * per-target prompt label.
+ */
+export function progressionTargets(
+  events: ChordEvent[],
+  opts: ProgressionStyleOpts,
+): { targets: Target[]; ideal: number[][] | null; labels: string[] } {
+  const smooth =
+    opts.voiceLead === 'smooth'
+      ? smoothVoicings(
+          events.map((e) => ({ root: e.root, quality: e.quality })),
+          55,
+        )
+      : null;
+
+  const targets: Target[] = [];
+  const ideal: number[][] = [];
+  const labels: string[] = [];
+  for (let i = 0; i < events.length; i++) {
+    const e = events[i];
+    if (!e) continue;
+    const voicing = smooth?.[i];
+    const symbol = voicing && voicing.inversion > 0 ? slashChordSymbol(e.root, e.quality, voicing.inversion) : e.symbol;
+
+    if (opts.style === 'brokenLH') {
+      // LH broken pattern: root · fifth · root+octave · fifth, one per beat.
+      const lhRoot = lowRoot(e.root);
+      const pattern = [lhRoot, lhRoot + 7, lhRoot + 12, lhRoot + 7];
+      for (let b = 0; b < e.beats; b++) {
+        targets.push({ kind: 'note', midi: pattern[b % 4] ?? lhRoot, atBeat: e.atBeat + b });
+        ideal.push([]);
+        labels.push(symbol);
+      }
+      if (opts.hand === 'both') {
+        // RH chord on the bar line, exact voicing so LH notes can't cross-match.
+        const midis = voicing?.midis ?? buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 60);
+        targets.push({ kind: 'set', midis, atBeat: e.atBeat, label: symbol, octaveFlexible: false });
+        ideal.push(midis);
+        labels.push(symbol);
+      }
+    } else if (voicing) {
+      targets.push({
+        kind: 'set',
+        midis: voicing.midis,
+        atBeat: e.atBeat,
+        label: symbol,
+        octaveFlexible: true,
+        inversionOf: { root: e.root, quality: e.quality, inversion: voicing.inversion },
+      });
+      ideal.push(voicing.midis);
+      labels.push(symbol);
+    } else {
+      targets.push({
+        kind: 'set',
+        midis: buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 48),
+        atBeat: e.atBeat,
+        label: symbol,
+        octaveFlexible: true,
+        inversionOf: { root: e.root, quality: e.quality, inversion: 0 },
+      });
+      ideal.push([]);
+      labels.push(symbol);
+    }
+  }
+
+  // Sort by beat so mixed brokenLH note/set targets stay grid-ordered.
+  const order = targets
+    .map((t, i) => ({ t, i, beat: t.atBeat ?? 0, setFirst: t.kind === 'set' ? 0 : 1 }))
+    .sort((a, b) => a.beat - b.beat || a.setFirst - b.setFirst);
+  return {
+    targets: order.map((o) => o.t),
+    ideal: smooth ? order.map((o) => ideal[o.i] ?? []) : null,
+    labels: order.map((o) => labels[o.i] ?? ''),
+  };
+}
+
 /** Play a roman-numeral progression on the beat grid, any voicing with the root in the bass. */
 export function generateProgressionPlay(def: ExerciseDef, seed: number): ExerciseInstance {
   const p = progressionPlayParams.parse(def.params);
   if (p.acceptAlternatives) return generateHarmonize(def, seed);
   const chords = progressionChords(p.roman, p.key);
 
-  const smooth = p.voiceLead === 'smooth' ? smoothVoicings(chords, 55) : null;
-
   const events: ChordEvent[] = [];
   let beat = 0;
   for (let loop = 0; loop < p.loops; loop++) {
-    for (let ci = 0; ci < chords.length; ci++) {
-      const c = chords[ci];
-      if (!c) continue;
-      const inv = smooth?.[ci]?.inversion ?? 0;
+    for (const c of chords) {
       events.push({
-        symbol: inv > 0 ? slashChordSymbol(c.root, c.quality, inv) : chordSymbol(c.root, c.quality),
+        symbol: chordSymbol(c.root, c.quality),
         roman: c.roman,
         root: c.root,
         quality: c.quality,
@@ -81,76 +150,25 @@ export function generateProgressionPlay(def: ExerciseDef, seed: number): Exercis
     }
   }
 
-  const targets: Target[] = [];
-  const ideal: number[][] = [];
-  const labels: string[] = [];
-  for (let i = 0; i < events.length; i++) {
-    const e = events[i];
-    if (!e) continue;
-    const voicing = smooth?.[i % chords.length];
-
-    if (p.style === 'brokenLH') {
-      // LH broken pattern: root · fifth · root+octave · fifth, one per beat.
-      const lhRoot = lowRoot(e.root);
-      const pattern = [lhRoot, lhRoot + 7, lhRoot + 12, lhRoot + 7];
-      for (let b = 0; b < e.beats; b++) {
-        targets.push({ kind: 'note', midi: pattern[b % 4] ?? lhRoot, atBeat: e.atBeat + b });
-        ideal.push([]);
-        labels.push(e.symbol);
-      }
-      if (def.hand === 'both') {
-        // RH chord on the bar line, exact voicing so LH notes can't cross-match.
-        const midis = voicing?.midis ?? buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 60);
-        targets.push({ kind: 'set', midis, atBeat: e.atBeat, label: e.symbol, octaveFlexible: false });
-        ideal.push(midis);
-        labels.push(e.symbol);
-      }
-    } else if (voicing) {
-      targets.push({
-        kind: 'set',
-        midis: voicing.midis,
-        atBeat: e.atBeat,
-        label: e.symbol,
-        octaveFlexible: true,
-        inversionOf: { root: e.root, quality: e.quality, inversion: voicing.inversion },
-      });
-      ideal.push(voicing.midis);
-      labels.push(e.symbol);
-    } else {
-      targets.push({
-        kind: 'set',
-        midis: buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 48),
-        atBeat: e.atBeat,
-        label: e.symbol,
-        octaveFlexible: true,
-        inversionOf: { root: e.root, quality: e.quality, inversion: 0 },
-      });
-      ideal.push([]);
-      labels.push(e.symbol);
-    }
-  }
-
-  // Sort by beat so mixed brokenLH note/set targets stay grid-ordered.
-  const order = targets
-    .map((t, i) => ({ t, i, beat: t.atBeat ?? 0, setFirst: t.kind === 'set' ? 0 : 1 }))
-    .sort((a, b) => a.beat - b.beat || a.setFirst - b.setFirst);
-  const sortedTargets = order.map((o) => o.t);
-  const sortedIdeal = order.map((o) => ideal[o.i] ?? []);
-  const sortedLabels = order.map((o) => labels[o.i] ?? '');
+  const { targets, ideal, labels } = progressionTargets(events, {
+    style: p.style,
+    voiceLead: p.voiceLead,
+    hand: def.hand,
+  });
 
   const styleNote = p.style === 'brokenLH' ? 'LH broken pattern' : 'block chords';
   const leadNote = p.voiceLead === 'smooth' ? ' · smallest possible moves' : '';
   return {
     def,
     seed,
-    targets: sortedTargets,
+    targets,
     prompt: {
       title: `${p.roman.join(' – ')} in ${p.key.tonic} ${p.key.mode}`,
       detail: `${styleNote} · one chord every ${p.beatsPerChord} beats · ${p.loops}× around${leadNote}`,
       key: p.key,
-      perTarget: sortedLabels.map((label) => ({ label })),
+      perTarget: labels.map((label) => ({ label })),
     },
-    ...(smooth ? { voiceLeading: { ideal: sortedIdeal } } : {}),
+    ...(ideal ? { voiceLeading: { ideal } } : {}),
   };
 }
 

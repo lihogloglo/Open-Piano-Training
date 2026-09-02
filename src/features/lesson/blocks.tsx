@@ -146,11 +146,53 @@ function CircleOfFifthsBlock({ block }: { block: Extract<ExplainBlock, { kind: '
   );
 }
 
+function EarCheckBlock({ block }: { block: Extract<ExplainBlock, { kind: 'earCheck' }> }) {
+  const [picked, setPicked] = useState<number | null>(null);
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(
+    () => () => {
+      for (const t of timers.current) clearTimeout(t);
+    },
+    [],
+  );
+
+  const play = () => {
+    void unlockAudio().then(() => {
+      const beatMs = 60_000 / block.demo.bpm;
+      for (const ev of block.demo.events) {
+        const at = ev.atBeat * beatMs + 150;
+        timers.current.push(
+          setTimeout(() => playNote(ev.midi, 0.7), at),
+          setTimeout(() => stopNote(ev.midi), at + ev.durBeats * beatMs),
+        );
+      }
+    });
+  };
+
+  return (
+    <div className={styles['earCheck']}>
+      <p className={styles['text']}>{block.question}</p>
+      <div className={styles['demoRow']}>
+        <Button onClick={play}>▶ Listen</Button>
+        {block.options.map((opt, i) => (
+          <Button
+            key={i}
+            variant={picked === i ? (i === block.correctIndex ? 'primary' : 'secondary') : 'ghost'}
+            onClick={() => setPicked(i)}
+          >
+            {opt}
+            {picked === i && (i === block.correctIndex ? ' ✓' : ' — listen again')}
+          </Button>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 export function ExplainBlockView({ block }: { block: ExplainBlock }) {
   if (block.kind === 'text') return <p className={styles['text']}>{renderMd(block.md)}</p>;
   if (block.kind === 'keyboardDemo') return <KeyboardDemoBlock block={block} />;
   if (block.kind === 'progressionCard') return <ProgressionCardBlock block={block} />;
   if (block.kind === 'circleOfFifths') return <CircleOfFifthsBlock block={block} />;
-  // earCheck renderer arrives with the ear-training phase.
-  return null;
+  return <EarCheckBlock block={block} />;
 }

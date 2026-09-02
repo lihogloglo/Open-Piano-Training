@@ -32,6 +32,19 @@ export async function completeUnit(unit: Unit, score: number, flagged: boolean):
       fluent: false,
     });
   }
+  // Checkpoint pass ⇒ the whole stage counts as passed (placement path) and
+  // the next stage unlocks via the checkpoint prerequisite chain (07 §Gates).
+  if (unit.kind === 'checkpoint') {
+    const stage = STAGES.find((s) => s.id === unit.stageId);
+    for (const unitId of stage?.unitIds ?? []) {
+      if (unitId === unit.id) continue;
+      const stageUnit = getUnit(unitId);
+      if (!stageUnit) continue;
+      const existing = await db.unitProgress.get(unitId);
+      if (existing?.status === 'passed') continue;
+      await completeUnit(stageUnit, score, false);
+    }
+  }
 }
 
 /** A review/warmup drill finished: grade the atom's card. */

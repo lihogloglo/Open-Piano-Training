@@ -280,8 +280,9 @@ subscribeMidiEvents((e) => {
   const set = useRunStore.setState.bind(useRunStore) as Set;
   const get = useRunStore.getState.bind(useRunStore) as Get;
   if (waitMatcher && !waitMatcher.isDone) {
-    // Ear exercises: ignore input while a preview is sounding.
-    if (e.tPerf < previewUntilPerf) return;
+    // Ear exercises: ignore presses while a preview is sounding — but releases
+    // must always reach the matcher or its held-note set goes stale.
+    if (e.kind === 'noteon' && e.tPerf < previewUntilPerf) return;
     processEvents(waitMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);
   } else if (tempoMatcher && !tempoMatcher.isDone && e.tPerf >= tempoStartGate) {
     processEvents(tempoMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);

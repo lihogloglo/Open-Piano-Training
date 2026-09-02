@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { buildPath, nodeStatuses, type NodeStatus, type PathNode } from '@/curriculum/path';
 import { getUnitProgressMap } from '@/progress/db';
+import { startWorkout } from '@/progress/service';
 import { ProgressRing } from '@/ui/ProgressRing';
 import { StarRating } from '@/ui/StarRating';
 import { Modal } from '@/ui/Modal';
@@ -74,10 +75,17 @@ export function PathScreen() {
                     data-side={i % 2 === 0 ? 'left' : 'right'}
                     data-status={status}
                     data-kind={node.kind}
+                    data-flagged={row?.flagged ? 'true' : undefined}
                     disabled={status === 'locked'}
                     onClick={() => {
                       if (node.kind === 'review') {
-                        toast('Review sessions arrive with the daily practice loop — soon!');
+                        void startWorkout().then((plan) => {
+                          if (plan.blocks.length === 0) {
+                            toast('Nothing due to review — keep walking the path!');
+                            return;
+                          }
+                          void navigate(`/drill/${plan.id}/0`);
+                        });
                         return;
                       }
                       setSelected(node);

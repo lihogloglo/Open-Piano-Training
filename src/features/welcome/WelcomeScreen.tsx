@@ -90,14 +90,20 @@ export function WelcomeScreen() {
             <h2>Where do we begin?</h2>
             <p className={styles['body']}>
               The path starts at the very beginning — finding your way around the keys. Every step earns the
-              next one.
+              next one. Already play a little? Take the checkpoints instead: pass one, skip its stage.
             </p>
             <div className={styles['actions']}>
               <Button variant="primary" size="l" onClick={finish}>
                 Start from zero
               </Button>
-              <Button variant="ghost" disabled title="The placement test is coming soon">
-                I know some piano (soon)
+              <Button
+                variant="ghost"
+                onClick={() => {
+                  setOnboarded(true);
+                  void navigate('/lesson/s0.cp?placement=1');
+                }}
+              >
+                I know some piano — place me
               </Button>
             </div>
           </>

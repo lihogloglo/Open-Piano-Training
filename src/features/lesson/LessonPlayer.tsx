@@ -5,7 +5,8 @@ import type { LessonStep, Unit } from '@/curriculum/schema';
 import type { ExerciseDef, ExerciseInstance } from '@/engine/types';
 import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
-import { useMidiStore } from '@/store/midiStore';
+import { subscribeMidiEvents, useMidiStore } from '@/store/midiStore';
+import { TakeRecorder } from '@/engine/replay';
 import { useRunStore } from '@/store/runStore';
 import { markUnitInProgress, saveTake } from '@/progress/db';
 import { addPracticeMinutes, completeUnit, markBlockComplete } from '@/progress/service';
@@ -41,11 +42,15 @@ export function LessonPlayer() {
   return <LessonPlayerInner unit={unit} />;
 }
 
+/** Onboarding placement: checkpoints taken back-to-back until one fails (05 §Welcome). */
+const PLACEMENT_CHAIN = ['s0.cp', 's1.cp', 's2.cp'];
+
 function LessonPlayerInner({ unit }: { unit: Unit }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session');
   const sessionBlock = searchParams.get('block');
+  const placement = searchParams.get('placement') !== null && unit.kind === 'checkpoint';
   const [stepIdx, setStepIdx] = useState(0);
   const gradedScores = useRef<number[]>([]);
   const flaggedRef = useRef(false);
@@ -65,6 +70,17 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
     const score = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
     await completeUnit(unit, score, flaggedRef.current);
     await addPracticeMinutes(localDateString(new Date()), unit.minutes);
+    if (placement) {
+      const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
+      if (next) {
+        toast(`${unit.title} — passed! Next checkpoint…`, 'ok');
+        void navigate(`/lesson/${next}?placement=1`);
+        return;
+      }
+      toast('Placement complete — the path opens well ahead!', 'ok');
+      void navigate('/path');
+      return;
+    }
     toast(`${unit.title} — complete!`, 'ok');
     if (sessionId && sessionBlock !== null) {
       // Minutes already counted above; the block just gets ticked off.
@@ -73,7 +89,7 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
       return;
     }
     void navigate('/path');
-  }, [unit, sessionId, sessionBlock, navigate]);
+  }, [unit, placement, sessionId, sessionBlock, navigate]);
 
   const advance = useCallback(() => {
     if (stepIdx + 1 >= unit.steps.length) {
@@ -123,13 +139,14 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
       </header>
 
       {step.kind === 'explain' && <ExplainStep key={step.id} step={step} onDone={advance} />}
-      {step.kind === 'create' && <CreateStep key={step.id} step={step} onDone={advance} />}
+      {step.kind === 'create' && <CreateStep key={step.id} step={step} unitId={unit.id} onDone={advance} />}
       {(step.kind === 'guided' || step.kind === 'ladder' || step.kind === 'graded') && (
         <ExerciseStep
           key={step.id}
           step={step}
           unitId={unit.id}
           allowSkip={unit.kind !== 'checkpoint'}
+          placement={placement}
           onDone={(score, flagged) => {
             if (step.kind === 'graded') gradedScores.current.push(score);
             if (flagged) flaggedRef.current = true;
@@ -175,15 +192,61 @@ function ExplainStep({
   );
 }
 
-function CreateStep({ step, onDone }: { step: Extract<LessonStep, { kind: 'create' }>; onDone: () => void }) {
+/** Nominal result for unscored create takes — saved to replays, never graded. */
+const CREATE_RESULT = {
+  pitchAccuracy: 1,
+  timingAccuracy: 1,
+  score: 1,
+  stars: 0 as const,
+  judgments: [],
+  passed: true,
+};
+
+function CreateStep({
+  step,
+  unitId,
+  onDone,
+}: {
+  step: Extract<LessonStep, { kind: 'create' }>;
+  unitId: string;
+  onDone: () => void;
+}) {
   const activeNotes = useMidiStore((s) => s.activeNotes);
+  const recorder = useRef<TakeRecorder | null>(null);
+
+  // Everything played during the step is captured for the replay shelf.
+  useEffect(() => {
+    recorder.current = new TakeRecorder(performance.now());
+    return subscribeMidiEvents((e) => {
+      if (e.kind === 'pedal') return;
+      recorder.current?.record(e.kind, e.midi, e.velocity, e.tPerf);
+    });
+  }, [step.id]);
+
+  const finish = () => {
+    const rec = recorder.current;
+    if (rec) {
+      const def: ExerciseDef = {
+        generator: 'improv-sandbox',
+        params: { prompt: step.prompt },
+        mode: 'wait',
+        rung: 'by-ear',
+        hand: 'both',
+        seedPolicy: 'random',
+      };
+      const take = rec.finalize(def, 0, CREATE_RESULT, { unitId });
+      if (take.events.length > 0) void saveTake(take);
+    }
+    onDone();
+  };
+
   return (
     <>
       <div className={styles['promptZone']}>
         <div className={styles['createPrompt']}>
           <h2>Make something</h2>
           <p>{step.prompt}</p>
-          <p className={styles['hintText']}>There's no score here — just play.</p>
+          <p className={styles['hintText']}>There's no score here — just play. Your take lands in Replays.</p>
         </div>
       </div>
       <Keyboard
@@ -194,7 +257,7 @@ function CreateStep({ step, onDone }: { step: Extract<LessonStep, { kind: 'creat
         onKeyUp={(m) => stopNote(m)}
       />
       <div className={styles['footer']}>
-        <Button variant="primary" size="l" onClick={onDone}>
+        <Button variant="primary" size="l" onClick={finish}>
           Done
         </Button>
       </div>
@@ -206,10 +269,12 @@ interface ExerciseStepProps {
   step: Extract<LessonStep, { kind: 'guided' | 'ladder' | 'graded' }>;
   unitId: string;
   allowSkip: boolean;
+  placement?: boolean;
   onDone: (score: number, flagged?: boolean) => void;
 }
 
-function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
+function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseStepProps) {
+  const navigate = useNavigate();
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const phase = useRunStore((s) => s.phase);
   const targets = useRunStore((s) => s.targets);
@@ -340,6 +405,15 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
             onRetrySlower={isTempo ? () => start(pip, true) : undefined}
             onContinue={() => onDone(result.score)}
             onSkip={() => onDone(result.score, true)}
+            onPlacementStop={
+              placement
+                ? () => {
+                    abortRun();
+                    toast('Good place to start — the path is yours from here', 'ok');
+                    void navigate('/path');
+                  }
+                : undefined
+            }
           />
         )}
       </div>

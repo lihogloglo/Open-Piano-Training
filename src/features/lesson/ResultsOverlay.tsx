@@ -37,6 +37,8 @@ interface ResultsOverlayProps {
   onRetrySlower?: (() => void) | undefined;
   onContinue: () => void;
   onSkip: () => void;
+  /** Placement mode: bail out of the checkpoint chain and start the path here. */
+  onPlacementStop?: (() => void) | undefined;
 }
 
 export function ResultsOverlay(p: ResultsOverlayProps) {
@@ -80,6 +82,11 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
           {!p.result.passed && p.failCount >= 3 && p.allowSkip && (
             <Button variant="ghost" onClick={p.onSkip} title="This skill gets extra review later">
               Mark for extra review & move on
+            </Button>
+          )}
+          {!p.result.passed && p.onPlacementStop && (
+            <Button variant="primary" onClick={p.onPlacementStop}>
+              Start my path here
             </Button>
           )}
         </div>

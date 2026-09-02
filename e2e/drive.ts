@@ -66,11 +66,13 @@ export async function scheduleTempoRun(page: Page, s: Snap): Promise<void> {
   );
 }
 
-/** Drive whatever lesson is open until we are back on /path or /practice. */
-export async function driveLesson(page: Page): Promise<void> {
+/** Drive whatever lesson is open until we are back on /path or /practice
+ *  (or, when given, until `until(url)` — e.g. a placement chain boundary). */
+export async function driveLesson(page: Page, until?: (url: string) => boolean): Promise<void> {
   const scheduledAnchors = new Set<number>();
   for (let guard = 0; guard < 900; guard++) {
     if (!page.url().includes('/lesson/')) return;
+    if (until?.(page.url())) return;
 
     // Structural buttons first: explain-Continue, create-Done, results-Continue, ladder-Continue.
     const structural = page.getByRole('button', { name: /^(Continue|Done)$/ }).first();

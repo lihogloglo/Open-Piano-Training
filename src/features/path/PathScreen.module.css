@@ -180,3 +180,9 @@
   display: flex;
   gap: var(--space-3);
 }
+
+/* passed* — cleared the unit through the fail-3 escape; amber until re-proven */
+.node[data-flagged='true'] .dot {
+  background: var(--warn);
+  border-color: var(--warn);
+}

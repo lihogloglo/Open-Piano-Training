@@ -231,6 +231,7 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
   const [showResults, setShowResults] = useState(false);
   const [instance, setInstance] = useState<ExerciseInstance | null>(null);
   const handledDone = useRef(false);
+  const autoAdvance = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const defFor = useCallback(
     (pipIdx: number, slow = false): ExerciseDef => {
@@ -246,6 +247,7 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
 
   const start = useCallback(
     (pipIdx = pip, slow = false) => {
+      clearTimeout(autoAdvance.current);
       handledDone.current = false;
       setShowResults(false);
       const def = defFor(pipIdx, slow);
@@ -262,6 +264,7 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
     const t = step.kind === 'guided' ? setTimeout(() => start(0), 0) : undefined;
     return () => {
       clearTimeout(t);
+      clearTimeout(autoAdvance.current);
       abortRun();
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -276,7 +279,8 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
       if (s.lastTake) void saveTake({ ...s.lastTake, unitId });
 
       if (step.kind === 'guided') {
-        setTimeout(() => onDone(runResult.score), 900);
+        clearTimeout(autoAdvance.current);
+        autoAdvance.current = setTimeout(() => onDone(runResult.score), 900);
         return;
       }
       if (step.kind === 'ladder') {
@@ -354,7 +358,9 @@ function ExerciseStep({ step, unitId, allowSkip, onDone }: ExerciseStepProps) {
         phase={phase}
         bpm={currentBpm}
         beatIndex={beatIndex}
-        canStart={step.kind !== 'guided' || phase === 'done'}
+        // Guided steps auto-start and auto-advance; a manual restart mid-advance
+        // would race the pending step change.
+        canStart={step.kind !== 'guided'}
         onStart={() => start()}
         {...(isLadder
           ? {

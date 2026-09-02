@@ -2,7 +2,7 @@ import { z } from 'zod';
 import { chordSymbol } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
 import type { ExerciseDef, ExerciseInstance } from '../types';
-import { chordTargets, type ChordEvent } from './progressionPlay';
+import { progressionTargets, type ChordEvent } from './progressionPlay';
 
 /** Minimal song shape the engine needs; curriculum owns the full catalog. */
 export interface ChartSong {
@@ -31,6 +31,8 @@ export const chartPlayParams = z.object({
   songId: z.string(),
   /** Target tonic; the song's romanized chart makes any key free. */
   transposeTo: z.string().optional(),
+  style: z.enum(['block', 'brokenLH']).default('block'),
+  voiceLead: z.enum(['free', 'smooth']).default('free'),
 });
 
 /** The song's flattened chord events in the requested key. */
@@ -56,21 +58,28 @@ export function songChordEvents(
   return { events, bpm: song.bpm, tonic, mode: song.key.mode };
 }
 
-/** Play through a song chart: one chord per bar, any voicing, root in the bass. */
+/** Play through a song chart: one chord per bar; optional LH texture and smooth RH. */
 export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInstance {
   const p = chartPlayParams.parse(def.params);
   const song = getSong(p.songId);
   if (!song) throw new Error(`Unknown song: ${p.songId}`);
   const { events, tonic, mode } = songChordEvents(p.songId, p.transposeTo);
+  const { targets, ideal, labels } = progressionTargets(events, {
+    style: p.style,
+    voiceLead: p.voiceLead,
+    hand: def.hand,
+  });
+  const styleNote = p.style === 'brokenLH' ? 'LH broken pattern' : 'one chord per bar';
   return {
     def,
     seed,
-    targets: chordTargets(events),
+    targets,
     prompt: {
       title: `${song.title} — in ${tonic}`,
-      detail: `${song.styleRef} · one chord per bar`,
+      detail: `${song.styleRef} · ${styleNote}`,
       key: { tonic, mode },
-      perTarget: events.map((e) => ({ label: e.symbol, detail: e.roman })),
+      perTarget: labels.map((label) => ({ label })),
     },
+    ...(ideal ? { voiceLeading: { ideal } } : {}),
   };
 }

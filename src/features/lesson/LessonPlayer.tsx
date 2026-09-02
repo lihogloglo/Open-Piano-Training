@@ -130,7 +130,13 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
   );
 }
 
-function ExplainStep({ step, onDone }: { step: Extract<LessonStep, { kind: 'explain' }>; onDone: () => void }) {
+function ExplainStep({
+  step,
+  onDone,
+}: {
+  step: Extract<LessonStep, { kind: 'explain' }>;
+  onDone: () => void;
+}) {
   const activeNotes = useMidiStore((s) => s.activeNotes);
   return (
     <>

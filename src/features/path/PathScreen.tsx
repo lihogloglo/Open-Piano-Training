@@ -89,10 +89,19 @@ export function PathScreen() {
                     <span className={styles['nodeBody']}>
                       <span className={styles['nodeTitle']}>
                         {node.title}
-                        {row?.flagged && <span className={styles['flag']} title="Marked for extra review"> *</span>}
+                        {row?.flagged && (
+                          <span className={styles['flag']} title="Marked for extra review">
+                            {' '}
+                            *
+                          </span>
+                        )}
                       </span>
                       <span className={styles['nodeMeta']}>
-                        {node.kind === 'checkpoint' ? 'Checkpoint · ' : node.kind === 'review' ? 'Review · ' : ''}
+                        {node.kind === 'checkpoint'
+                          ? 'Checkpoint · '
+                          : node.kind === 'review'
+                            ? 'Review · '
+                            : ''}
                         {node.minutes} min
                         {row && row.bestScore > 0 && status === 'passed' && (
                           <StarRating stars={starsFor(row.bestScore)} size={12} />
@@ -106,7 +115,9 @@ export function PathScreen() {
           </section>
         );
       })}
-      <p className={styles['moreSoon']}>Stage 1 — “One key, whole system” is being written. The path grows from here.</p>
+      <p className={styles['moreSoon']}>
+        Stage 1 — “One key, whole system” is being written. The path grows from here.
+      </p>
 
       {selected?.unit && (
         <Modal onClose={() => setSelected(null)}>
@@ -126,11 +137,7 @@ export function PathScreen() {
             </p>
           )}
           <div className={styles['modalActions']}>
-            <Button
-              variant="primary"
-              size="l"
-              onClick={() => void navigate(`/lesson/${selected.id}`)}
-            >
+            <Button variant="primary" size="l" onClick={() => void navigate(`/lesson/${selected.id}`)}>
               {progress.get(selected.id)?.status === 'passed' ? 'Redo' : 'Start'}
             </Button>
             <Button variant="ghost" onClick={() => setSelected(null)}>

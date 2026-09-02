@@ -57,7 +57,12 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
         </div>
         <div className={styles['strip']} aria-label="Per-note results">
           {strip.map((v, i) => (
-            <span key={i} className={styles['dot']} style={{ background: VERDICT_COLOR[v] }} title={`${i + 1}: ${v}`} />
+            <span
+              key={i}
+              className={styles['dot']}
+              style={{ background: VERDICT_COLOR[v] }}
+              title={`${i + 1}: ${v}`}
+            />
           ))}
         </div>
         <div className={styles['actions']}>

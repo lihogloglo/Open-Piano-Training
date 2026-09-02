@@ -71,7 +71,10 @@ export async function saveTake(take: Take): Promise<void> {
     await db.takes.put(take);
     const count = await db.takes.count();
     if (count > MAX_TAKES) {
-      const oldest = await db.takes.orderBy('startedAt').limit(count - MAX_TAKES).toArray();
+      const oldest = await db.takes
+        .orderBy('startedAt')
+        .limit(count - MAX_TAKES)
+        .toArray();
       const prunable = oldest.filter((t) => t.result.stars < 3).map((t) => t.id);
       if (prunable.length > 0) await db.takes.bulkDelete(prunable);
     }

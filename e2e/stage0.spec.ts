@@ -25,7 +25,9 @@ interface Snap {
 }
 
 const snap = (page: Page): Promise<Snap> =>
-  page.evaluate(() => (window as unknown as { __runTest: { snapshot(): unknown } }).__runTest.snapshot() as never);
+  page.evaluate(
+    () => (window as unknown as { __runTest: { snapshot(): unknown } }).__runTest.snapshot() as never,
+  );
 
 /** Press-and-release the given midis simultaneously through the fake adapter. */
 async function playChord(page: Page, midis: number[]): Promise<void> {
@@ -61,9 +63,7 @@ async function driveLesson(page: Page): Promise<void> {
     if (!page.url().includes('/lesson/')) return;
 
     // Structural buttons first: explain-Continue, create-Done, results-Continue, ladder-Continue.
-    const structural = page
-      .getByRole('button', { name: /^(Continue|Done)$/ })
-      .first();
+    const structural = page.getByRole('button', { name: /^(Continue|Done)$/ }).first();
     if (await structural.isVisible().catch(() => false)) {
       if (await structural.isEnabled()) {
         await structural.click();

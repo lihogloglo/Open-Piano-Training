@@ -53,13 +53,27 @@
   transform: translateY(-2px);
 }
 
-.chip[data-degree='1'] .roman { color: var(--deg-1); }
-.chip[data-degree='2'] .roman { color: var(--deg-2); }
-.chip[data-degree='3'] .roman { color: var(--deg-3); }
-.chip[data-degree='4'] .roman { color: var(--deg-4); }
-.chip[data-degree='5'] .roman { color: var(--deg-5); }
-.chip[data-degree='6'] .roman { color: var(--deg-6); }
-.chip[data-degree='7'] .roman { color: var(--deg-7); }
+.chip[data-degree='1'] .roman {
+  color: var(--deg-1);
+}
+.chip[data-degree='2'] .roman {
+  color: var(--deg-2);
+}
+.chip[data-degree='3'] .roman {
+  color: var(--deg-3);
+}
+.chip[data-degree='4'] .roman {
+  color: var(--deg-4);
+}
+.chip[data-degree='5'] .roman {
+  color: var(--deg-5);
+}
+.chip[data-degree='6'] .roman {
+  color: var(--deg-6);
+}
+.chip[data-degree='7'] .roman {
+  color: var(--deg-7);
+}
 
 .roman {
   font-size: var(--fs-xl);

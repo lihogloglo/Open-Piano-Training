@@ -131,7 +131,11 @@ function CircleOfFifthsBlock({ block }: { block: Extract<ExplainBlock, { kind: '
               x={x}
               y={y + 5}
               textAnchor="middle"
-              style={{ fontSize: 15, fontWeight: hot ? 700 : 500, fill: hot ? 'var(--accent)' : 'var(--text-2)' }}
+              style={{
+                fontSize: 15,
+                fontWeight: hot ? 700 : 500,
+                fill: hot ? 'var(--accent)' : 'var(--text-2)',
+              }}
             >
               {name.replace('#', '♯').replace(/(?<=.)b/, '♭')}
             </text>

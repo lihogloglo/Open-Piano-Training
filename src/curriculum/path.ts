@@ -35,7 +35,14 @@ export function buildPath(): { stage: Stage; nodes: PathNode[] }[] {
     for (const unitId of stage.unitIds) {
       const unit = getUnit(unitId);
       if (!unit) continue;
-      nodes.push({ id: unit.id, kind: unit.kind, stageId: stage.id, unit, title: unit.title, minutes: unit.minutes });
+      nodes.push({
+        id: unit.id,
+        kind: unit.kind,
+        stageId: stage.id,
+        unit,
+        title: unit.title,
+        minutes: unit.minutes,
+      });
       if (unit.kind === 'lesson') {
         lessonCount += 1;
         if (lessonCount % 3 === 0) {

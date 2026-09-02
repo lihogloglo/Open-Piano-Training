@@ -27,6 +27,19 @@ export function bandOf(
   return null;
 }
 
+/**
+ * Latency calibration: median of measured (press − click) deltas, clamped to
+ * ±80ms (03-midi-audio §Latency calibration). Empty input → 0.
+ */
+export function calibrationOffset(deltasMs: number[]): number {
+  if (deltasMs.length === 0) return 0;
+  const sorted = [...deltasMs].sort((a, b) => a - b);
+  const mid = Math.floor(sorted.length / 2);
+  const median =
+    sorted.length % 2 === 1 ? (sorted[mid] ?? 0) : ((sorted[mid - 1] ?? 0) + (sorted[mid] ?? 0)) / 2;
+  return Math.max(-80, Math.min(80, Math.round(median)));
+}
+
 /** Worst of two bands (perfect < good < ok). */
 export function worseBand(
   a: Extract<JudgeVerdict, 'perfect' | 'good' | 'ok'>,

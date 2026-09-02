@@ -1,0 +1,21 @@
+.panel {
+  display: grid;
+  gap: var(--space-3);
+  margin-top: var(--space-3);
+}
+
+.note {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+}
+
+.live {
+  color: var(--accent);
+  font-weight: 600;
+}

@@ -5,6 +5,7 @@ import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { toast } from '@/ui/Toast';
 import { APP_NAME } from '@/app/brand';
+import { CalibrationPanel } from './CalibrationPanel';
 import styles from './SettingsScreen.module.css';
 
 const THEMES: { value: ThemeSetting; label: string }[] = [
@@ -105,6 +106,11 @@ export function SettingsScreen() {
             </button>
           </div>
         </div>
+      </Card>
+
+      <Card>
+        <h3>Timing calibration</h3>
+        <CalibrationPanel />
       </Card>
 
       <Card>

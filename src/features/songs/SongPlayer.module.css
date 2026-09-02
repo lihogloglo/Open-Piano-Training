@@ -1,0 +1,121 @@
+.player {
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  background: var(--bg);
+}
+
+.topbar {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  min-height: 56px;
+  padding: var(--space-2) var(--space-4);
+  border-bottom: 1px solid var(--border);
+  background: var(--surface);
+  flex-wrap: wrap;
+}
+
+.close {
+  border: none;
+  background: transparent;
+  color: var(--text-2);
+  cursor: pointer;
+  padding: var(--space-2);
+  border-radius: var(--radius-m);
+}
+
+.close:hover {
+  background: var(--surface-2);
+}
+
+.title {
+  font-weight: 650;
+}
+
+.style {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.controls {
+  margin-left: auto;
+  display: flex;
+  gap: var(--space-4);
+}
+
+.controls label {
+  display: grid;
+  gap: 2px;
+  font-size: var(--fs-xs);
+  color: var(--text-2);
+}
+
+.controls select {
+  background: var(--surface-2);
+  color: var(--text);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 3px var(--space-2);
+  font-size: var(--fs-s);
+}
+
+.chartZone {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  padding: var(--space-5);
+  display: grid;
+  place-items: center;
+}
+
+.chart {
+  display: grid;
+  gap: var(--space-2);
+  width: 100%;
+  max-width: 720px;
+}
+
+.bar {
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  padding: var(--space-3);
+  display: grid;
+  gap: 2px;
+  justify-items: center;
+  background: var(--surface);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.bar[data-state='current'] {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 2px color-mix(in srgb, var(--accent) 30%, transparent);
+}
+
+.bar[data-state='done'] {
+  opacity: 0.55;
+}
+
+.symbol {
+  font-size: var(--fs-xl);
+  font-weight: 650;
+}
+
+.roman {
+  font-size: var(--fs-xs);
+  color: var(--text-3);
+}
+
+.intro {
+  max-width: 480px;
+  text-align: center;
+  color: var(--text-2);
+  display: grid;
+  gap: var(--space-3);
+}
+
+.footerHint {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2);
+}

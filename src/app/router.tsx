@@ -10,6 +10,7 @@ import { SandboxScreen } from '@/features/sandbox/SandboxScreen';
 import { ProgressScreen } from '@/features/progress/ProgressScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
 import { Placeholder } from '@/features/shared/Placeholder';
+import { LabScreen } from '@/features/lab/LabScreen';
 
 function RootRedirect() {
   const onboarded = useSettingsStore((s) => s.onboarded);
@@ -42,6 +43,7 @@ export const router = createBrowserRouter([
     element: <AppShell />,
     children: [
       { path: '/setup', element: <SetupScreen /> },
+      { path: '/lab', element: <LabScreen /> },
       { path: '/practice', element: <TodayScreen /> },
       { path: '/path', element: <PathScreen /> },
       { path: '/songs', element: <SongsScreen /> },

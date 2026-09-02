@@ -18,6 +18,41 @@
   font-size: var(--fs-s);
 }
 
+/* Weekly recap card (07): the honest numbers, dismissible. */
+.recapCard {
+  display: grid;
+  gap: var(--space-3);
+}
+
+.recapHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.recapStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: var(--space-3);
+}
+
+.stat {
+  display: grid;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: var(--fs-xl);
+  font-weight: 650;
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
 .streakBox {
   display: grid;
   gap: var(--space-2);

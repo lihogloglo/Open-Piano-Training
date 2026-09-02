@@ -9,6 +9,7 @@ import { SongsScreen } from '@/features/songs/SongsScreen';
 import { SandboxScreen } from '@/features/sandbox/SandboxScreen';
 import { ProgressScreen } from '@/features/progress/ProgressScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
+import { LicensesScreen } from '@/features/settings/LicensesScreen';
 import { RatingChallenge } from '@/features/rating/RatingChallenge';
 import { LabScreen } from '@/features/lab/LabScreen';
 import { LessonPlayer } from '@/features/lesson/LessonPlayer';
@@ -53,6 +54,7 @@ export const router = createBrowserRouter([
       { path: '/sandbox', element: <SandboxScreen /> },
       { path: '/progress', element: <ProgressScreen /> },
       { path: '/settings', element: <SettingsScreen /> },
+      { path: '/licenses', element: <LicensesScreen /> },
       { path: '*', element: <Navigate to="/" replace /> },
     ],
   },

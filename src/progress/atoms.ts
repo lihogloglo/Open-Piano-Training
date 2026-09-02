@@ -282,12 +282,16 @@ function progDrill(kind: string, parts: string[]): ExerciseDef | null {
   const progId = parts[1];
   const keySeg = parts[2] ?? 'c';
   if (!progId) return null;
-  const entry =
-    PROGRESSION_CATALOG.find((p) => p.id === progId) ??
-    PROGRESSION_CATALOG.find((p) => p.id === `min-${progId}`);
-  if (!entry) return null;
-  // `all` = drill it in a rotating key; the generator picks per seed via roots.
+  // A minor key segment (`am`) must pick the minor entry: `i-iv-v` names both.
   const minor = keySeg.endsWith('m');
+  const lookup = minor
+    ? [`min-${progId}`, progId]
+    : [progId, `min-${progId}`];
+  const entry = lookup.reduce<(typeof PROGRESSION_CATALOG)[number] | undefined>(
+    (found, id) => found ?? PROGRESSION_CATALOG.find((p) => p.id === id),
+    undefined,
+  );
+  if (!entry) return null;
   const tonic = keySeg === 'all' ? 'C' : cap(minor ? keySeg.slice(0, -1) : keySeg);
   return {
     generator: 'progression-play',

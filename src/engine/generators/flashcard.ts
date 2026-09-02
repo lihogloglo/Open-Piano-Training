@@ -1,6 +1,7 @@
 import { z } from 'zod';
 import { keySignature, type KeyContext } from '@/theory/keys';
 import { namePc } from '@/theory/notes';
+import { parseRoman } from '@/theory/progressions';
 import { QUALITY_INTERVALS, type ChordQuality, chordSymbol } from '@/theory/chords';
 import { createRng } from '../rng';
 import type { ExerciseDef, ExerciseInstance, Target } from '../types';
@@ -21,6 +22,12 @@ export const flashcardParams = z.discriminatedUnion('kind', [
     intervals: z
       .array(z.enum(['m2', 'M2', 'm3', 'M3', 'P4', 'TT', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8']))
       .min(1),
+    count: z.number().int().min(1).max(30).default(10),
+  }),
+  z.object({
+    kind: z.literal('roman'),
+    keys: z.array(z.object({ tonic: z.string(), mode: z.enum(['major', 'minor']) })).min(1),
+    romans: z.array(z.string()).min(1),
     count: z.number().int().min(1).max(30).default(10),
   }),
 ]);
@@ -76,6 +83,18 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         prev = cardKey;
         targets.push(gripTarget(root, quality, 0, true));
         perTarget.push({ label: `Spell ${chordSymbol(root, quality)}`, detail: 'Play it in any octave' });
+      } else if (p.kind === 'roman') {
+        const key = rng.pick(p.keys);
+        const roman = rng.pick(p.romans);
+        const cardKey = `${key.tonic}:${key.mode}:${roman}`;
+        if (cardKey === prev && (p.keys.length > 1 || p.romans.length > 1)) continue;
+        prev = cardKey;
+        const chord = parseRoman(roman, key);
+        targets.push(gripTarget(chord.root, chord.quality, 0, true));
+        perTarget.push({
+          label: `${roman} in ${key.tonic} ${key.mode} is…?`,
+          detail: 'Play the chord — any octave',
+        });
       } else {
         const root = rng.pick(p.roots);
         const interval = rng.pick(p.intervals);
@@ -105,8 +124,13 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
     targets,
     beatsPerTarget: 2,
     prompt: {
-      title: p.kind === 'spell' ? 'Spelling drill' : 'Interval drill',
-      detail: p.kind === 'spell' ? 'Build each chord from its symbol' : 'Measure up from each root',
+      title: p.kind === 'spell' ? 'Spelling drill' : p.kind === 'roman' ? 'Roman numeral drill' : 'Interval drill',
+      detail:
+        p.kind === 'spell'
+          ? 'Build each chord from its symbol'
+          : p.kind === 'roman'
+            ? 'Turn each numeral into the chord it names'
+            : 'Measure up from each root',
       perTarget,
     },
   };

@@ -1,6 +1,7 @@
 import type { ExerciseInstance, MatchEvent, MatcherNoteEvent, NoteJudgment } from '../types';
-import { noteBelongsToTarget, setSatisfied } from './setMatch';
+import { chordAnySatisfied, noteBelongsToTarget, setSatisfied } from './setMatch';
 import { scoreTake } from '../scoring';
+import { applyVoiceLeading } from '../voiceLeading';
 
 /**
  * Wait-mode matcher: no clock, advances target-by-target on correct input.
@@ -15,6 +16,8 @@ export class WaitMatcher {
   private missesOnCurrent = 0;
   private judgments: NoteJudgment[] = [];
   private done = false;
+  /** Per-target midis that satisfied a set target (voice-leading scoring). */
+  private playedVoicings: (number[] | null)[] = [];
 
   constructor(instance: ExerciseInstance) {
     this.instance = instance;
@@ -44,15 +47,19 @@ export class WaitMatcher {
     if (!target) return [];
     const events: MatchEvent[] = [];
 
-    if (target.kind === 'set') {
+    if (target.kind === 'set' || target.kind === 'chord-any') {
       if (!noteBelongsToTarget(e.midi, target)) {
         this.missesOnCurrent += 1;
         events.push(this.judge(e.midi, 'extra'));
         if (this.missesOnCurrent === 2) events.push({ type: 'hintEligible', index: this.index, auto: false });
         if (this.missesOnCurrent >= 4) events.push({ type: 'hintEligible', index: this.index, auto: true });
       }
-      if (setSatisfied(this.held, target)) {
-        for (const m of this.held) events.push(this.judge(m, 'perfect'));
+      const satisfied =
+        target.kind === 'set' ? setSatisfied(this.held, target) : chordAnySatisfied(this.held, target);
+      if (satisfied) {
+        const members = [...this.held].filter((m) => noteBelongsToTarget(m, target));
+        this.playedVoicings[this.index] = members;
+        for (const m of members) events.push(this.judge(m, 'perfect'));
         events.push(...this.advance());
       }
       return events;
@@ -86,7 +93,12 @@ export class WaitMatcher {
     this.missesOnCurrent = 0;
     if (this.index >= this.instance.targets.length) {
       this.done = true;
-      const result = scoreTake(this.judgments, this.instance.targets.length, 'wait', 0.8);
+      let result = scoreTake(this.judgments, this.instance.targets.length, 'wait', 0.8);
+      const vl = this.instance.voiceLeading;
+      if (vl) {
+        const played = this.instance.targets.map((_, i) => this.playedVoicings[i] ?? null);
+        result = applyVoiceLeading(result, played, vl.ideal);
+      }
       return [{ type: 'completed', result }];
     }
     return [{ type: 'targetFocused', index: this.index }];

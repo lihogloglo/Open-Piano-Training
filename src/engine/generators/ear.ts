@@ -123,3 +123,70 @@ export function generateEarQuality(def: ExerciseDef, seed: number): ExerciseInst
     prompt: { title: 'Ear: chord quality', detail: 'Listen, then rebuild the chord', perTarget },
   };
 }
+
+export const earProgressionParams = z.object({
+  key: keySchema,
+  /** Progressions to recognize, e.g. [['I','V','vi','IV'], ['I','IV','V','I']]. */
+  pool: z.array(z.array(z.string()).min(2)).min(2),
+  count: z.number().int().min(1).max(10).default(4),
+  /** Playing just the bass root of each chord also counts (default true). */
+  bassRootsOk: z.boolean().default(true),
+});
+
+/**
+ * Progression recognition: a whole progression plays, then the learner answers
+ * chord by chord — the full chord (any voicing) or, if allowed, its bass root.
+ */
+export function generateEarProgression(def: ExerciseDef, seed: number): ExerciseInstance {
+  const p = earProgressionParams.parse(def.params);
+  const rng = createRng(seed);
+  const targets: Target[] = [];
+  const previews: ({ notes: DemoNote[]; bpm: number } | undefined)[] = [];
+  const perTarget: { label: string; detail?: string }[] = [];
+
+  let prevIdx = -1;
+  for (let item = 0; item < p.count; item++) {
+    let poolIdx = rng.int(p.pool.length);
+    if (poolIdx === prevIdx) poolIdx = (poolIdx + 1) % p.pool.length;
+    prevIdx = poolIdx;
+    const romans = p.pool[poolIdx] ?? [];
+    const chords = progressionChords(romans, p.key);
+
+    // The whole progression sounds once, at the item's first target.
+    const notes: DemoNote[] = chords.flatMap((c, bar) =>
+      buildChord({ root: c.root, quality: c.quality, inversion: 0 }, 48).map((midi) => ({
+        midi,
+        atBeat: bar,
+        durBeats: 1,
+      })),
+    );
+
+    chords.forEach((c, bar) => {
+      targets.push({
+        kind: 'chord-any',
+        accept: [{ root: c.root, quality: c.quality }],
+        ...(p.bassRootsOk ? { bassRootOk: true } : {}),
+        label: `Chord ${bar + 1} of ${chords.length}`,
+      });
+      previews.push(bar === 0 ? { notes, bpm: 76 } : undefined);
+      perTarget.push({
+        label: `Chord ${bar + 1} of ${chords.length} — what was it?`,
+        detail: p.bassRootsOk ? 'Play the chord, or just its bass note' : 'Play the chord you heard',
+      });
+    });
+  }
+
+  return {
+    def,
+    seed,
+    targets,
+    beatsPerTarget: 2,
+    perTargetPreview: previews,
+    prompt: {
+      title: `Ear: name the progression (${p.key.tonic} ${p.key.mode})`,
+      detail: 'A progression plays — answer it back, chord by chord',
+      key: p.key,
+      perTarget,
+    },
+  };
+}

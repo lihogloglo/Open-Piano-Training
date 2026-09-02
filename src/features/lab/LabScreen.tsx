@@ -61,6 +61,8 @@ export function LabScreen() {
   const [tier, setTier] = useState<TimingTier>('standard');
   const [labels, setLabels] = useState<KeyLabels>('none');
   const [count, setCount] = useState(8);
+  const [voiceLead, setVoiceLead] = useState<'free' | 'smooth'>('free');
+  const [style, setStyle] = useState<'block' | 'brokenLH'>('block');
 
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const phase = useRunStore((s) => s.phase);
@@ -105,6 +107,48 @@ export function LabScreen() {
           inversions: [0, 1, 2],
           count,
           hand,
+        },
+      };
+    }
+    if (generator === 'progression-play') {
+      return {
+        ...base,
+        generator,
+        params: {
+          key: { tonic, mode: 'major' },
+          roman: ['I', 'V', 'vi', 'IV'],
+          beatsPerChord: 4,
+          loops: 1,
+          voiceLead,
+          style,
+        },
+      };
+    }
+    if (generator === 'harmonize') {
+      return {
+        ...base,
+        mode: 'wait' as const,
+        generator: 'progression-play',
+        params: {
+          key: { tonic, mode: 'major' },
+          roman: ['I', 'IV', 'V', 'I', 'vi', 'IV', 'V', 'I'],
+          acceptAlternatives: true,
+        },
+      };
+    }
+    if (generator === 'ear-progression') {
+      return {
+        ...base,
+        mode: 'wait' as const,
+        generator,
+        params: {
+          key: { tonic, mode: 'major' },
+          pool: [
+            ['I', 'IV', 'V', 'I'],
+            ['I', 'V', 'vi', 'IV'],
+            ['I', 'vi', 'IV', 'V'],
+          ],
+          count: 2,
         },
       };
     }
@@ -161,8 +205,29 @@ export function LabScreen() {
               <option value="chord-grip">chord-grip</option>
               <option value="grip-interleave">grip-interleave</option>
               <option value="flashcard">flashcard (spell)</option>
+              <option value="progression-play">progression-play</option>
+              <option value="harmonize">harmonize (acceptAlternatives)</option>
+              <option value="ear-progression">ear-progression</option>
             </select>
           </label>
+          {generator === 'progression-play' && (
+            <>
+              <label>
+                Voice leading
+                <select value={voiceLead} onChange={(e) => setVoiceLead(e.target.value as 'free' | 'smooth')}>
+                  <option value="free">free</option>
+                  <option value="smooth">smooth</option>
+                </select>
+              </label>
+              <label>
+                Style
+                <select value={style} onChange={(e) => setStyle(e.target.value as 'block' | 'brokenLH')}>
+                  <option value="block">block</option>
+                  <option value="brokenLH">brokenLH</option>
+                </select>
+              </label>
+            </>
+          )}
           <label>
             Tonic/root
             <select value={tonic} onChange={(e) => setTonic(e.target.value)}>

@@ -14,9 +14,12 @@ import { STAGES, getUnit } from '@/curriculum/content';
 import { earnedBadges, newlyEarned, type BadgeDef, type BadgeInputs } from './badges';
 import { computeRecap, weekEndingSunday, type WeeklyRecap } from './stats';
 
-/** Unit passed: persist status and start tracking its concept atoms. */
-export async function completeUnit(unit: Unit, score: number, flagged: boolean): Promise<void> {
-  await markUnitPassed(unit.id, score, flagged);
+/**
+ * Start tracking a unit's concept atoms. Idempotent per atom, so it is safe to
+ * call for a unit that is already passed — which keeps the invariant "a passed
+ * unit's atoms are tracked" true no matter which route marked it passed.
+ */
+async function trackAtoms(unit: Unit, score: number, flagged: boolean): Promise<void> {
   const now = new Date();
   for (const atomId of unit.concepts) {
     if (!ATOMS.has(atomId)) continue;
@@ -34,6 +37,12 @@ export async function completeUnit(unit: Unit, score: number, flagged: boolean):
       fluent: false,
     });
   }
+}
+
+/** Unit passed: persist status and start tracking its concept atoms. */
+export async function completeUnit(unit: Unit, score: number, flagged: boolean): Promise<void> {
+  await markUnitPassed(unit.id, score, flagged);
+  await trackAtoms(unit, score, flagged);
   // Checkpoint pass ⇒ the whole stage counts as passed (placement path) and
   // the next stage unlocks via the checkpoint prerequisite chain (07 §Gates).
   if (unit.kind === 'checkpoint') {
@@ -43,7 +52,11 @@ export async function completeUnit(unit: Unit, score: number, flagged: boolean):
       const stageUnit = getUnit(unitId);
       if (!stageUnit) continue;
       const existing = await db.unitProgress.get(unitId);
-      if (existing?.status === 'passed') continue;
+      if (existing?.status === 'passed') {
+        // Keep its real score, but make sure its atoms are on the schedule.
+        await trackAtoms(stageUnit, existing.bestScore, existing.flagged ?? false);
+        continue;
+      }
       await completeUnit(stageUnit, score, false);
     }
   }
@@ -196,7 +209,17 @@ export async function markThenVsNowViewed(): Promise<void> {
   await db.meta.put({ key: THEN_VS_NOW_KEY, value: true });
 }
 
-/** This week's recap card, computed once per week and cached in `meta`. */
+/**
+ * Read-only view of the stored recap (safe inside liveQuery). Returns null
+ * until `getRecap` has computed this week's — same split as sessions.
+ */
+export async function readRecap(now = new Date()): Promise<WeeklyRecap | null> {
+  const stored = (await db.meta.get(RECAP_KEY))?.value as WeeklyRecap | undefined;
+  const weekEnding = weekEndingSunday(localDateString(now));
+  return stored?.weekEnding === weekEnding ? stored : null;
+}
+
+/** This week's recap card, computed once per week and cached in `meta`. NOT liveQuery-safe. */
 export async function getRecap(now = new Date()): Promise<WeeklyRecap> {
   const today = localDateString(now);
   const weekEnding = weekEndingSunday(today);

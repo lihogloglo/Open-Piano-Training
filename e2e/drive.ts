@@ -21,6 +21,40 @@ export async function seedPassedUnits(page: Page, unitIds: string[]): Promise<vo
   }, unitIds);
 }
 
+/** Give the given atoms FSRS cards, as if their units had been passed. */
+export async function seedTrackedAtoms(page: Page, atomIds: string[]): Promise<void> {
+  await page.evaluate(async (ids: string[]) => {
+    const dbMod = (await import(/* @vite-ignore */ String('/src/progress/db.ts'))) as {
+      db: { atomProgress: { bulkPut(rows: unknown[]): Promise<unknown> } };
+    };
+    const fsrsMod = (await import(/* @vite-ignore */ String('/src/progress/fsrs.ts'))) as {
+      newCard(now: Date): unknown;
+    };
+    const now = Date.now();
+    await dbMod.db.atomProgress.bulkPut(
+      ids.map((atomId) => ({
+        atomId,
+        fsrs: fsrsMod.newCard(new Date(now)),
+        introducedAt: now,
+        lastSeenAt: now,
+        bestScore: 0.9,
+        attempts: 1,
+        fluent: false,
+      })),
+    );
+  }, atomIds);
+}
+
+/** Read a strand's stored rating level (null when never challenged). */
+export async function readRatingLevel(page: Page, strand: string): Promise<number | null> {
+  return page.evaluate(async (s: string) => {
+    const mod = (await import(/* @vite-ignore */ String('/src/progress/db.ts'))) as {
+      db: { ratings: { get(key: string): Promise<{ level: number } | undefined> } };
+    };
+    return (await mod.db.ratings.get(s))?.level ?? null;
+  }, strand);
+}
+
 export interface Snap {
   phase: string;
   mode: 'wait' | 'tempo' | null;
@@ -78,7 +112,9 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
     const structural = page.getByRole('button', { name: /^(Continue|Done)$/ }).first();
     if (await structural.isVisible().catch(() => false)) {
       if (await structural.isEnabled()) {
-        await structural.click();
+        // The last Continue navigates away, so the button can vanish mid-click;
+        // a lost click just means the step already advanced.
+        await structural.click({ timeout: 2000 }).catch(() => {});
         await page.waitForTimeout(120);
         continue;
       }
@@ -103,7 +139,7 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
       const startBtn = page.getByRole('button', { name: /^(Start|Try again|Restart)$/ }).first();
       if (await startBtn.isVisible().catch(() => false)) {
         if (await startBtn.isEnabled()) {
-          await startBtn.click();
+          await startBtn.click({ timeout: 2000 }).catch(() => {});
           await page.waitForTimeout(150);
           continue;
         }
@@ -112,6 +148,46 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
     await page.waitForTimeout(200);
   }
   throw new Error('driveLesson did not finish within the guard limit');
+}
+
+/**
+ * Drive a rating challenge to the end screen. Same run machinery as a lesson,
+ * different chrome — and no retries, so every item is one pass.
+ */
+export async function driveChallenge(page: Page): Promise<void> {
+  const scheduledAnchors = new Set<number>();
+  for (let guard = 0; guard < 900; guard++) {
+    const heading = await page
+      .getByRole('heading', { name: /Level up|Holding steady|Down a step/ })
+      .isVisible()
+      .catch(() => false);
+    if (heading) return;
+
+    const s = await snap(page);
+    if (s.mode === 'wait' && s.phase === 'running') {
+      if (s.currentTargetMidis.length > 0) await playChord(page, s.currentTargetMidis);
+      await page.waitForTimeout(160);
+      continue;
+    }
+    if (s.mode === 'tempo' && (s.phase === 'count-in' || s.phase === 'running')) {
+      if (s.anchorT0Perf !== null && !scheduledAnchors.has(s.anchorT0Perf)) {
+        scheduledAnchors.add(s.anchorT0Perf);
+        await scheduleTempoRun(page, s);
+      }
+      await page.waitForTimeout(250);
+      continue;
+    }
+    // Tempo items need an explicit Start; wait items auto-start, and their
+    // transport Start stays disabled — never click through a disabled one.
+    const startBtn = page.getByRole('button', { name: /^Start$/ }).first();
+    if ((await startBtn.isVisible().catch(() => false)) && (await startBtn.isEnabled())) {
+      await startBtn.click();
+      await page.waitForTimeout(150);
+      continue;
+    }
+    await page.waitForTimeout(200);
+  }
+  throw new Error('driveChallenge did not finish within the guard limit');
 }
 
 export async function completeLesson(page: Page, unitId: string): Promise<void> {

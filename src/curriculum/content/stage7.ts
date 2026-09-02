@@ -183,6 +183,10 @@ export const stage7Units: Unit[] = [
             kind: 'text',
             md: 'So the target is the 1st, 3rd or 5th of whatever chord just arrived. Between downbeats, do what you like. An **approach note** — a step above or below your target, played just before it — makes the landing sound intentional.',
           },
+          {
+            kind: 'text',
+            md: 'Two halves to this. The drill below waits for you at each chord, so it only asks **which** note is home. Then the backing loop plays in time and asks **when** — and that half is unscored, because rushing a landing to satisfy a computer is the opposite of the skill.',
+          },
         ],
       },
       {
@@ -205,6 +209,9 @@ export const stage7Units: Unit[] = [
         kind: 'graded',
         id: 's7.u3.q1',
         passScore: 0.75,
+        // Scored on *which* note lands, not when: the app waits for you at each
+        // chord. The timing half of the lesson is the create step below, played
+        // against the backing loop, where nothing is scored at all.
         exercise: wait(
           'improv',
           {
@@ -214,6 +221,18 @@ export const stage7Units: Unit[] = [
             loops: 2,
             targetDownbeats: true,
           },
+          'rh',
+          'by-ear',
+        ),
+      },
+      {
+        kind: 'create',
+        id: 's7.u3.c1',
+        prompt:
+          'Now put it in time. Start the backing and land a chord tone on the first beat of every bar — nothing else matters. Once that is automatic, fill the gaps between landings.',
+        exercise: wait(
+          'improv',
+          { key: C, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 4 },
           'rh',
           'by-ear',
         ),

@@ -2,6 +2,7 @@ import type { ExerciseInstance, MatchEvent, MatcherNoteEvent, NoteJudgment, Targ
 import { TIER_WINDOWS, bandOf, worseBand, type TimingWindows } from './timing';
 import { noteBelongsToTarget } from './setMatch';
 import { scoreTake } from '../scoring';
+import { applyVoiceLeading } from '../voiceLeading';
 
 interface TargetState {
   target: Target;
@@ -14,6 +15,8 @@ interface TargetState {
   memberDeltas: number[];
   memberBands: ('perfect' | 'good' | 'ok')[];
   membersHit: Set<number>; // pitch classes (flexible) or midis (exact)
+  /** Actual midis that landed (voice-leading scoring). */
+  playedMidis: number[];
   wantedCount: number;
 }
 
@@ -42,6 +45,9 @@ export class TempoMatcher {
     this.latencyOffsetMs = latencyOffsetMs;
     const spacing = instance.beatsPerTarget ?? 1;
     this.states = instance.targets.map((target, i) => {
+      if (target.kind === 'chord-any') {
+        throw new Error('chord-any targets are wait-mode only');
+      }
       const atBeat = target.atBeat ?? i * spacing;
       const wantedCount =
         target.kind === 'set'
@@ -58,6 +64,7 @@ export class TempoMatcher {
         memberDeltas: [],
         memberBands: [],
         membersHit: new Set<number>(),
+        playedMidis: [],
         wantedCount,
       };
     });
@@ -146,6 +153,7 @@ export class TempoMatcher {
     state.membersHit.add(memberKey);
     state.memberDeltas.push(delta);
     state.memberBands.push(withinRoll ? band : worseBand(band, 'ok'));
+    state.playedMidis.push(midi);
 
     if (state.membersHit.size >= state.wantedCount) {
       state.consumed = true;
@@ -189,10 +197,7 @@ export class TempoMatcher {
     const events = this.tick(Number.POSITIVE_INFINITY);
     if (!this.done) {
       this.done = true;
-      events.push({
-        type: 'completed',
-        result: scoreTake(this.judgments, this.instance.targets.length, 'tempo', 0.8),
-      });
+      events.push({ type: 'completed', result: this.finalResult() });
     }
     return events;
   }
@@ -202,11 +207,18 @@ export class TempoMatcher {
     const allSettled = this.states.every((s) => s.consumed || s.missed);
     if (!allSettled) return [];
     this.done = true;
-    return [
-      {
-        type: 'completed',
-        result: scoreTake(this.judgments, this.instance.targets.length, 'tempo', 0.8),
-      },
-    ];
+    return [{ type: 'completed', result: this.finalResult() }];
+  }
+
+  private finalResult() {
+    let result = scoreTake(this.judgments, this.instance.targets.length, 'tempo', 0.8);
+    const vl = this.instance.voiceLeading;
+    if (vl) {
+      const played = this.states.map((s) =>
+        s.target.kind === 'set' && s.consumed && s.playedMidis.length > 0 ? s.playedMidis : null,
+      );
+      result = applyVoiceLeading(result, played, vl.ideal);
+    }
+    return result;
   }
 }

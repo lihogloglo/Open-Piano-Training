@@ -5,7 +5,7 @@ import { generateChordGrip } from './chordGrip';
 import { generateGripInterleave } from './gripInterleave';
 import { generateFlashcard } from './flashcard';
 import { generateNoteFind } from './noteFind';
-import { generateEarDegree, generateEarQuality } from './ear';
+import { generateEarDegree, generateEarProgression, generateEarQuality } from './ear';
 import { generateProgressionPlay } from './progressionPlay';
 import { generateChartPlay } from './chartPlay';
 
@@ -20,6 +20,7 @@ export const GENERATORS: Record<string, Generator> = {
   'note-find': generateNoteFind,
   'ear-degree': generateEarDegree,
   'ear-quality': generateEarQuality,
+  'ear-progression': generateEarProgression,
   'progression-play': generateProgressionPlay,
   'chart-play': generateChartPlay,
 };

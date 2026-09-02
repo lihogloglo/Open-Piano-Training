@@ -30,7 +30,16 @@ export type Target =
       octaveFlexible: boolean;
       inversionOf?: { root: string; quality: ChordQuality; inversion: Inversion };
     }
-  | { kind: 'any-of-degree'; degree: Degree; key: KeyContext; atBeat?: number };
+  | { kind: 'any-of-degree'; degree: Degree; key: KeyContext; atBeat?: number }
+  | {
+      /** Multiple valid chord answers (harmonization, ear-progression). Wait mode only. */
+      kind: 'chord-any';
+      accept: { root: string; quality: ChordQuality }[];
+      /** A lone root note (any octave) of accept[0] also passes (ear answers). */
+      bassRootOk?: boolean;
+      label: string;
+      atBeat?: number;
+    };
 
 export interface PromptItem {
   /** Big text shown for the current target (chord symbol, note name, question). */
@@ -62,8 +71,11 @@ export interface ExerciseInstance {
   beatsPerTarget?: number;
   /** Played once before the run starts (e.g. a cadence establishing the key). */
   audioPreview?: { notes: DemoNote[]; bpm: number } | undefined;
-  /** Ear exercises: played when the target gains focus; input gated until done. */
-  perTargetPreview?: { notes: DemoNote[]; bpm: number }[] | undefined;
+  /** Ear exercises: played when the target gains focus; input gated until done.
+   *  Sparse — targets without their own preview hold `undefined`. */
+  perTargetPreview?: ({ notes: DemoNote[]; bpm: number } | undefined)[] | undefined;
+  /** Smooth progressions: reference voicings; matchers blend vl into the score. */
+  voiceLeading?: { ideal: MidiNumber[][] } | undefined;
 }
 
 export type JudgeVerdict = 'perfect' | 'good' | 'ok' | 'wrong' | 'missed' | 'extra';

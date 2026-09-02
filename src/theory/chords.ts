@@ -58,6 +58,16 @@ export function chordSymbol(root: string, quality: ChordQuality): string {
   return `${displayRoot}${QUALITY_SUFFIX[quality]}`;
 }
 
+const PC_DISPLAY = ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'];
+
+/** 'C' maj inversion 1 → 'C/E' (slash notation); root position → plain symbol. */
+export function slashChordSymbol(root: string, quality: ChordQuality, inversion: Inversion): string {
+  const symbol = chordSymbol(root, quality);
+  if (inversion === 0) return symbol;
+  const bassPc = bassPcForInversion(root, quality, inversion);
+  return `${symbol}/${PC_DISPLAY[bassPc]}`;
+}
+
 export interface ChordSpec {
   root: string;
   quality: ChordQuality;

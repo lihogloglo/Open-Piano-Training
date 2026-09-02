@@ -45,7 +45,10 @@ export function SongPlayer() {
     return useRunStore.subscribe((s, prev) => {
       if (s.phase === 'done' && prev.phase !== 'done' && s.result) {
         const pct = Math.round(s.result.score * 100);
-        toast(s.result.passed ? `Nice — ${pct}%` : `${pct}% — loop it again`, s.result.passed ? 'ok' : 'info');
+        toast(
+          s.result.passed ? `Nice — ${pct}%` : `${pct}% — loop it again`,
+          s.result.passed ? 'ok' : 'info',
+        );
       }
     });
   }, []);
@@ -72,7 +75,11 @@ export function SongPlayer() {
   return (
     <div className={styles['player']}>
       <header className={styles['topbar']}>
-        <button className={styles['close']} onClick={() => void navigate('/songs')} aria-label="Back to songs">
+        <button
+          className={styles['close']}
+          onClick={() => void navigate('/songs')}
+          aria-label="Back to songs"
+        >
           <Icon name="close" />
         </button>
         <span className={styles['title']}>{song.title}</span>
@@ -80,7 +87,7 @@ export function SongPlayer() {
         <div className={styles['controls']}>
           <label>
             Key
-            <select value={tonic} onChange={(e) => setTonic(e.target.value)}>
+            <select aria-label="Key" value={tonic} onChange={(e) => setTonic(e.target.value)}>
               {CIRCLE_OF_FIFTHS.map((k) => (
                 <option key={k}>{k}</option>
               ))}
@@ -88,7 +95,7 @@ export function SongPlayer() {
           </label>
           <label>
             Tempo
-            <select value={tempoPct} onChange={(e) => setTempoPct(Number(e.target.value))}>
+            <select aria-label="Tempo" value={tempoPct} onChange={(e) => setTempoPct(Number(e.target.value))}>
               <option value={0.75}>75%</option>
               <option value={1}>100%</option>
             </select>
@@ -96,6 +103,7 @@ export function SongPlayer() {
           <label>
             Mode
             <select
+              aria-label="Mode"
               value={practiceMode ? 'practice' : 'intime'}
               onChange={(e) => setPracticeMode(e.target.value === 'practice')}
             >
@@ -113,7 +121,9 @@ export function SongPlayer() {
               <div
                 key={i}
                 className={styles['bar']}
-                data-state={i === targetIndex && phase !== 'idle' ? 'current' : i < targetIndex ? 'done' : 'todo'}
+                data-state={
+                  i === targetIndex && phase !== 'idle' ? 'current' : i < targetIndex ? 'done' : 'todo'
+                }
               >
                 <span className={styles['symbol']}>{t.label}</span>
                 <span className={styles['roman']}>{t.detail}</span>
@@ -122,9 +132,7 @@ export function SongPlayer() {
           </div>
         ) : (
           <div className={styles['intro']}>
-            <p>
-              One chord per bar, root at the bottom, any voicing. Pick a key — the chart follows you.
-            </p>
+            <p>One chord per bar, root at the bottom, any voicing. Pick a key — the chart follows you.</p>
             {result && <p>Last take: {Math.round(result.score * 100)}%</p>}
           </div>
         )}

@@ -34,7 +34,10 @@ export const chartPlayParams = z.object({
 });
 
 /** The song's flattened chord events in the requested key. */
-export function songChordEvents(songId: string, transposeTo?: string): { events: ChordEvent[]; bpm: number; tonic: string; mode: 'major' | 'minor' } {
+export function songChordEvents(
+  songId: string,
+  transposeTo?: string,
+): { events: ChordEvent[]; bpm: number; tonic: string; mode: 'major' | 'minor' } {
   const song = getSong(songId);
   if (!song) throw new Error(`Unknown song: ${songId}`);
   const tonic = transposeTo ?? song.key.tonic;

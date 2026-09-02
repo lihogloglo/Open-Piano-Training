@@ -3,8 +3,12 @@ import type { ExerciseDef } from '@/engine/types';
 
 type Hand = 'rh' | 'lh' | 'both';
 
-const wait = (generator: string, params: Record<string, unknown>, hand: Hand = 'rh', rung = 'keys-lit'): ExerciseDef =>
-  ({ generator, params, mode: 'wait', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
+const wait = (
+  generator: string,
+  params: Record<string, unknown>,
+  hand: Hand = 'rh',
+  rung = 'keys-lit',
+): ExerciseDef => ({ generator, params, mode: 'wait', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
 
 const tempo = (
   generator: string,
@@ -13,7 +17,16 @@ const tempo = (
   hand: Hand = 'rh',
   rung = 'keys-lit',
 ): ExerciseDef =>
-  ({ generator, params, mode: 'tempo', bpm, timingTier: 'standard', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
+  ({
+    generator,
+    params,
+    mode: 'tempo',
+    bpm,
+    timingTier: 'standard',
+    rung,
+    hand,
+    seedPolicy: 'random',
+  }) as ExerciseDef;
 
 const WHITE_ROOTS = ['C', 'D', 'E', 'F', 'G', 'A', 'B'];
 const ALL_ROOTS = ['C', 'Db', 'D', 'Eb', 'E', 'F', 'F#', 'G', 'Ab', 'A', 'Bb', 'B'];
@@ -57,7 +70,12 @@ export const stage2Units: Unit[] = [
       {
         kind: 'guided',
         id: 's2.u1.g1',
-        exercise: wait('flashcard', { kind: 'interval', roots: ['C', 'F', 'G'], intervals: ['M3', 'm3'], count: 6 }),
+        exercise: wait('flashcard', {
+          kind: 'interval',
+          roots: ['C', 'F', 'G'],
+          intervals: ['M3', 'm3'],
+          count: 6,
+        }),
       },
       {
         kind: 'graded',
@@ -112,13 +130,23 @@ export const stage2Units: Unit[] = [
       {
         kind: 'guided',
         id: 's2.u2.g1',
-        exercise: wait('flashcard', { kind: 'spell', roots: ['D', 'E', 'A'], qualities: ['maj', 'min'], count: 6 }, 'rh', 'chord-symbols'),
+        exercise: wait(
+          'flashcard',
+          { kind: 'spell', roots: ['D', 'E', 'A'], qualities: ['maj', 'min'], count: 6 },
+          'rh',
+          'chord-symbols',
+        ),
       },
       {
         kind: 'graded',
         id: 's2.u2.q1',
         passScore: 0.8,
-        exercise: wait('flashcard', { kind: 'spell', roots: WHITE_ROOTS, qualities: ['maj', 'min'], count: 10 }, 'rh', 'chord-symbols'),
+        exercise: wait(
+          'flashcard',
+          { kind: 'spell', roots: WHITE_ROOTS, qualities: ['maj', 'min'], count: 10 },
+          'rh',
+          'chord-symbols',
+        ),
       },
     ],
   },
@@ -139,24 +167,34 @@ export const stage2Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The engine doesn\'t care about key color. **E♭ major** is still a major 3rd plus a minor 3rd. Twelve roots, two qualities — twenty-four triads, one rule.',
+            md: "The engine doesn't care about key color. **E♭ major** is still a major 3rd plus a minor 3rd. Twelve roots, two qualities — twenty-four triads, one rule.",
           },
           {
             kind: 'text',
-            md: 'This drill mixes them on purpose. Mixed practice feels harder than repeating one chord — that\'s exactly why it sticks.',
+            md: "This drill mixes them on purpose. Mixed practice feels harder than repeating one chord — that's exactly why it sticks.",
           },
         ],
       },
       {
         kind: 'guided',
         id: 's2.u3.g1',
-        exercise: wait('grip-interleave', { roots: ['Db', 'Eb', 'F#', 'Ab', 'Bb'], qualities: ['maj'], count: 6 }, 'rh', 'chord-symbols'),
+        exercise: wait(
+          'grip-interleave',
+          { roots: ['Db', 'Eb', 'F#', 'Ab', 'Bb'], qualities: ['maj'], count: 6 },
+          'rh',
+          'chord-symbols',
+        ),
       },
       {
         kind: 'graded',
         id: 's2.u3.q1',
         passScore: 0.8,
-        exercise: wait('grip-interleave', { roots: ALL_ROOTS, qualities: ['maj', 'min'], count: 14 }, 'rh', 'chord-symbols'),
+        exercise: wait(
+          'grip-interleave',
+          { roots: ALL_ROOTS, qualities: ['maj', 'min'], count: 14 },
+          'rh',
+          'chord-symbols',
+        ),
       },
     ],
   },
@@ -177,7 +215,7 @@ export const stage2Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Run the scale recipe from **G** and one note bends: the recipe demands **F♯**. That single sharp *is* G major\'s key signature.',
+            md: "Run the scale recipe from **G** and one note bends: the recipe demands **F♯**. That single sharp *is* G major's key signature.",
           },
           { kind: 'circleOfFifths', highlight: ['C', 'G'] },
           {
@@ -231,7 +269,7 @@ export const stage2Units: Unit[] = [
           { kind: 'circleOfFifths', highlight: ['C', 'G', 'D'] },
           {
             kind: 'text',
-            md: '**D major**: two sharps (F♯, C♯). The circle of fifths isn\'t trivia — it\'s the map of every key you\'ll ever meet.',
+            md: "**D major**: two sharps (F♯, C♯). The circle of fifths isn't trivia — it's the map of every key you'll ever meet.",
           },
         ],
       },
@@ -312,7 +350,12 @@ export const stage2Units: Unit[] = [
         kind: 'graded',
         id: 's2.u7.q1',
         passScore: 0.9,
-        exercise: wait('ear-quality', { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 8 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-quality',
+          { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 8 },
+          'rh',
+          'by-ear',
+        ),
       },
       {
         kind: 'graded',
@@ -332,7 +375,8 @@ export const stage2Units: Unit[] = [
       {
         kind: 'create',
         id: 's2.u7.c1',
-        prompt: 'Play any major chord, then sink its middle note a half step. Do it slowly, listening for the exact moment the light changes.',
+        prompt:
+          'Play any major chord, then sink its middle note a half step. Do it slowly, listening for the exact moment the light changes.',
       },
     ],
   },
@@ -361,7 +405,12 @@ export const stage2Units: Unit[] = [
         kind: 'graded',
         id: 's2.cp.q1',
         passScore: 0.8,
-        exercise: wait('grip-interleave', { roots: ALL_ROOTS, qualities: ['maj', 'min'], count: 12 }, 'rh', 'chord-symbols'),
+        exercise: wait(
+          'grip-interleave',
+          { roots: ALL_ROOTS, qualities: ['maj', 'min'], count: 12 },
+          'rh',
+          'chord-symbols',
+        ),
       },
       {
         kind: 'graded',
@@ -373,13 +422,23 @@ export const stage2Units: Unit[] = [
         kind: 'graded',
         id: 's2.cp.q3',
         passScore: 0.8,
-        exercise: wait('flashcard', { kind: 'interval', roots: WHITE_ROOTS, intervals: ['m3', 'M3', 'P5'], count: 8 }),
+        exercise: wait('flashcard', {
+          kind: 'interval',
+          roots: WHITE_ROOTS,
+          intervals: ['m3', 'M3', 'P5'],
+          count: 8,
+        }),
       },
       {
         kind: 'graded',
         id: 's2.cp.q4',
         passScore: 0.85,
-        exercise: wait('ear-quality', { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 6 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-quality',
+          { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 6 },
+          'rh',
+          'by-ear',
+        ),
       },
     ],
   },

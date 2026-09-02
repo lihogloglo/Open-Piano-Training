@@ -52,7 +52,9 @@ export function CalibrationPanel() {
     });
     const unMidi = subscribeMidiEvents((e) => {
       if (e.kind !== 'noteon' || beatTimes.length === 0) return;
-      const nearest = beatTimes.reduce((best, t) => (Math.abs(e.tPerf - t) < Math.abs(e.tPerf - best) ? t : best));
+      const nearest = beatTimes.reduce((best, t) =>
+        Math.abs(e.tPerf - t) < Math.abs(e.tPerf - best) ? t : best,
+      );
       const delta = e.tPerf - nearest;
       if (Math.abs(delta) < 250) {
         deltas.push(delta);

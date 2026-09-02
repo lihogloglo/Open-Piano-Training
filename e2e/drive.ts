@@ -111,10 +111,18 @@ export async function scheduleTempoRun(page: Page, s: Snap): Promise<void> {
 
 /** Drive whatever lesson is open until we are back on /path or /practice
  *  (or, when given, until `until(url)` — e.g. a placement chain boundary). */
+/**
+ * Guard by wall clock, not iterations: a 12-bar chart at a 60% ladder rung is
+ * a 70-second take on its own, so an iteration count says nothing useful about
+ * whether the lesson is stuck.
+ */
+const LESSON_BUDGET_MS = 15 * 60_000;
+
 export async function driveLesson(page: Page, until?: (url: string) => boolean): Promise<void> {
   await waitForApp(page);
   const scheduledAnchors = new Set<number>();
-  for (let guard = 0; guard < 900; guard++) {
+  const deadline = Date.now() + LESSON_BUDGET_MS;
+  for (let guard = 0; Date.now() < deadline; guard++) {
     if (!page.url().includes('/lesson/')) return;
     if (until?.(page.url())) return;
 
@@ -157,7 +165,9 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
     }
     await page.waitForTimeout(200);
   }
-  throw new Error('driveLesson did not finish within the guard limit');
+  throw new Error(
+    `driveLesson did not finish within ${LESSON_BUDGET_MS / 60_000} minutes (at ${page.url()})`,
+  );
 }
 
 /**

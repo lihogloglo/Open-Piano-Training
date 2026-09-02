@@ -741,8 +741,11 @@ export const stage5Units: Unit[] = [
       },
       {
         kind: 'ladder',
+        // Twelve bars is a long unbroken take; at 60% of 66 BPM it runs over a
+        // minute without a break, which trains endurance, not the cell. Two
+        // rungs, same as the Stage 4 chart ladder.
         id: 's5.u9.l1',
-        tempos: [0.6, 0.8, 1],
+        tempos: [0.75, 1],
         exercise: tempo(
           'chart-play',
           { songId: 'round-the-circle', voiceLead: 'smooth' },

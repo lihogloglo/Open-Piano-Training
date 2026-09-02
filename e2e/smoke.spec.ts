@@ -39,7 +39,7 @@ test('first run walks the onboarding wizard to Today', async ({ page }) => {
   await page.getByRole('button', { name: 'Start from zero' }).click();
 
   await expect(page).toHaveURL(/\/practice/);
-  await expect(page.getByRole('heading', { name: 'Today' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: /Good (morning|afternoon|evening)/ })).toBeVisible();
   expect(errors).toEqual([]);
 });
 
@@ -65,8 +65,8 @@ test('MIDI status dot reflects the fake device', async ({ page }) => {
   await expect(page.getByText('Keyboard connected')).toBeVisible();
 });
 
-const screens: { path: string; heading: string }[] = [
-  { path: '/practice', heading: 'Today' },
+const screens: { path: string; heading: string | RegExp }[] = [
+  { path: '/practice', heading: /Good (morning|afternoon|evening)/ },
   { path: '/path', heading: 'Path' },
   { path: '/songs', heading: 'Songs' },
   { path: '/sandbox', heading: 'Sandbox' },

@@ -1,0 +1,142 @@
+.wrap {
+  max-width: 720px;
+  margin: 0 auto;
+  padding: var(--space-6) var(--space-5);
+  display: grid;
+  gap: var(--space-5);
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: var(--space-4);
+}
+
+.sub {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+}
+
+.streakBox {
+  display: grid;
+  gap: var(--space-2);
+  justify-items: end;
+}
+
+.flame {
+  font-size: var(--fs-l);
+  font-weight: 650;
+  opacity: 0.5;
+}
+
+.flame[data-active='true'] {
+  opacity: 1;
+}
+
+.freeze {
+  font-size: var(--fs-xs);
+  color: var(--info);
+}
+
+.week {
+  display: flex;
+  gap: 5px;
+}
+
+.dayDot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+}
+
+.dayDot[data-done='true'] {
+  background: var(--ok);
+  border-color: var(--ok);
+}
+
+.dayDot[data-today='true'] {
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
+}
+
+.banner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  border: 1px solid var(--warn);
+  border-radius: var(--radius-m);
+  padding: var(--space-3) var(--space-4);
+  font-size: var(--fs-s);
+}
+
+.sessionCard {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.sessionHead {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.minutes {
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
+.blocks {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  gap: var(--space-2);
+}
+
+.block {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-3);
+  border-radius: var(--radius-m);
+  background: var(--surface-2);
+}
+
+.block[data-done='true'] {
+  opacity: 0.6;
+}
+
+.block[data-done='true'] .blockIcon {
+  color: var(--ok);
+}
+
+.blockLabel {
+  flex: 1;
+  font-weight: 500;
+  font-size: var(--fs-s);
+}
+
+.blockMin {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
+.doneLine {
+  color: var(--ok);
+  font-weight: 500;
+}
+
+.secondary {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+}
+
+.smallCard {
+  display: grid;
+  gap: var(--space-3);
+  justify-items: start;
+}

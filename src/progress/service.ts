@@ -11,6 +11,8 @@ import {
 } from './sessionBuilder';
 import { nextUnit } from '@/curriculum/path';
 import { STAGES, getUnit } from '@/curriculum/content';
+import { earnedBadges, newlyEarned, type BadgeDef, type BadgeInputs } from './badges';
+import { computeRecap, weekEndingSunday, type WeeklyRecap } from './stats';
 
 /** Unit passed: persist status and start tracking its concept atoms. */
 export async function completeUnit(unit: Unit, score: number, flagged: boolean): Promise<void> {
@@ -148,4 +150,79 @@ export async function getPracticedDates(): Promise<Set<string>> {
 /** Resolve the unit for a 'new' block (content may have shifted between builds). */
 export function resolveUnit(unitId: string): Unit | undefined {
   return getUnit(unitId);
+}
+
+// ── badges & recap ─────────────────────────────────────────────────────────
+
+const BADGE_SNAPSHOT_KEY = 'badgesSeen';
+const THEN_VS_NOW_KEY = 'viewedThenVsNow';
+const RECAP_KEY = 'weeklyRecap';
+
+async function badgeInputs(): Promise<BadgeInputs> {
+  const [takes, units, atoms, sessionCount, viewed] = await Promise.all([
+    db.takes.toArray(),
+    db.unitProgress.toArray(),
+    db.atomProgress.toArray(),
+    db.sessions.count(),
+    db.meta.get(THEN_VS_NOW_KEY),
+  ]);
+  const settingsRow = localStorage.getItem('ks.settings.v1');
+  const onboarded = settingsRow
+    ? ((JSON.parse(settingsRow) as { onboarded?: boolean }).onboarded ?? false)
+    : false;
+  return { takes, units, atoms, sessionCount, onboarded, viewedThenVsNow: viewed?.value === true };
+}
+
+export async function loadBadges(): Promise<Set<string>> {
+  return earnedBadges(await badgeInputs());
+}
+
+/**
+ * Recompute badges and return the ones earned since the last check, so the
+ * caller can toast them. Badges themselves stay derived — only the "already
+ * celebrated" snapshot is stored.
+ */
+export async function refreshBadges(): Promise<BadgeDef[]> {
+  const earned = await loadBadges();
+  const seenRow = await db.meta.get(BADGE_SNAPSHOT_KEY);
+  const seen = new Set((seenRow?.value as string[] | undefined) ?? []);
+  const fresh = newlyEarned(seen, earned);
+  if (fresh.length > 0) await db.meta.put({ key: BADGE_SNAPSHOT_KEY, value: [...earned] });
+  else if (!seenRow) await db.meta.put({ key: BADGE_SNAPSHOT_KEY, value: [...earned] });
+  return fresh;
+}
+
+export async function markThenVsNowViewed(): Promise<void> {
+  await db.meta.put({ key: THEN_VS_NOW_KEY, value: true });
+}
+
+/** This week's recap card, computed once per week and cached in `meta`. */
+export async function getRecap(now = new Date()): Promise<WeeklyRecap> {
+  const today = localDateString(now);
+  const weekEnding = weekEndingSunday(today);
+  const stored = (await db.meta.get(RECAP_KEY))?.value as WeeklyRecap | undefined;
+  if (stored?.weekEnding === weekEnding) return stored;
+
+  const [minutesRow, sessions, atoms, ratings, takes] = await Promise.all([
+    db.meta.get('practiceDays'),
+    db.sessions.toArray(),
+    db.atomProgress.toArray(),
+    db.ratings.toArray(),
+    db.takes.toArray(),
+  ]);
+  const recap = computeRecap({
+    today,
+    practiceMinutes: (minutesRow?.value as Record<string, number> | undefined) ?? {},
+    sessionDates: sessions.map((s) => s.date),
+    atoms,
+    ratings,
+    takes,
+  });
+  await db.meta.put({ key: RECAP_KEY, value: recap });
+  return recap;
+}
+
+export async function dismissRecap(): Promise<void> {
+  const stored = (await db.meta.get(RECAP_KEY))?.value as WeeklyRecap | undefined;
+  if (stored) await db.meta.put({ key: RECAP_KEY, value: { ...stored, dismissed: true } });
 }

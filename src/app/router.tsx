@@ -9,7 +9,7 @@ import { SongsScreen } from '@/features/songs/SongsScreen';
 import { SandboxScreen } from '@/features/sandbox/SandboxScreen';
 import { ProgressScreen } from '@/features/progress/ProgressScreen';
 import { SettingsScreen } from '@/features/settings/SettingsScreen';
-import { Placeholder } from '@/features/shared/Placeholder';
+import { RatingChallenge } from '@/features/rating/RatingChallenge';
 import { LabScreen } from '@/features/lab/LabScreen';
 import { LessonPlayer } from '@/features/lesson/LessonPlayer';
 import { DrillPlayer } from '@/features/drill/DrillPlayer';
@@ -36,7 +36,7 @@ export const router = createBrowserRouter([
   },
   {
     path: '/rating/:strand',
-    element: <Placeholder title="Rating challenge" note="Arrives in Phase 7." />,
+    element: <RatingChallenge />,
   },
   {
     path: '/songs/:songId',

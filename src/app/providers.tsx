@@ -1,6 +1,21 @@
-import { Component, type ErrorInfo, type ReactNode } from 'react';
+import { Component, useEffect, type ErrorInfo, type ReactNode } from 'react';
 import { ToastViewport } from '@/ui/Toast';
 import { Button } from '@/ui/Button';
+import { useSettingsStore } from '@/store/settingsStore';
+import { useMidiStore } from '@/store/midiStore';
+
+/**
+ * MIDI must exist on every route (lesson/drill screens render without the
+ * AppShell). Onboarded users already granted access once; init silently.
+ */
+function MidiBoot() {
+  const onboarded = useSettingsStore((s) => s.onboarded);
+  const init = useMidiStore((s) => s.init);
+  useEffect(() => {
+    if (onboarded) void init();
+  }, [onboarded, init]);
+  return null;
+}
 
 interface ErrorBoundaryState {
   error: Error | null;
@@ -55,6 +70,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryStat
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
+      <MidiBoot />
       {children}
       <ToastViewport />
     </ErrorBoundary>

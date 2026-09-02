@@ -9,9 +9,11 @@ import { router } from './router';
 import { Providers } from './providers';
 import { initTheme } from '@/store/settingsStore';
 import { installRunTestBridge } from '@/store/runTestBridge';
+import { registerServiceWorker } from './registerSW';
 
 initTheme();
 installRunTestBridge();
+registerServiceWorker();
 
 createRoot(document.getElementById('root')!).render(
   <StrictMode>

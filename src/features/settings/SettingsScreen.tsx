@@ -1,10 +1,11 @@
 import { useRef, useState } from 'react';
+import { useNavigate } from 'react-router';
 import { useSettingsStore, type ThemeSetting } from '@/store/settingsStore';
 import { exportAll, importAll, db } from '@/progress/db';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
 import { toast } from '@/ui/Toast';
-import { APP_NAME } from '@/app/brand';
+import { APP_NAME, APP_TAGLINE } from '@/app/brand';
 import { CalibrationPanel } from './CalibrationPanel';
 import styles from './SettingsScreen.module.css';
 
@@ -17,6 +18,7 @@ const THEMES: { value: ThemeSetting; label: string }[] = [
 const GOALS = [10, 15, 20, 30];
 
 export function SettingsScreen() {
+  const navigate = useNavigate();
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
   const dailyMinutes = useSettingsStore((s) => s.dailyMinutes);
@@ -155,6 +157,16 @@ export function SettingsScreen() {
           <Button variant="ghost" onClick={() => void doWipe()}>
             {wipeArmed ? 'Really wipe everything?' : 'Wipe all progress'}
           </Button>
+        </div>
+      </Card>
+
+      <Card>
+        <h3>About</h3>
+        <p className={styles['note']}>
+          {APP_NAME} — {APP_TAGLINE} Works offline once loaded; nothing you play leaves this device.
+        </p>
+        <div className={styles['dataRow']}>
+          <Button onClick={() => void navigate('/licenses')}>Licenses &amp; credits</Button>
         </div>
       </Card>
     </div>

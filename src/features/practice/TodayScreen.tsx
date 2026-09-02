@@ -1,8 +1,18 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
-import { getPracticedDates, getTodaySession, readTodaySession, startWorkout } from '@/progress/service';
+import {
+  dismissRecap,
+  getPracticedDates,
+  getRecap,
+  getTodaySession,
+  readTodaySession,
+  startWorkout,
+} from '@/progress/service';
 import { computeStreak, weekDots } from '@/progress/stats';
+import { db } from '@/progress/db';
+import { STRAND_LABEL, levelDisplay, suggestedStrands } from '@/progress/ratings';
+import { ATOMS } from '@/progress/atoms';
 import { localDateString, type SessionBlock, type SessionPlan } from '@/progress/sessionBuilder';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
@@ -39,6 +49,10 @@ export function TodayScreen() {
   }, []);
   const plan = useLiveQuery(() => readTodaySession(), [], null);
   const practiced = useLiveQuery(() => getPracticedDates(), [], null);
+  const recap = useLiveQuery(() => getRecap(), [], null);
+  const ratingRows = useLiveQuery(() => db.ratings.toArray(), [], null);
+  const atomRows = useLiveQuery(() => db.atomProgress.toArray(), [], null);
+  const [recapHidden, setRecapHidden] = useState(false);
 
   if (plan === null || practiced === null) return null;
   const streak = computeStreak(practiced, today);
@@ -48,6 +62,19 @@ export function TodayScreen() {
   const started = plan.completedBlocks.length > 0;
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+
+  // A recap is worth showing only once the week actually contains something.
+  const showRecap =
+    recap !== null && !recap.dismissed && !recapHidden && (recap.minutes > 0 || recap.sessions > 0);
+  const tracked = new Set((atomRows ?? []).map((r) => r.atomId));
+  const trackedByStrand = (strand: string): Set<string> =>
+    new Set([...tracked].filter((id) => ATOMS.get(id)?.strand === strand));
+  const suggestions =
+    ratingRows === null || atomRows === null
+      ? []
+      : suggestedStrands(new Map(ratingRows.map((r) => [r.strand, r])), today, (s) =>
+          trackedByStrand(s),
+        );
 
   return (
     <div className={styles['wrap']}>
@@ -128,6 +155,70 @@ export function TodayScreen() {
           )
         )}
       </Card>
+
+      {showRecap && recap && (
+        <Card className={styles['recapCard'] ?? ''}>
+          <div className={styles['recapHead']}>
+            <h2>Your week</h2>
+            <Button
+              variant="ghost"
+              onClick={() => {
+                setRecapHidden(true);
+                void dismissRecap();
+              }}
+            >
+              Dismiss
+            </Button>
+          </div>
+          <div className={styles['recapStats']}>
+            <div className={styles['stat']}>
+              <span className={styles['statValue']}>{recap.minutes}</span>
+              <span className={styles['statLabel']}>minutes</span>
+            </div>
+            <div className={styles['stat']}>
+              <span className={styles['statValue']}>{recap.sessions}</span>
+              <span className={styles['statLabel']}>sessions</span>
+            </div>
+            <div className={styles['stat']}>
+              <span className={styles['statValue']}>{recap.newAtoms.length}</span>
+              <span className={styles['statLabel']}>new skills</span>
+            </div>
+            <div className={styles['stat']}>
+              <span className={styles['statValue']}>{recap.wentFluent.length}</span>
+              <span className={styles['statLabel']}>gone fluent</span>
+            </div>
+          </div>
+          {recap.ratingDeltas.length > 0 && (
+            <p className={styles['sub']}>
+              {recap.ratingDeltas
+                .map(
+                  (d) =>
+                    `${STRAND_LABEL[d.strand as 'keys'] ?? d.strand} ${levelDisplay(d.from)} → ${levelDisplay(d.to)}`,
+                )
+                .join(' · ')}
+            </p>
+          )}
+          {recap.highlight && (
+            <p className={styles['sub']}>
+              {recap.highlight.label} — you first played this {recap.highlight.daysApart} days ago.{' '}
+              <Button variant="ghost" onClick={() => void navigate('/progress')}>
+                Hear then vs now
+              </Button>
+            </p>
+          )}
+        </Card>
+      )}
+
+      {suggestions.length > 0 && (
+        <Card className={styles['smallCard'] ?? ''}>
+          <h3>Rating challenge</h3>
+          <p className={styles['sub']}>
+            Optional, never required. Ten items at your level in{' '}
+            {STRAND_LABEL[suggestions[0]!].toLowerCase()}.
+          </p>
+          <Button onClick={() => void navigate(`/rating/${suggestions[0]}`)}>Take the challenge</Button>
+        </Card>
+      )}
 
       <div className={styles['secondary']}>
         <Card className={styles['smallCard'] ?? ''}>

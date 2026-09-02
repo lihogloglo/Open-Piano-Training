@@ -78,6 +78,65 @@ export const SONGS: Song[] = [
     romanized: ['I', 'vi', 'ii', 'V', 'I', 'vi', 'ii', 'V'],
     stage: 3,
   },
+  {
+    id: 'ember',
+    title: 'Ember',
+    styleRef: 'Minor-key indie folk, slow build, brushed drums',
+    key: { tonic: 'A', mode: 'minor' },
+    bpm: 76,
+    timeSig: [4, 4],
+    sections: [
+      { name: 'Verse', bars: 8 },
+      { name: 'Chorus', bars: 8 },
+    ],
+    romanized: [
+      // Verse: the minor anthem loop, twice
+      'i',
+      'VI',
+      'III',
+      'VII',
+      'i',
+      'VI',
+      'III',
+      'VII',
+      // Chorus: leans on the minor three-chord cell, then lifts to VI
+      'i',
+      'iv',
+      'v',
+      'i',
+      'i',
+      'iv',
+      'VI',
+      'V',
+    ],
+    stage: 5,
+  },
+  {
+    id: 'round-the-circle',
+    title: 'Round the Circle',
+    styleRef: 'Standards-era practice etude; walks ii-V-I down in fourths',
+    key: { tonic: 'C', mode: 'major' },
+    bpm: 66,
+    timeSig: [4, 4],
+    sections: [{ name: 'Etude', bars: 12 }],
+    // Four ii-V-I cells (C, F, B♭, E♭) written against C so transposing the
+    // whole etude stays one edit.
+    romanized: [
+      'ii7',
+      'V7',
+      'Imaj7',
+      'v7',
+      'I7',
+      'IVmaj7',
+      'i7',
+      'IV7',
+      'bVIImaj7',
+      'iv7',
+      'bVII7',
+      'bIIImaj7',
+    ],
+    stage: 5,
+  },
 ];
 
 export function getSong(id: string): Song | undefined {

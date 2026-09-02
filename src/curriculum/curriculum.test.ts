@@ -1,5 +1,6 @@
 import { describe, expect, it } from 'vitest';
 import { CURRICULUM, getUnit } from './content';
+import { getSong } from './content/songs';
 import { validateCurriculum } from './schema';
 import { buildPath, nodeStatuses, nextUnit, type UnitProgressLike } from './path';
 import { GENERATORS, generate } from '@/engine/generators';
@@ -47,6 +48,25 @@ describe('curriculum content', () => {
       if (++guard > 500) throw new Error('Path did not terminate');
     }
     expect(progress.size).toBe(CURRICULUM.units.length);
+  });
+
+  it('teaches all 12 key signatures, so circle-complete is reachable', () => {
+    const keysigs = new Set(
+      CURRICULUM.units.flatMap((u) => u.concepts.filter((c) => c.startsWith('keysig:'))),
+    );
+    expect(keysigs.size).toBeGreaterThanOrEqual(12);
+  });
+
+  it('every charted song in the curriculum exists in the catalog', () => {
+    for (const unit of CURRICULUM.units) {
+      for (const step of unit.steps) {
+        if (step.kind === 'explain') continue;
+        const def = step.kind === 'create' ? step.exercise : step.exercise;
+        if (def?.generator !== 'chart-play') continue;
+        const songId = def.params['songId'] as string;
+        expect(getSong(songId), `${unit.id}/${step.id} → ${songId}`).toBeDefined();
+      }
+    }
   });
 
   it('rejects broken content', () => {

@@ -63,6 +63,10 @@ export function LabScreen() {
   const [count, setCount] = useState(8);
   const [voiceLead, setVoiceLead] = useState<'free' | 'smooth'>('free');
   const [style, setStyle] = useState<'block' | 'brokenLH'>('block');
+  const [voicing, setVoicing] = useState<'triad' | 'shell17' | 'shell13' | 'guidetones'>('triad');
+  const [compPattern, setCompPattern] = useState<'straight8' | 'ballad' | 'boomchuck' | 'swing'>(
+    'straight8',
+  );
 
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const phase = useRunStore((s) => s.phase);
@@ -134,6 +138,50 @@ export function LabScreen() {
           roman: ['I', 'IV', 'V', 'I', 'vi', 'IV', 'V', 'I'],
           acceptAlternatives: true,
         },
+      };
+    }
+    if (generator === 'unseen-chart') {
+      return {
+        ...base,
+        generator,
+        params: { form: 'aaba', sevenths: true, style, voicing },
+      };
+    }
+    if (generator === 'comp-pattern') {
+      return {
+        ...base,
+        generator: 'progression-play',
+        hand: 'both' as const,
+        params: {
+          key: { tonic, mode: 'major' },
+          roman: ['ii7', 'V7', 'Imaj7'],
+          beatsPerChord: 4,
+          loops: 2,
+          style: compPattern,
+          voicing,
+          ...(compPattern === 'swing' ? { swing: 0.667 } : {}),
+        },
+      };
+    }
+    if (generator === 'improv') {
+      return {
+        ...base,
+        mode: 'wait' as const,
+        generator,
+        params: {
+          key: { tonic, mode: 'major' },
+          palette: 'pentatonic',
+          roman: ['I', 'V', 'vi', 'IV'],
+          loops: 1,
+          targetDownbeats: true,
+        },
+      };
+    }
+    if (generator === 'read-snippet') {
+      return {
+        ...base,
+        generator,
+        params: { key: { tonic, mode: 'major' }, clef: hand === 'lh' ? 'bass' : 'treble', bars: 2 },
       };
     }
     if (generator === 'ear-progression') {
@@ -208,17 +256,26 @@ export function LabScreen() {
               <option value="progression-play">progression-play</option>
               <option value="harmonize">harmonize (acceptAlternatives)</option>
               <option value="ear-progression">ear-progression</option>
+              <option value="comp-pattern">comp-pattern</option>
+              <option value="unseen-chart">unseen-chart</option>
+              <option value="improv">improv</option>
+              <option value="read-snippet">read-snippet</option>
             </select>
           </label>
-          {generator === 'progression-play' && (
+          {(generator === 'progression-play' || generator === 'unseen-chart') && (
             <>
-              <label>
-                Voice leading
-                <select value={voiceLead} onChange={(e) => setVoiceLead(e.target.value as 'free' | 'smooth')}>
-                  <option value="free">free</option>
-                  <option value="smooth">smooth</option>
-                </select>
-              </label>
+              {generator === 'progression-play' && (
+                <label>
+                  Voice leading
+                  <select
+                    value={voiceLead}
+                    onChange={(e) => setVoiceLead(e.target.value as 'free' | 'smooth')}
+                  >
+                    <option value="free">free</option>
+                    <option value="smooth">smooth</option>
+                  </select>
+                </label>
+              )}
               <label>
                 Style
                 <select value={style} onChange={(e) => setStyle(e.target.value as 'block' | 'brokenLH')}>
@@ -227,6 +284,34 @@ export function LabScreen() {
                 </select>
               </label>
             </>
+          )}
+          {(generator === 'comp-pattern' || generator === 'unseen-chart') && (
+            <label>
+              Voicing
+              <select
+                value={voicing}
+                onChange={(e) => setVoicing(e.target.value as typeof voicing)}
+              >
+                <option value="triad">triad</option>
+                <option value="shell17">shell 1-7</option>
+                <option value="shell13">shell 1-3</option>
+                <option value="guidetones">guide tones</option>
+              </select>
+            </label>
+          )}
+          {generator === 'comp-pattern' && (
+            <label>
+              Pattern
+              <select
+                value={compPattern}
+                onChange={(e) => setCompPattern(e.target.value as typeof compPattern)}
+              >
+                <option value="straight8">straight 8ths</option>
+                <option value="ballad">ballad</option>
+                <option value="boomchuck">boom-chuck</option>
+                <option value="swing">swing</option>
+              </select>
+            </label>
           )}
           <label>
             Tonic/root

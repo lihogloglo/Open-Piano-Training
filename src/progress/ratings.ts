@@ -11,9 +11,17 @@ import { localDateString } from './sessionBuilder';
  * tracked atoms, so a level can never outrun the curriculum. `read` arrives
  * with the notation strand; `create` is never numerically rated (07 invariant).
  */
-export type RatingStrand = 'keys' | 'theory' | 'ear';
+export type RatingStrand = 'keys' | 'theory' | 'ear' | 'read';
 
+/** Always-on strands. `create` is never numerically rated (07 invariant 3). */
 export const RATED_STRANDS: readonly RatingStrand[] = ['keys', 'theory', 'ear'];
+
+/** The optional notation strand, shown only when the learner opts in (08). */
+export const READ_STRAND: RatingStrand = 'read';
+
+export function ratedStrands(readEnabled: boolean): readonly RatingStrand[] {
+  return readEnabled ? [...RATED_STRANDS, READ_STRAND] : RATED_STRANDS;
+}
 
 export const MIN_LEVEL = 1;
 export const MAX_LEVEL = 99;
@@ -32,6 +40,7 @@ export const STRAND_LABEL: Record<RatingStrand, string> = {
   keys: 'Keys',
   theory: 'Theory',
   ear: 'Ear',
+  read: 'Read',
 };
 
 /** Display number reads like an ELO: level 34 shows as 340. */
@@ -223,7 +232,8 @@ export function suggestedStrands(
   today: string,
   trackedByStrand: (strand: RatingStrand) => ReadonlySet<string>,
 ): RatingStrand[] {
-  return RATED_STRANDS.filter((strand) => {
+  const strands = [...RATED_STRANDS, READ_STRAND];
+  return strands.filter((strand) => {
     if (!supportedLevelRange(strand, trackedByStrand(strand))) return false;
     const last = ratings.get(strand)?.history.at(-1);
     return !last || daysBetween(last.date, today) >= CHALLENGE_COOLDOWN_DAYS;

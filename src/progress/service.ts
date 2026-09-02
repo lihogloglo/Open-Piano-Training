@@ -1,6 +1,6 @@
 import type { Unit } from '@/curriculum/schema';
 import { getUnitProgressMap, markUnitPassed, db, type AtomProgressRow } from './db';
-import { ATOMS } from './atoms';
+import { ATOMS, READ_STRAND_ATOMS } from './atoms';
 import { isFluent, newCard, reviewCard, type StoredCard } from './fsrs';
 import {
   buildSession,
@@ -163,6 +163,31 @@ export async function getPracticedDates(): Promise<Set<string>> {
 /** Resolve the unit for a 'new' block (content may have shifted between builds). */
 export function resolveUnit(unitId: string): Unit | undefined {
   return getUnit(unitId);
+}
+
+/**
+ * Turning the notation strand on starts tracking its atoms; turning it off
+ * stops scheduling them. Progress already made is kept, so toggling back on
+ * does not reset anyone — it only removes them from the review queue.
+ */
+export async function syncReadStrand(enabled: boolean): Promise<void> {
+  if (!enabled) {
+    await db.atomProgress.where('atomId').startsWith('read:staff:').delete();
+    return;
+  }
+  const now = new Date();
+  for (const atomId of READ_STRAND_ATOMS) {
+    if (await db.atomProgress.get(atomId)) continue;
+    await db.atomProgress.put({
+      atomId,
+      fsrs: newCard(now),
+      introducedAt: now.getTime(),
+      lastSeenAt: now.getTime(),
+      bestScore: 0,
+      attempts: 0,
+      fluent: false,
+    });
+  }
 }
 
 // ── badges & recap ─────────────────────────────────────────────────────────

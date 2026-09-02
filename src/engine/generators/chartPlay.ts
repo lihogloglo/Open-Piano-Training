@@ -3,6 +3,7 @@ import { chordSymbol } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
 import type { ExerciseDef, ExerciseInstance } from '../types';
 import { progressionTargets, type ChordEvent } from './progressionPlay';
+import { COMP_PATTERNS } from '../comp';
 
 /** Minimal song shape the engine needs; curriculum owns the full catalog. */
 export interface ChartSong {
@@ -31,8 +32,12 @@ export const chartPlayParams = z.object({
   songId: z.string(),
   /** Target tonic; the song's romanized chart makes any key free. */
   transposeTo: z.string().optional(),
-  style: z.enum(['block', 'brokenLH']).default('block'),
+  style: z.enum(['block', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing']).default('block'),
   voiceLead: z.enum(['free', 'smooth']).default('free'),
+  /** Comping voicing (Stage 6): shells and guide tones instead of full triads. */
+  voicing: z.enum(['triad', 'shell17', 'shell13', 'guidetones']).default('triad'),
+  /** Swing ratio for the eighth-note grid; 0.5 = straight. */
+  swing: z.number().min(0.5).max(0.7).default(0.5),
 });
 
 /** The song's flattened chord events in the requested key. */
@@ -68,8 +73,15 @@ export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInsta
     style: p.style,
     voiceLead: p.voiceLead,
     hand: def.hand,
+    voicing: p.voicing,
+    swing: p.swing,
   });
-  const styleNote = p.style === 'brokenLH' ? 'LH broken pattern' : 'one chord per bar';
+  const styleNote =
+    p.style === 'brokenLH'
+      ? 'LH broken pattern'
+      : p.style === 'block'
+        ? 'one chord per bar'
+        : COMP_PATTERNS[p.style].label;
   return {
     def,
     seed,

@@ -4,13 +4,14 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/progress/db';
 import { loadBadges, markThenVsNowViewed, startWorkout } from '@/progress/service';
 import {
-  RATED_STRANDS,
   STRAND_LABEL,
   clampLevel,
   initialLevel,
+  ratedStrands,
   supportedLevelRange,
   type RatingStrand,
 } from '@/progress/ratings';
+import { useSettingsStore } from '@/store/settingsStore';
 import { BADGES, findThenVsNowPairs, type ReplayPair } from '@/progress/badges';
 import { FAMILIES, HEATMAP_KEYS, buildHeatmap, type HeatCell } from '@/progress/heatmap';
 import { ATOMS } from '@/progress/atoms';
@@ -42,6 +43,7 @@ export function ProgressScreen() {
     null,
   );
   const badges = useLiveQuery(() => loadBadges(), [], null);
+  const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
   const [openPair, setOpenPair] = useState<ReplayPair | null>(null);
 
   if (atomRows === null || ratingRows === null || takes === null || badges === null) return null;
@@ -93,7 +95,7 @@ export function ProgressScreen() {
           </p>
         </div>
         <div className={styles['dials']}>
-          {RATED_STRANDS.map((strand: RatingStrand) => {
+          {ratedStrands(readStrandEnabled).map((strand: RatingStrand) => {
             const row = ratingByStrand.get(strand);
             const challengeable = supportedLevelRange(strand, tracked) !== null;
             const level = row ? clampLevel(row.level, strand, tracked) : initialLevel(strand, tracked);

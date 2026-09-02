@@ -6,13 +6,15 @@ import { stage2, stage2Units } from './stage2';
 import { stage3, stage3Units } from './stage3';
 import { stage4, stage4Units } from './stage4';
 import { stage5, stage5Units } from './stage5';
+import { stage6, stage6Units } from './stage6';
+import { stage7, stage7Units } from './stage7';
 import { getSong } from './songs';
 
 // Engine looks songs up through this provider (no upward import from engine/).
 registerSongProvider(getSong);
 
 export const CURRICULUM: CurriculumContent = {
-  stages: [stage0, stage1, stage2, stage3, stage4, stage5],
+  stages: [stage0, stage1, stage2, stage3, stage4, stage5, stage6, stage7],
   units: [
     ...stage0Units,
     ...stage1Units,
@@ -20,6 +22,8 @@ export const CURRICULUM: CurriculumContent = {
     ...stage3Units,
     ...stage4Units,
     ...stage5Units,
+    ...stage6Units,
+    ...stage7Units,
   ],
 };
 

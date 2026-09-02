@@ -107,7 +107,10 @@ export function generateEarQuality(def: ExerciseDef, seed: number): ExerciseInst
       });
       previews.push({ notes: midis.map((midi) => ({ midi, atBeat: 0, durBeats: 2 })), bpm: 80 });
       const displayRoot = root.replace('#', '♯').replace(/(?<=.)b/, '♭');
-      perTarget.push({ label: `${displayRoot} — but which ${displayRoot}?`, detail: 'Play the chord you heard on that root' });
+      perTarget.push({
+        label: `${displayRoot} — but which ${displayRoot}?`,
+        detail: 'Play the chord you heard on that root',
+      });
       break;
     }
   }

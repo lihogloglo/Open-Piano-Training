@@ -458,14 +458,19 @@ describe('generators', () => {
     for (let i = 0; i < inst.targets.length; i++) {
       const t = inst.targets[i];
       if (t?.kind === 'set') {
-        const previewMidis = (inst.perTargetPreview?.[i]?.notes ?? []).map((n) => n.midi).sort((a, b) => a - b);
+        const previewMidis = (inst.perTargetPreview?.[i]?.notes ?? [])
+          .map((n) => n.midi)
+          .sort((a, b) => a - b);
         expect(previewMidis).toEqual([...t.midis].sort((a, b) => a - b));
       }
     }
   });
 
   it('flashcard interval cards build two-note targets', () => {
-    const inst = generate(def('flashcard', { kind: 'interval', roots: ['C'], intervals: ['M3'], count: 2 }), 1);
+    const inst = generate(
+      def('flashcard', { kind: 'interval', roots: ['C'], intervals: ['M3'], count: 2 }),
+      1,
+    );
     const t = inst.targets[0];
     expect(t?.kind).toBe('set');
     if (t?.kind === 'set') expect(t.midis).toEqual([60, 64]);

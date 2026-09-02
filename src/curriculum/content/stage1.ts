@@ -3,8 +3,12 @@ import type { ExerciseDef } from '@/engine/types';
 
 type Hand = 'rh' | 'lh' | 'both';
 
-const wait = (generator: string, params: Record<string, unknown>, hand: Hand = 'rh', rung = 'keys-lit'): ExerciseDef =>
-  ({ generator, params, mode: 'wait', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
+const wait = (
+  generator: string,
+  params: Record<string, unknown>,
+  hand: Hand = 'rh',
+  rung = 'keys-lit',
+): ExerciseDef => ({ generator, params, mode: 'wait', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
 
 const tempo = (
   generator: string,
@@ -13,7 +17,16 @@ const tempo = (
   hand: Hand = 'rh',
   rung = 'keys-lit',
 ): ExerciseDef =>
-  ({ generator, params, mode: 'tempo', bpm, timingTier: 'relaxed', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
+  ({
+    generator,
+    params,
+    mode: 'tempo',
+    bpm,
+    timingTier: 'relaxed',
+    rung,
+    hand,
+    seedPolicy: 'random',
+  }) as ExerciseDef;
 
 export const stage1: Stage = {
   id: 's1',
@@ -73,7 +86,8 @@ export const stage1Units: Unit[] = [
       {
         kind: 'create',
         id: 's1.u1.c1',
-        prompt: 'Walk up the scale, but pause anywhere that sounds unfinished. Feel how it wants to land back on C.',
+        prompt:
+          'Walk up the scale, but pause anywhere that sounds unfinished. Feel how it wants to land back on C.',
       },
     ],
   },
@@ -119,7 +133,12 @@ export const stage1Units: Unit[] = [
         kind: 'graded',
         id: 's1.u2.q2',
         passScore: 0.8,
-        exercise: tempo('scale-run', { tonic: 'C', scaleType: 'major', hand: 'lh', direction: 'up' }, 60, 'lh'),
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'C', scaleType: 'major', hand: 'lh', direction: 'up' },
+          60,
+          'lh',
+        ),
       },
     ],
   },
@@ -151,18 +170,29 @@ export const stage1Units: Unit[] = [
       {
         kind: 'guided',
         id: 's1.u3.g1',
-        exercise: wait('ear-degree', { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 4 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-degree',
+          { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 4 },
+          'rh',
+          'by-ear',
+        ),
       },
       {
         kind: 'graded',
         id: 's1.u3.q1',
         passScore: 0.8,
-        exercise: wait('ear-degree', { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 6 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-degree',
+          { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 6 },
+          'rh',
+          'by-ear',
+        ),
       },
       {
         kind: 'create',
         id: 's1.u3.c1',
-        prompt: 'Sing along as you play degrees 1–5 by number ("one, two, three…"). Silly? Yes. It wires the ear.',
+        prompt:
+          'Sing along as you play degrees 1–5 by number ("one, two, three…"). Silly? Yes. It wires the ear.',
       },
     ],
   },
@@ -213,7 +243,7 @@ export const stage1Units: Unit[] = [
       {
         kind: 'create',
         id: 's1.u4.c1',
-        prompt: 'Left hand plays a low C, right hand the chord. Let it ring. That\'s already accompaniment.',
+        prompt: "Left hand plays a low C, right hand the chord. Let it ring. That's already accompaniment.",
       },
     ],
   },
@@ -252,7 +282,11 @@ export const stage1Units: Unit[] = [
       {
         kind: 'guided',
         id: 's1.u5.g3',
-        exercise: wait('progression-play', { key: { tonic: 'C', mode: 'major' }, roman: ['I', 'IV', 'V', 'I'], loops: 1 }),
+        exercise: wait('progression-play', {
+          key: { tonic: 'C', mode: 'major' },
+          roman: ['I', 'IV', 'V', 'I'],
+          loops: 1,
+        }),
       },
       {
         kind: 'graded',
@@ -300,7 +334,12 @@ export const stage1Units: Unit[] = [
       {
         kind: 'guided',
         id: 's1.u6.g2',
-        exercise: wait('ear-quality', { qualityPool: ['maj', 'min'], roots: ['C'], count: 4 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-quality',
+          { qualityPool: ['maj', 'min'], roots: ['C'], count: 4 },
+          'rh',
+          'by-ear',
+        ),
       },
       {
         kind: 'graded',
@@ -339,7 +378,11 @@ export const stage1Units: Unit[] = [
           },
         ],
       },
-      { kind: 'guided', id: 's1.u7.g1', exercise: wait('chart-play', { songId: 'first-light' }, 'both', 'chord-symbols') },
+      {
+        kind: 'guided',
+        id: 's1.u7.g1',
+        exercise: wait('chart-play', { songId: 'first-light' }, 'both', 'chord-symbols'),
+      },
       {
         kind: 'graded',
         id: 's1.u7.q1',
@@ -358,7 +401,8 @@ export const stage1Units: Unit[] = [
       {
         kind: 'create',
         id: 's1.u7.c1',
-        prompt: 'Reorder the four chords into your own loop. Start somewhere other than C — notice how the story changes.',
+        prompt:
+          'Reorder the four chords into your own loop. Start somewhere other than C — notice how the story changes.',
       },
     ],
   },
@@ -403,7 +447,12 @@ export const stage1Units: Unit[] = [
         kind: 'graded',
         id: 's1.cp.q3',
         passScore: 0.8,
-        exercise: wait('ear-degree', { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 6 }, 'rh', 'by-ear'),
+        exercise: wait(
+          'ear-degree',
+          { key: { tonic: 'C', mode: 'major' }, degreePool: [1, 3, 5], count: 6 },
+          'rh',
+          'by-ear',
+        ),
       },
     ],
   },

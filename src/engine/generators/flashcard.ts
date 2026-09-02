@@ -18,7 +18,9 @@ export const flashcardParams = z.discriminatedUnion('kind', [
   z.object({
     kind: z.literal('interval'),
     roots: z.array(z.string()).min(1),
-    intervals: z.array(z.enum(['m2', 'M2', 'm3', 'M3', 'P4', 'TT', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8'])).min(1),
+    intervals: z
+      .array(z.enum(['m2', 'M2', 'm3', 'M3', 'P4', 'TT', 'P5', 'm6', 'M6', 'm7', 'M7', 'P8']))
+      .min(1),
     count: z.number().int().min(1).max(30).default(10),
   }),
 ]);

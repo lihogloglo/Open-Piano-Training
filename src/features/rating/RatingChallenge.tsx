@@ -26,6 +26,7 @@ import { Icon } from '@/ui/Icon';
 import { RatingDial } from '@/ui/RatingDial';
 import { TransportBar } from '@/ui/TransportBar';
 import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PlayerNotices } from '@/ui/PlayerNotices';
 import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import { playNote, stopNote } from '@/audio/sampler';
@@ -282,6 +283,7 @@ function Challenge({
           })}
         </div>
       </header>
+      <PlayerNotices />
       <div className={styles['promptZone']}>
         <div className={styles['prompt']}>
           <p className={styles['sub']}>

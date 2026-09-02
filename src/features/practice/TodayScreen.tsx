@@ -63,6 +63,9 @@ export function TodayScreen() {
   const nextIdx = plan.blocks.findIndex((_, i) => !plan.completedBlocks.includes(i));
   const allDone = plan.blocks.length > 0 && nextIdx === -1;
   const started = plan.completedBlocks.length > 0;
+  // Nothing to learn and nothing due: the rest of the plan is an invitation.
+  const caughtUp =
+    plan.blocks.length > 0 && !plan.blocks.some((b) => b.kind === 'new' || b.kind === 'review');
   const hour = new Date().getHours();
   const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
 
@@ -131,17 +134,27 @@ export function TodayScreen() {
         {plan.blocks.length === 0 ? (
           <p className={styles['sub']}>All caught up — nothing scheduled. Try a workout or the sandbox.</p>
         ) : (
-          <ul className={styles['blocks']}>
-            {plan.blocks.map((block, i) => (
-              <li key={i} className={styles['block']} data-done={plan.completedBlocks.includes(i)}>
-                <span className={styles['blockIcon']} aria-hidden>
-                  {plan.completedBlocks.includes(i) ? '✓' : BLOCK_ICON[block.kind]}
-                </span>
-                <span className={styles['blockLabel']}>{blockLabel(block)}</span>
-                <span className={styles['blockMin']}>{block.minutes} min</span>
-              </li>
-            ))}
-          </ul>
+          <>
+            {caughtUp && (
+              // 05: the caught-up state is about there being nothing *due*, not
+              // an empty plan — a warmup and a create prompt are always offered.
+              <p className={styles['sub']}>
+                All caught up — no new unit and nothing due for review. What&apos;s below is optional, and a
+                rating challenge is a good use of the time.
+              </p>
+            )}
+            <ul className={styles['blocks']}>
+              {plan.blocks.map((block, i) => (
+                <li key={i} className={styles['block']} data-done={plan.completedBlocks.includes(i)}>
+                  <span className={styles['blockIcon']} aria-hidden>
+                    {plan.completedBlocks.includes(i) ? '✓' : BLOCK_ICON[block.kind]}
+                  </span>
+                  <span className={styles['blockLabel']}>{blockLabel(block)}</span>
+                  <span className={styles['blockMin']}>{block.minutes} min</span>
+                </li>
+              ))}
+            </ul>
+          </>
         )}
         {allDone ? (
           <p className={styles['doneLine']}>
@@ -192,10 +205,7 @@ export function TodayScreen() {
           {recap.ratingDeltas.length > 0 && (
             <p className={styles['sub']}>
               {recap.ratingDeltas
-                .map(
-                  (d) =>
-                    `${strandLabel(d.strand)} ${levelDisplay(d.from)} → ${levelDisplay(d.to)}`,
-                )
+                .map((d) => `${strandLabel(d.strand)} ${levelDisplay(d.from)} → ${levelDisplay(d.to)}`)
                 .join(' · ')}
             </p>
           )}

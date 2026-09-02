@@ -16,6 +16,7 @@ import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { TransportBar } from '@/ui/TransportBar';
 import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PlayerNotices } from '@/ui/PlayerNotices';
 import { startBacking, type BackingHandle } from '@/audio/backing';
 import type { KeyContext } from '@/theory/keys';
 import { snippetNotes } from '@/engine/generators/readSnippet';
@@ -163,6 +164,10 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
           {STEP_CHIP[step.kind]}
         </span>
       </header>
+
+      {/* Explain steps need the instrument too — their demos play through the
+          sampler, and a missing keyboard is better learned early than late. */}
+      <PlayerNotices />
 
       {step.kind === 'explain' && <ExplainStep key={step.id} step={step} onDone={advance} />}
       {step.kind === 'create' && <CreateStep key={step.id} step={step} unitId={unit.id} onDone={advance} />}

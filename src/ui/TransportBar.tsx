@@ -1,5 +1,6 @@
 import type { RunPhase } from '@/store/runStore';
 import { Button } from './Button';
+import { useSamplerLoading } from './PlayerNotices';
 import styles from './TransportBar.module.css';
 
 export interface LadderPips {
@@ -33,11 +34,18 @@ export function TransportBar({
   const running = phase === 'running' || phase === 'count-in';
   const label = startLabel ?? (phase === 'done' ? 'Try again' : running ? 'Restart' : 'Start');
   const beatInBar = beatIndex === null ? null : ((beatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar;
+  // Starting before the samples land would run the exercise in silence.
+  const loading = useSamplerLoading();
 
   return (
     <div className={styles['bar']}>
-      <Button variant="primary" onClick={onStart} disabled={!canStart} title="Space">
-        {label}
+      <Button
+        variant="primary"
+        onClick={onStart}
+        disabled={!canStart || loading}
+        title={loading ? 'Waiting for the piano sounds to load' : 'Space'}
+      >
+        {loading ? 'Loading sounds…' : label}
       </Button>
 
       {bpm !== null && (

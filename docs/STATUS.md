@@ -39,9 +39,26 @@ npm ci && npm run check && npm run build && npm run check:bundle && npx playwrig
 
 ## Known gaps / notes for the next session
 
+Everything below needs a human; none of it can be closed by another agent pass.
+
 - **Real-hardware pass still pending.** Everything is verified through the fake MIDI adapter. Latency feel and timing-window tuning on an actual keyboard is the one thing no test can close — see the 00-overview quality bar. The calibration panel is in Settings.
+- **Sound after an offline reload is verified structurally, not audibly.** `e2e/offline.spec.ts` proves the built app boots, navigates and keeps its precache with the network cut. The piano samples are held by a cache-first rule, but populating that cache needs a real audio unlock (a user gesture), so "load the app, play a note, go offline, reload, play a note" is still a manual check.
+- **Lighthouse PWA installability has not been measured** on a real deploy. Manifest, icons, service worker and precache are all in place and the build emits them; nobody has run the audit.
 - Choice-mode flashcards (key signatures as a multiple-choice card) are still deferred; `keysig:*` atoms drill as roman-numeral cards in the key instead, which is playable but not the same skill.
 - `passed*` re-test inside the next review node (07 §Gates) is still not special-cased — flagged units' atoms are scheduled `Again`, so they resurface in reviews, but the graded step is not re-run specifically.
 - The notation strand ships six `read:staff:*` atoms (treble/bass × C/G/F). It is a working strand, not a curriculum: there are no read _units_, by design (05 lists it as optional).
-- Lighthouse PWA installability has not been measured on a real deploy — the manifest, icons and service worker are all in place and the build emits them, but nobody has run the audit.
 - `docs/decisions.md` logs deviations from the spec docs; keep appending.
+
+## Edge states (05 §Empty/edge states) — where each one lives
+
+| State                     | Where                                                                  |
+| ------------------------- | ---------------------------------------------------------------------- |
+| No MIDI device            | `ui/PlayerNotices` in every player + `MidiSetupPanel`                  |
+| Sampler still loading     | `ui/PlayerNotices` progress pill; `TransportBar` start button disabled |
+| Unsupported browser       | `MidiSetupPanel` explainer + the same player notice                    |
+| Narrow viewport (<1024px) | `app/ViewportNotice`                                                   |
+| No due reviews            | Today's caught-up line + the rating-challenge card                     |
+| Day 1                     | Today shows only the start-the-path card (no recap, no challenge)      |
+| Offline                   | `app/ConnectionBanner`                                                 |
+
+Covered by `e2e/edge-states.spec.ts` and `e2e/offline.spec.ts`.

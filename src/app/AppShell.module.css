@@ -1,3 +1,12 @@
+.viewportNotice {
+  background: color-mix(in srgb, var(--info) 14%, var(--surface));
+  border-bottom: 1px solid color-mix(in srgb, var(--info) 35%, var(--border));
+  color: var(--text);
+  font-size: var(--fs-s);
+  padding: var(--space-2) var(--space-4);
+  text-align: center;
+}
+
 .offlineBanner {
   background: color-mix(in srgb, var(--warn) 14%, var(--surface));
   border-bottom: 1px solid color-mix(in srgb, var(--warn) 35%, var(--border));

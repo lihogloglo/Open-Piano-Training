@@ -14,6 +14,7 @@ import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { TransportBar } from '@/ui/TransportBar';
 import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PlayerNotices } from '@/ui/PlayerNotices';
 import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import { playNote, stopNote } from '@/audio/sampler';
@@ -187,6 +188,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
         subtitle={`${itemIdx + 1}/${items.length} · ${item.label}`}
         onExit={() => void navigate('/practice')}
       />
+      <PlayerNotices />
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
           <p className={styles['sub']}>{instance?.prompt.title ?? item.label}</p>

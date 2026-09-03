@@ -22,8 +22,8 @@ export function ViewportNotice() {
   if (!narrow) return null;
   return (
     <div className={styles['viewportNotice']} role="status" data-testid="viewport-notice">
-      This window is too narrow for a full keyboard. Widen it to at least {MIN_WIDTH}px — a landscape tablet
-      or a laptop screen is the smallest comfortable size.
+      This window is too narrow for a full keyboard. Widen it to at least {MIN_WIDTH}px, a landscape tablet or
+      a laptop screen is the smallest comfortable size.
     </div>
   );
 }

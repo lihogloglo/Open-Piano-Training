@@ -2,7 +2,13 @@ import { Scale } from 'tonal';
 import { nameToMidi, type MidiNumber } from './notes';
 
 export type ScaleType =
-  'major' | 'natural-minor' | 'harmonic-minor' | 'major-pentatonic' | 'minor-pentatonic' | 'blues';
+  | 'major'
+  | 'natural-minor'
+  | 'harmonic-minor'
+  | 'major-pentatonic'
+  | 'minor-pentatonic'
+  | 'blues'
+  | 'chromatic';
 
 const TONAL_NAMES: Record<ScaleType, string> = {
   major: 'major',
@@ -11,6 +17,7 @@ const TONAL_NAMES: Record<ScaleType, string> = {
   'major-pentatonic': 'major pentatonic',
   'minor-pentatonic': 'minor pentatonic',
   blues: 'minor blues',
+  chromatic: 'chromatic',
 };
 
 /** Ascending midi notes: `octaves` octaves plus the top tonic. */
@@ -106,6 +113,27 @@ const MINOR_LH: Record<string, readonly number[]> = {
   Ab: [3, 2, 1, 4, 3, 2, 1, 3],
 };
 
+const BLACK_PCS = new Set([1, 3, 6, 8, 10]);
+
+/**
+ * The standard chromatic fingering, as a rule rather than a table: **3** on
+ * every black key, **1** on the whites, and **2** on the second of two adjacent
+ * whites (E-F, B-C). From C that yields the familiar 1 3 1 3 1 2 3 1 3 1 3 1 2,
+ * and it stays correct from any starting note, which a C-shaped table would not.
+ *
+ * RH only — the LH pattern differs between published editions, and nothing in
+ * the curriculum asks for it yet.
+ */
+function chromaticFingering(midis: MidiNumber[]): number[] {
+  return midis.map((midi, i) => {
+    const pc = ((midi % 12) + 12) % 12;
+    if (BLACK_PCS.has(pc)) return 3;
+    const prev = midis[i - 1];
+    const prevWhite = prev !== undefined && !BLACK_PCS.has(((prev % 12) + 12) % 12);
+    return prevWhite ? 2 : 1;
+  });
+}
+
 /**
  * Fingering for an ascending scale, aligned with scaleMidis(). Multi-octave:
  * the per-octave pattern repeats, the final note takes the top-tonic finger.
@@ -117,6 +145,9 @@ export function scaleFingering(
   hand: Hand,
   octaves: 1 | 2 = 1,
 ): number[] | null {
+  if (type === 'chromatic') {
+    return hand === 'rh' ? chromaticFingering(scaleMidis(tonic, type, octaves)) : null;
+  }
   let table: Record<string, readonly number[]> | null = null;
   if (type === 'major') table = hand === 'rh' ? MAJOR_RH : MAJOR_LH;
   if (type === 'natural-minor' || type === 'harmonic-minor') {

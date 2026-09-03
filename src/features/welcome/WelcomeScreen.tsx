@@ -30,16 +30,13 @@ export function WelcomeScreen() {
             <h1>{APP_NAME}</h1>
             <p className={styles['tagline']}>{APP_TAGLINE}</p>
             <p className={styles['body']}>
-              A guided path from zero to fluency — scales, chords and harmony you can actually use, on your
-              own MIDI piano, with feedback on every note.
+              A guided path from zero to fluency: scales, chords and harmony you can actually use, on your own
+              MIDI piano, with feedback on every note.
             </p>
+            {/* The instrument is the hero image. One chord lit, nothing else,
+                so the first thing you see is a C major triad. */}
             <div className={styles['demo']} aria-hidden>
-              <Keyboard
-                range={[55, 79]}
-                pressed={new Set([60, 64, 67])}
-                height={90}
-                degreeTint={{ tonic: 'C' }}
-              />
+              <Keyboard range={[55, 79]} pressed={new Set([60, 64, 67])} height={96} />
             </div>
             <Button variant="primary" size="l" onClick={() => setStep(1)}>
               Get started
@@ -71,7 +68,7 @@ export function WelcomeScreen() {
           <>
             <h2>Hear yourself</h2>
             <p className={styles['body']}>
-              If your piano has speakers, use those — it always sounds best. Otherwise we'll play a warm grand
+              If your piano has speakers, use those, it always sounds best. Otherwise we'll play a warm grand
               piano for every note you press.
             </p>
             <div className={styles['panelBox']}>
@@ -89,7 +86,7 @@ export function WelcomeScreen() {
           <>
             <h2>Where do we begin?</h2>
             <p className={styles['body']}>
-              The path starts at the very beginning — finding your way around the keys. Every step earns the
+              The path starts at the very beginning, finding your way around the keys. Every step earns the
               next one. Already play a little? Take the checkpoints instead: pass one, skip its stage.
             </p>
             <div className={styles['actions']}>
@@ -103,7 +100,7 @@ export function WelcomeScreen() {
                   void navigate('/lesson/s0.cp?placement=1');
                 }}
               >
-                I know some piano — place me
+                I know some piano, place me
               </Button>
             </div>
           </>

@@ -19,17 +19,25 @@
   max-width: 420px;
   transition:
     opacity var(--dur-med) var(--ease),
-    transform var(--dur-med) var(--ease);
+    transform var(--dur-med) var(--ease-out);
 }
 
+/* Tone is a rail on the leading edge, so the toast itself stays neutral and
+   readable in both themes. */
 .toast[data-kind='ok'] {
-  border-color: var(--ok);
+  box-shadow:
+    var(--elev-2),
+    inset 3px 0 0 var(--ok);
 }
 .toast[data-kind='warn'] {
-  border-color: var(--warn);
+  box-shadow:
+    var(--elev-2),
+    inset 3px 0 0 var(--warn);
 }
 .toast[data-kind='err'] {
-  border-color: var(--err);
+  box-shadow:
+    var(--elev-2),
+    inset 3px 0 0 var(--err);
 }
 
 .in {

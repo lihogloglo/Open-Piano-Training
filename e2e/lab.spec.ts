@@ -15,8 +15,8 @@ test('lab: D major scale RH in wait mode, played perfectly via fake MIDI', async
   await page.getByLabel('Tonic/root').selectOption('D');
   await page.getByRole('button', { name: 'Start' }).click();
   await expect(page.getByText('phase:')).toContainText('running');
-  await page.getByRole('button', { name: '▶ Play perfectly (fake)' }).click();
-  await expect(page.getByRole('heading', { name: /Result — score 100%/ })).toBeVisible({ timeout: 15000 });
+  await page.getByRole('button', { name: 'Play perfectly (fake)' }).click();
+  await expect(page.getByRole('heading', { name: /Result: score 100%/ })).toBeVisible({ timeout: 15000 });
   await expect(page.getByRole('heading', { name: /passed/ })).toBeVisible();
 });
 
@@ -26,9 +26,9 @@ test('lab: D major scale RH @80 BPM tempo mode, standard tier, perfect judgments
   await page.getByLabel('Tonic/root').selectOption('D');
   await page.getByLabel('Mode').selectOption('tempo');
   await page.getByRole('button', { name: 'Start' }).click();
-  await page.getByRole('button', { name: '▶ Play perfectly (fake)' }).click();
+  await page.getByRole('button', { name: 'Play perfectly (fake)' }).click();
   // 4-beat count-in + 8 notes @80 BPM = ~9s
-  await expect(page.getByRole('heading', { name: /Result — score 100%/ })).toBeVisible({ timeout: 25000 });
+  await expect(page.getByRole('heading', { name: /Result: score 100%/ })).toBeVisible({ timeout: 25000 });
   const dump = await page.locator('pre').textContent();
   const parsed = JSON.parse(dump ?? '{}') as { judgments: { verdict: string }[] };
   expect(parsed.judgments).toHaveLength(8);

@@ -13,15 +13,15 @@ import { fileURLToPath } from 'node:url';
 const OUT = join(dirname(fileURLToPath(import.meta.url)), '..', 'public');
 
 /** The mark, in the favicon's 32x32 coordinate space. */
-const BG = [0x0f, 0x11, 0x15];
+const BG = [0x0b, 0x0d, 0x0e];
 const RECTS = [
-  { x: 6, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfa, 0xfa, 0xf8] },
-  { x: 11.4, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfa, 0xfa, 0xf8] },
-  { x: 16.8, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfa, 0xfa, 0xf8] },
-  { x: 22.2, y: 8, w: 4.4, h: 16, r: 1, fill: [0x3e, 0x63, 0xdd] },
-  { x: 9, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x17, 0x18, 0x1b] },
-  { x: 14.4, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x17, 0x18, 0x1b] },
-  { x: 19.8, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x17, 0x18, 0x1b] },
+  { x: 6, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfb, 0xfb, 0xf9] },
+  { x: 11.4, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfb, 0xfb, 0xf9] },
+  { x: 16.8, y: 8, w: 4.4, h: 16, r: 1, fill: [0xfb, 0xfb, 0xf9] },
+  { x: 22.2, y: 8, w: 4.4, h: 16, r: 1, fill: [0x2f, 0xcf, 0xad] },
+  { x: 9, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x16, 0x19, 0x1a] },
+  { x: 14.4, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x16, 0x19, 0x1a] },
+  { x: 19.8, y: 8, w: 3.2, h: 9.5, r: 1, fill: [0x16, 0x19, 0x1a] },
 ];
 
 /** Coverage of a rounded rect at a point, sampled 3x3 for cheap antialiasing. */

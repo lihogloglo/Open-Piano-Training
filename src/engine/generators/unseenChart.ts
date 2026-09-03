@@ -14,7 +14,9 @@ export const unseenChartParams = z.object({
   form: z.enum(['aaba', 'verse-chorus', 'blues']).default('aaba'),
   sevenths: z.boolean().default(true),
   beatsPerChord: z.number().int().min(2).max(8).default(4),
-  style: z.enum(['block', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing']).default('block'),
+  style: z
+    .enum(['block', 'rootchord', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing'])
+    .default('block'),
   voicing: z.enum(['triad', 'shell17', 'shell13', 'guidetones']).default('triad'),
   swing: z.number().min(0.5).max(0.7).default(0.5),
 });

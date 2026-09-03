@@ -37,7 +37,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryStat
       return (
         <div style={{ display: 'grid', placeItems: 'center', height: '100%', padding: 24 }}>
           <div style={{ maxWidth: 480, textAlign: 'center', display: 'grid', gap: 16 }}>
-            <h2>Something broke — your progress is safe.</h2>
+            <h2>Something broke. Your progress is safe.</h2>
             <p style={{ color: 'var(--text-2)' }}>
               Everything you've done is stored on this device. Reloading usually fixes it.
             </p>

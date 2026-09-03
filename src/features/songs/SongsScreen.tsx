@@ -5,6 +5,7 @@ import { STAGES, getUnit } from '@/curriculum/content';
 import { nodeStatuses } from '@/curriculum/path';
 import { getUnitProgressMap } from '@/progress/db';
 import { Card } from '@/ui/Card';
+import { Icon } from '@/ui/Icon';
 import styles from './SongsScreen.module.css';
 
 /** A stage is "reached" once its first unit is available or beyond. */
@@ -46,14 +47,25 @@ export function SongsScreen() {
                   if (!locked) void navigate(`/songs/${song.id}`);
                 }}
               >
-                <span className={styles['title']}>{song.title}</span>
+                <span className={styles['cardTop']}>
+                  <span className={styles['title']}>{song.title}</span>
+                  {locked && <Icon name="locked" size={15} />}
+                </span>
                 <span className={styles['style']}>{song.styleRef}</span>
                 <span className={styles['meta']}>
-                  {song.key.tonic} {song.key.mode} · {song.bpm} BPM · {bars} bars
-                  {locked && ` · unlocks in Stage ${song.stage}`}
+                  <span>
+                    {song.key.tonic} {song.key.mode}
+                  </span>
+                  <span className="tabular">{song.bpm} BPM</span>
+                  <span className="tabular">{bars} bars</span>
+                  {locked && <span className={styles['lockNote']}>unlocks in Stage {song.stage}</span>}
                 </span>
                 <span className={styles['romans']}>
-                  {[...new Set(song.romanized)].slice(0, 6).join(' · ')}
+                  {[...new Set(song.romanized)].slice(0, 6).map((r) => (
+                    <span key={r} className={styles['roman']}>
+                      {r}
+                    </span>
+                  ))}
                 </span>
               </button>
             </Card>
@@ -61,7 +73,7 @@ export function SongsScreen() {
         })}
       </div>
       {getUnit('s1.u7') && reached < 1 && (
-        <p className={styles['sub']}>Your first song opens with Stage 1 — a few units away.</p>
+        <p className={styles['sub']}>Your first song opens with Stage 1, a few units away.</p>
       )}
     </div>
   );

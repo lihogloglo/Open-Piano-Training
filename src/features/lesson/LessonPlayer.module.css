@@ -1,63 +1,87 @@
+/* Focus mode: no sidebar, one surface, nothing on screen that is not the
+   step you are on. */
 .player {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   background: var(--bg);
 }
 
 .topbar {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   height: 56px;
   padding: 0 var(--space-4);
-  border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg);
   flex-shrink: 0;
 }
 
 .close {
   border: none;
   background: transparent;
-  color: var(--text-2);
+  color: var(--text-3);
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-m);
   display: grid;
   place-items: center;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .close:hover {
   background: var(--surface-2);
+  color: var(--text);
 }
 
 .unitTitle {
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .stepCount {
   color: var(--text-3);
-  font-size: var(--fs-s);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.progress {
+  height: 2px;
+  background: var(--surface-2);
+  flex-shrink: 0;
+}
+
+.progress span {
+  display: block;
+  height: 100%;
+  background: var(--accent);
+  transition: width var(--dur-slow) var(--ease-out);
 }
 
 .chip {
   margin-left: auto;
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface-2);
+  border: 1px solid var(--border);
   color: var(--text-2);
 }
 
 .chip[data-kind='graded'] {
-  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+  background: var(--accent-soft);
+  border-color: var(--accent-line);
   color: var(--accent-text);
 }
 
 .chip[data-kind='create'] {
-  background: color-mix(in srgb, var(--deg-4) 18%, var(--surface-2));
-  color: var(--deg-4);
+  background: var(--surface-2);
+  border-color: var(--border-strong);
+  color: var(--text);
 }
 
 .promptZone {
@@ -66,7 +90,7 @@
   overflow-y: auto;
   display: grid;
   place-items: center;
-  padding: var(--space-5);
+  padding: var(--space-6) var(--space-5);
   position: relative;
 }
 
@@ -92,24 +116,30 @@
 
 .exercisePrompt {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   text-align: center;
   justify-items: center;
 }
 
 .promptDetail {
   color: var(--text-2);
+  font-size: var(--fs-s);
 }
 
+/* The prompt is the whole screen's message: it gets the display size and
+   nothing else competes with it. */
 .promptMain {
-  font-size: 42px;
-  font-weight: 650;
-  letter-spacing: -0.01em;
+  font-size: var(--fs-display);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  line-height: 1.1;
 }
 
 .targetCount {
   color: var(--text-3);
-  font-size: var(--fs-s);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
 }
 
 .footer {

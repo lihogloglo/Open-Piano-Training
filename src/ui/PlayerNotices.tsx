@@ -26,7 +26,7 @@ export function PlayerNotices() {
               : midiStatus === 'unsupported'
                 ? "This browser can't talk to MIDI keyboards."
                 : 'No keyboard connected.'}{' '}
-            You can play with your computer keys: <kbd>A</kbd>–<kbd>K</kbd> for white notes, <kbd>W</kbd>/
+            You can play with your computer keys: <kbd>A</kbd> to <kbd>K</kbd> for white notes, <kbd>W</kbd>/
             <kbd>E</kbd>/<kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> for black.
           </span>
           <Link to="/setup" className={styles['link']}>
@@ -43,7 +43,7 @@ export function PlayerNotices() {
       {sampler.state === 'error' && (
         <div className={styles['notice']} role="status">
           <span>
-            The piano samples didn&apos;t load. Everything still works — you just won&apos;t hear the app play
+            The piano samples didn&apos;t load. Everything still works, you just won&apos;t hear the app play
             along. Check your connection and reload.
           </span>
         </div>

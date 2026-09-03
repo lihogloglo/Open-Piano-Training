@@ -28,6 +28,17 @@ const tempo = (
     seedPolicy: 'random',
   }) as ExerciseDef;
 
+/** Free play over a backing loop — the Make strand, with something behind it. */
+const play = (params: Record<string, unknown>, hand: Hand = 'both', bpm = 76): ExerciseDef => ({
+  generator: 'improv',
+  params: { bpm, ...params },
+  mode: 'wait',
+  bpm,
+  rung: 'chord-symbols',
+  hand,
+  seedPolicy: 'random',
+});
+
 const C = { tonic: 'C', mode: 'major' } as const;
 const G = { tonic: 'G', mode: 'major' } as const;
 const F = { tonic: 'F', mode: 'major' } as const;
@@ -54,7 +65,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { theory: 3, ear: 2 },
     concepts: ['spell:maj7', 'spell:7', 'ear:quality:maj7', 'ear:quality:7'],
     prerequisites: ['s4.cp'],
-    minutes: 10,
+    minutes: 13,
     kind: 'lesson',
     steps: [
       {
@@ -88,7 +99,7 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: '**maj7** (7th a half step under the octave) is the dreamy one — it sits still. **7**, the *dominant*, drops that 7th a half step and creates a tritone against the 3rd. That interval is unstable on purpose: it *pulls*, and where it pulls is home.',
+            md: '**maj7** (7th a half step under the octave) is the dreamy one — it sits still. **7**, the *dominant*, drops that 7th a half step. That leaves a **tritone** between it and the 3rd — three whole steps, exactly half an octave. It is the most unstable gap in music, and it is there on purpose: it *pulls*, and where it pulls is home.',
           },
           {
             kind: 'earCheck',
@@ -106,6 +117,22 @@ export const stage5Units: Unit[] = [
             options: ['This one rests', 'This one pulls'],
             correctIndex: 1,
           },
+          {
+            kind: 'playCheck',
+            ask: 'Build **Cmaj7**: the triad, plus one more third on top.',
+            notes: ['C', 'E', 'G', 'B'],
+            count: 4,
+            distinct: 'name',
+            hint: 'C–E–G, then B. The 7th sits a half step under the octave, which is why it glows rather than pushes.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now make it a **C7**: play the note that replaces the B.',
+            notes: ['Bb'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Drop the 7th a half step. One black key, and the chord stops resting.',
+          },
         ],
       },
       {
@@ -117,6 +144,16 @@ export const stage5Units: Unit[] = [
           qualities: ['maj7', '7'],
           count: 6,
         }),
+      },
+      {
+        kind: 'ladder',
+        id: 's5.u1.l1',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'flashcard',
+          { kind: 'spell', roots: ['C', 'D', 'F', 'G', 'A'], qualities: ['maj7', '7'], count: 8 },
+          50,
+        ),
       },
       {
         kind: 'graded',
@@ -140,6 +177,13 @@ export const stage5Units: Unit[] = [
           'by-ear',
         ),
       },
+      {
+        kind: 'create',
+        id: 's5.u1.c1',
+        prompt:
+          'The backing rocks between Imaj7 and V7 — rest and pull, over and over. Play anything you like on top, then try landing on the 7th of each chord as it turns over. One note, and you can hear which of the two you are sitting in.',
+        exercise: play({ key: C, palette: 'chordtones', roman: ['Imaj7', 'V7'], loops: 3, bpm: 72 }),
+      },
     ],
   },
   {
@@ -150,7 +194,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { theory: 2, keys: 3, ear: 1 },
     concepts: ['spell:m7', 'prog:ii-v-i:c', 'prog:ii-v-i:g', 'prog:ii-v-i:f', 'ear:quality:m7'],
     prerequisites: ['s5.u1'],
-    minutes: 11,
+    minutes: 13,
     kind: 'lesson',
     steps: [
       {
@@ -171,6 +215,22 @@ export const stage5Units: Unit[] = [
             key: C,
             songRefs: ['Jazz standards, bossa nova, most film ballads'],
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play **Dm7** — the ii of C major.',
+            notes: ['D', 'F', 'A', 'C'],
+            count: 4,
+            distinct: 'name',
+            hint: 'D minor with a C on top. Four notes, and every one of them is a white key.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now the three roots of the cell, left hand: **D, G, C**.',
+            notes: ['D', 'G', 'C'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Down a fourth, then down a fifth. That bass line says the cell more than the chords do.',
+          },
         ],
       },
       {
@@ -182,6 +242,15 @@ export const stage5Units: Unit[] = [
           qualities: ['m7'],
           count: 6,
         }),
+      },
+      {
+        kind: 'guided',
+        id: 's5.u2.g2',
+        exercise: wait(
+          'progression-play',
+          { key: C, roman: ['ii7', 'V7', 'Imaj7'], loops: 1, style: 'rootchord', voiceLead: 'smooth' },
+          'both',
+        ),
       },
       {
         kind: 'ladder',
@@ -213,6 +282,13 @@ export const stage5Units: Unit[] = [
           66,
         ),
       },
+      {
+        kind: 'create',
+        id: 's5.u2.c1',
+        prompt:
+          'ii–V–I under your hands, round and round. Try playing only the 3rds and 7ths of each chord — two notes — and hear how little it takes to say the whole progression. That discovery is what Stage 6 is built on.',
+        exercise: play({ key: C, palette: 'chordtones', roman: ['ii7', 'V7', 'Imaj7'], loops: 3, bpm: 72 }),
+      },
     ],
   },
   {
@@ -223,7 +299,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { theory: 3 },
     concepts: ['spell:m7b5', 'spell:dim7'],
     prerequisites: ['s5.u2'],
-    minutes: 9,
+    minutes: 12,
     kind: 'lesson',
     steps: [
       {
@@ -232,7 +308,7 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Two more sevenths, both built on a diminished triad. **m7♭5** (also written ø) is the seventh chord on the 7th degree of a major key — it is the vii of the family, and it leans hard on V.',
+            md: 'Two more sevenths, both built on a diminished triad. **m7♭5** (also written ø) sits on the 7th degree of a major key, where it is dominant-function and leans hard on **I**. Its day job is elsewhere: in a *minor* key it is the **iiø7**, the chord that opens a minor ii–V–i.',
           },
           {
             kind: 'text',
@@ -256,6 +332,22 @@ export const stage5Units: Unit[] = [
               ],
             },
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play **Bm7♭5**: B, D, F, A.',
+            notes: ['B', 'D', 'F', 'A'],
+            count: 4,
+            distinct: 'name',
+            hint: 'The diminished triad B–D–F, with a plain minor 7th on top. All white keys.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Make it **Bdim7**: play the note that replaces the A.',
+            notes: ['Ab'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Drop the 7th a half step so every gap is three semitones. Now it is perfectly symmetrical — and homeless.',
+          },
         ],
       },
       {
@@ -269,6 +361,16 @@ export const stage5Units: Unit[] = [
         }),
       },
       {
+        kind: 'ladder',
+        id: 's5.u3.l1',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'flashcard',
+          { kind: 'spell', roots: ['B', 'E', 'A', 'D', 'G'], qualities: ['m7b5', 'dim7'], count: 8 },
+          46,
+        ),
+      },
+      {
         kind: 'graded',
         id: 's5.u3.q1',
         passScore: 0.8,
@@ -277,6 +379,19 @@ export const stage5Units: Unit[] = [
           roots: ['C', 'D', 'E', 'F', 'G', 'A', 'B'],
           qualities: ['m7b5', 'dim7'],
           count: 10,
+        }),
+      },
+      {
+        kind: 'create',
+        id: 's5.u3.c1',
+        prompt:
+          'A minor loop is playing. Between any two of its chords, slide a dim7 in — any root, one beat. It will fit, because a chord with no home cannot be in the wrong place. Find the two or three spots where it sounds deliberate rather than lucky.',
+        exercise: play({
+          key: Am,
+          palette: 'chordtones',
+          roman: ['i', 'VI', 'III', 'VII'],
+          loops: 3,
+          bpm: 70,
         }),
       },
     ],
@@ -289,7 +404,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { theory: 2, keys: 3 },
     concepts: ['scale:a:natminor:rh', 'scale:a:natminor:lh', 'scale:a:harmminor:rh', 'theory:relative'],
     prerequisites: ['s5.u3'],
-    minutes: 11,
+    minutes: 16,
     kind: 'lesson',
     steps: [
       {
@@ -330,7 +445,55 @@ export const stage5Units: Unit[] = [
             kind: 'text',
             md: 'The rule: **relative minor is three half steps down from the major tonic** (C → A). One catch — natural minor has no leading tone, so its v chord is limp. Raise the 7th (G → G♯) and you get **harmonic minor**, which hands minor keys a real dominant: E7 → Am.',
           },
+          {
+            kind: 'playCheck',
+            ask: 'Three half steps down from C — play the home note of its relative minor.',
+            notes: ['A'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'C, B, B♭, A. Same seven white keys as C major; different note in charge.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play the one note harmonic minor changes: the raised 7th of A minor.',
+            notes: ['G#'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'G becomes G♯, a half step under A. That is the leading tone minor keys borrow to get a real V.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u4.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'A', scaleType: 'natural-minor', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'guided',
+        id: 's5.u4.g2',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'A', scaleType: 'harmonic-minor', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        // The unit claims `scale:a:natminor:lh` and used to grade it without
+        // the hand ever playing it. Left hand alone, then ramped.
+        kind: 'guided',
+        id: 's5.u4.g3',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'A', scaleType: 'natural-minor', hand: 'lh', direction: 'up' },
+          'lh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
@@ -341,6 +504,18 @@ export const stage5Units: Unit[] = [
           { tonic: 'A', scaleType: 'natural-minor', hand: 'rh', direction: 'updown' },
           70,
           'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'ladder',
+        id: 's5.u4.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'A', scaleType: 'natural-minor', hand: 'lh', direction: 'updown' },
+          70,
+          'lh',
           'keys-lit',
         ),
       },
@@ -357,16 +532,25 @@ export const stage5Units: Unit[] = [
         ),
       },
       {
+        // Wait mode, not tempo. Harmonic minor is one raised note and a wider
+        // reach between 6 and 7; the lesson is about finding it, not speed. It
+        // gets no tempo ramp of its own, so it is not scored against a clock.
         kind: 'graded',
         id: 's5.u4.q2',
         passScore: 0.8,
-        exercise: tempo(
+        exercise: wait(
           'scale-run',
           { tonic: 'A', scaleType: 'harmonic-minor', hand: 'rh', direction: 'up' },
-          66,
           'rh',
           'keys-lit',
         ),
+      },
+      {
+        kind: 'create',
+        id: 's5.u4.c1',
+        prompt:
+          'Play over the A minor backing using only white keys — then, on the bar before the loop turns over, raise the G to G♯ and hold it. You have just borrowed harmonic minor for one beat, which is exactly how real music uses it.',
+        exercise: play({ key: Am, palette: 'chordtones', roman: ['i', 'iv', 'V7', 'i'], loops: 3, bpm: 70 }),
       },
     ],
   },
@@ -378,7 +562,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { keys: 3, create: 1 },
     concepts: ['prog:i-vi-iii-vii:am', 'prog:i-iv-v:am', 'song:ember'],
     prerequisites: ['s5.u4'],
-    minutes: 12,
+    minutes: 18,
     kind: 'lesson',
     steps: [
       {
@@ -395,7 +579,32 @@ export const stage5Units: Unit[] = [
             key: Am,
             songRefs: ['Minor-key folk, film cues, half of modern pop in a sad mood'],
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play the **VI** of A minor: F, A, C.',
+            notes: ['F', 'A', 'C'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Capital numeral, major chord — and it is the same F major you have played since Stage 1.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'And the **VII**: G, B, D.',
+            notes: ['G', 'B', 'D'],
+            count: 3,
+            distinct: 'name',
+            hint: 'A whole step under the tonic, major, and no leading tone anywhere. That flat 7th is why minor loops sound modal rather than classical.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u5.g1',
+        exercise: wait(
+          'progression-play',
+          { key: Am, roman: ['i', 'VI', 'III', 'VII'], loops: 1, style: 'rootchord', voiceLead: 'smooth' },
+          'both',
+        ),
       },
       {
         kind: 'ladder',
@@ -413,8 +622,32 @@ export const stage5Units: Unit[] = [
         passScore: 0.8,
         exercise: tempo(
           'progression-play',
-          { key: Am, roman: ['i', 'iv', 'v'], beatsPerChord: 4, loops: 2, voiceLead: 'smooth' },
+          { key: Am, roman: ['i', 'iv', 'V'], beatsPerChord: 4, loops: 2, voiceLead: 'smooth' },
           76,
+        ),
+      },
+      {
+        // Ember is the stage's first minor chart and its first broken-left-hand
+        // texture since s4. A read at wait speed, then a ramp, then the take.
+        kind: 'guided',
+        id: 's5.u5.g2',
+        exercise: wait(
+          'chart-play',
+          { songId: 'ember', style: 'brokenLH', voiceLead: 'smooth' },
+          'both',
+          'lead-sheet',
+        ),
+      },
+      {
+        kind: 'ladder',
+        id: 's5.u5.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'chart-play',
+          { songId: 'ember', style: 'brokenLH', voiceLead: 'smooth' },
+          76,
+          'both',
+          'lead-sheet',
         ),
       },
       {
@@ -433,7 +666,14 @@ export const stage5Units: Unit[] = [
         kind: 'create',
         id: 's5.u5.c1',
         prompt:
-          'Loop i-VI-III-VII in A minor and find a melody in the right hand that only uses the white keys. Let one note hang over a chord change — that tension is the point.',
+          'Loop i-VI-III-VII in A minor and find a melody in the right hand that only uses the white keys. Let one note hang over a chord change — the note stays, the chord moves under it, and that friction is the point.',
+        exercise: play({
+          key: Am,
+          palette: 'chordtones',
+          roman: ['i', 'VI', 'III', 'VII'],
+          loops: 3,
+          bpm: 76,
+        }),
       },
     ],
   },
@@ -445,6 +685,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { keys: 3, theory: 2 },
     concepts: [
       'scale:a:major:rh',
+      'scale:a:major:lh',
       'scale:e:major:rh',
       'scale:b:major:rh',
       // C anchors the circle at 12 o'clock — the one signature with nothing in it.
@@ -454,7 +695,7 @@ export const stage5Units: Unit[] = [
       'keysig:b:major',
     ],
     prerequisites: ['s5.u5'],
-    minutes: 12,
+    minutes: 17,
     kind: 'lesson',
     steps: [
       {
@@ -473,7 +714,43 @@ export const stage5Units: Unit[] = [
             kind: 'text',
             md: 'Here is the part nobody tells beginners: A, E and B are **easier** under the hand than C, not harder. The black keys give your long fingers somewhere to sit. Same fingering as C major, better ergonomics.',
           },
+          {
+            kind: 'playCheck',
+            ask: 'A major has three sharps. Play them: F♯, C♯, G♯.',
+            notes: ['F#', 'C#', 'G#'],
+            count: 3,
+            distinct: 'name',
+            hint: 'The order never changes: F♯ first, then C♯, then G♯. Each new key keeps the previous ones.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'E major keeps those three and adds one. Play the fourth sharp.',
+            notes: ['D#'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Next along the same chain: F♯ C♯ G♯ **D♯**. It is always the 7th degree of the new key.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u6.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'A', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'guided',
+        id: 's5.u6.g2',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'A', scaleType: 'major', hand: 'lh', direction: 'up' },
+          'lh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
@@ -484,6 +761,22 @@ export const stage5Units: Unit[] = [
           { tonic: 'A', scaleType: 'major', hand: 'rh', direction: 'updown' },
           70,
           'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        // The left hand has not been ramped on a major scale since s1.u2, at
+        // 60. This unit grades it at 66, so it ramps it here first. A, E and B
+        // all take C major's left-hand fingering, so one ladder covers all
+        // three keys.
+        kind: 'ladder',
+        id: 's5.u6.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'A', scaleType: 'major', hand: 'lh', direction: 'updown' },
+          66,
+          'lh',
           'keys-lit',
         ),
       },
@@ -526,6 +819,30 @@ export const stage5Units: Unit[] = [
           count: 9,
         }),
       },
+      {
+        kind: 'graded',
+        id: 's5.u6.q4',
+        passScore: 0.8,
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'A', scaleType: 'major', hand: 'lh', direction: 'up' },
+          66,
+          'lh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'create',
+        id: 's5.u6.c1',
+        prompt:
+          'Improvise in E major — four sharps, and your hand will want to sit on the black keys rather than reach for them. Notice that it is more comfortable than C, not less. That is the ergonomic secret of the sharp keys.',
+        exercise: play({
+          key: { tonic: 'E', mode: 'major' },
+          palette: 'chordtones',
+          roman: ['I', 'V', 'vi', 'IV'],
+          loops: 3,
+        }),
+      },
     ],
   },
   {
@@ -536,6 +853,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { keys: 3, theory: 2 },
     concepts: [
       'scale:bb:major:rh',
+      'scale:bb:major:lh',
       'scale:eb:major:rh',
       'scale:ab:major:rh',
       'keysig:bb:major',
@@ -543,7 +861,7 @@ export const stage5Units: Unit[] = [
       'keysig:ab:major',
     ],
     prerequisites: ['s5.u6'],
-    minutes: 12,
+    minutes: 19,
     kind: 'lesson',
     steps: [
       {
@@ -560,9 +878,68 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'These are the horn keys — brass and reeds live here, so most jazz and soul charts do too. The fingering family is different from C: your thumb learns to avoid the black keys, which is why B♭ starts on finger 4.',
+            md: 'These are the horn keys — brass and reeds live here, so most jazz and soul charts do too. The rule everywhere on this side: the thumb avoids the black keys. That is why B♭ starts on finger 4, and it is why the right hand needs a slightly different route for each flat key. Your left hand gets off lightly — one fingering covers all of them.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play the two flats of **B♭ major**: B♭ and E♭.',
+            notes: ['Bb', 'Eb'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Flats arrive in their own order: B♭ E♭ A♭ D♭ G♭. Two of them, and the key is B♭.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'A♭ major has four. Play the two that B♭ major did **not** have.',
+            notes: ['Ab', 'Db'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Keep going down the same chain: B♭ E♭ **A♭ D♭**.',
           },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u7.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Bb', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'guided',
+        id: 's5.u7.g2',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Bb', scaleType: 'major', hand: 'lh', direction: 'up' },
+          'lh',
+          'keys-lit',
+        ),
+      },
+      {
+        // Each flat key has its own right-hand fingering, so meeting E-flat and
+        // A-flat needs a rep each. The old unit graded both at tempo having
+        // only ever ramped B-flat.
+        kind: 'guided',
+        id: 's5.u7.g3',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Eb', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'guided',
+        id: 's5.u7.g4',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Ab', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
@@ -577,13 +954,29 @@ export const stage5Units: Unit[] = [
         ),
       },
       {
+        // B-flat, E-flat, A-flat and D-flat all share one left-hand fingering,
+        // so this single ladder covers the whole flat side for that hand.
+        kind: 'ladder',
+        id: 's5.u7.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'Bb', scaleType: 'major', hand: 'lh', direction: 'updown' },
+          60,
+          'lh',
+          'keys-lit',
+        ),
+      },
+      {
+        // Wait mode, not tempo. B-flat is the key this unit ramps; E-flat and
+        // A-flat are scored on finding the notes and the fingering, and speed
+        // comes later through review.
         kind: 'graded',
         id: 's5.u7.q1',
         passScore: 0.8,
-        exercise: tempo(
+        exercise: wait(
           'scale-run',
           { tonic: 'Eb', scaleType: 'major', hand: 'rh', direction: 'up' },
-          66,
           'rh',
           'keys-lit',
         ),
@@ -592,10 +985,9 @@ export const stage5Units: Unit[] = [
         kind: 'graded',
         id: 's5.u7.q2',
         passScore: 0.8,
-        exercise: tempo(
+        exercise: wait(
           'scale-run',
           { tonic: 'Ab', scaleType: 'major', hand: 'rh', direction: 'up' },
-          66,
           'rh',
           'keys-lit',
         ),
@@ -615,6 +1007,30 @@ export const stage5Units: Unit[] = [
           count: 9,
         }),
       },
+      {
+        kind: 'graded',
+        id: 's5.u7.q4',
+        passScore: 0.8,
+        exercise: tempo(
+          'scale-run',
+          { tonic: 'Bb', scaleType: 'major', hand: 'lh', direction: 'up' },
+          60,
+          'lh',
+          'keys-lit',
+        ),
+      },
+      {
+        kind: 'create',
+        id: 's5.u7.c1',
+        prompt:
+          'A backing in E♭ — three flats, and the key half the soul records you love were cut in. Play chord tones over it until the geography stops feeling like a foreign country. Flat keys are only awkward while they are unfamiliar.',
+        exercise: play({
+          key: { tonic: 'Eb', mode: 'major' },
+          palette: 'chordtones',
+          roman: ['I', 'vi', 'ii', 'V'],
+          loops: 3,
+        }),
+      },
     ],
   },
   {
@@ -625,7 +1041,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { keys: 2, theory: 3 },
     concepts: ['scale:db:major:rh', 'scale:gb:major:rh', 'keysig:db:major', 'keysig:gb:major'],
     prerequisites: ['s5.u7'],
-    minutes: 10,
+    minutes: 15,
     kind: 'lesson',
     steps: [
       {
@@ -648,7 +1064,33 @@ export const stage5Units: Unit[] = [
             kind: 'text',
             md: "Good news: D♭ is many pianists' favourite key. Five black keys under the long fingers, thumbs on the two whites — it almost plays itself.",
           },
+          {
+            kind: 'playCheck',
+            ask: 'D♭ major has exactly two white keys in it. Play them.',
+            notes: ['F', 'C'],
+            count: 2,
+            distinct: 'name',
+            hint: 'D♭ E♭ F G♭ A♭ B♭ C — the 3rd and the 7th. Those two are where your thumbs go.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play the key that is both **F♯ and G♭**.',
+            notes: ['F#'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'One key, two names. Which name a chart uses depends on the key signature it is trying to keep tidy.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u8.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Db', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
@@ -663,13 +1105,25 @@ export const stage5Units: Unit[] = [
         ),
       },
       {
+        // G-flat has its own right-hand fingering, so it gets its own rep.
+        kind: 'guided',
+        id: 's5.u8.g2',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'Gb', scaleType: 'major', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
+      },
+      {
+        // Wait mode: D-flat is the key this unit ramps. G-flat is scored on
+        // the notes and the fingering, not against a clock.
         kind: 'graded',
         id: 's5.u8.q1',
         passScore: 0.8,
-        exercise: tempo(
+        exercise: wait(
           'scale-run',
           { tonic: 'Gb', scaleType: 'major', hand: 'rh', direction: 'up' },
-          60,
           'rh',
           'keys-lit',
         ),
@@ -688,6 +1142,19 @@ export const stage5Units: Unit[] = [
           count: 6,
         }),
       },
+      {
+        kind: 'create',
+        id: 's5.u8.c1',
+        prompt:
+          'Improvise in D♭ using only the black keys. Those five are D♭ major **pentatonic** — five notes, no half steps anywhere, so nothing in the set can clash. Then add the F and the C when you want the light to change. This is the key that convinces people the black keys are the easy ones.',
+        exercise: play({
+          key: { tonic: 'Db', mode: 'major' },
+          palette: 'pentatonic',
+          roman: ['I', 'IV', 'V', 'I'],
+          loops: 3,
+          bpm: 70,
+        }),
+      },
     ],
   },
   {
@@ -698,7 +1165,7 @@ export const stage5Units: Unit[] = [
     strandWeights: { keys: 3, ear: 2 },
     concepts: ['prog:ii-v-i:all', 'ear:prog:iivi', 'song:round-the-circle'],
     prerequisites: ['s5.u8'],
-    minutes: 12,
+    minutes: 14,
     kind: 'lesson',
     steps: [
       {
@@ -737,7 +1204,20 @@ export const stage5Units: Unit[] = [
             options: ['ii-V-I', 'IV-V-I'],
             correctIndex: 0,
           },
+          {
+            kind: 'playCheck',
+            ask: 'Left hand: the three roots of a ii–V–I in **B♭** — C, F, B♭.',
+            notes: ['C', 'F', 'Bb'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Down a fourth, down a fifth — the same shape as D, G, C was in the key of C. The gesture never changes.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's5.u9.g1',
+        exercise: wait('chart-play', { songId: 'round-the-circle', voiceLead: 'smooth' }, 'rh', 'lead-sheet'),
       },
       {
         kind: 'ladder',
@@ -783,6 +1263,19 @@ export const stage5Units: Unit[] = [
           'rh',
           'by-ear',
         ),
+      },
+      {
+        kind: 'create',
+        id: 's5.u9.c1',
+        prompt:
+          'ii–V–I in F, looping. Play it with the left hand taking roots and the right hand taking whatever it likes — then move the whole thing to B♭ by ear when the loop comes round. If your hand can find it without being told the letters, this stage has done its job.',
+        exercise: play({
+          key: { tonic: 'F', mode: 'major' },
+          palette: 'chordtones',
+          roman: ['ii7', 'V7', 'Imaj7'],
+          loops: 3,
+          bpm: 70,
+        }),
       },
     ],
   },
@@ -836,8 +1329,16 @@ export const stage5Units: Unit[] = [
         passScore: 0.8,
         exercise: tempo(
           'progression-play',
-          { key: F, roman: ['ii7', 'V7', 'Imaj7'], beatsPerChord: 4, loops: 2, voiceLead: 'smooth' },
+          {
+            key: F,
+            roman: ['ii7', 'V7', 'Imaj7'],
+            beatsPerChord: 4,
+            loops: 2,
+            voiceLead: 'smooth',
+            style: 'rootchord',
+          },
           66,
+          'both',
         ),
       },
       {

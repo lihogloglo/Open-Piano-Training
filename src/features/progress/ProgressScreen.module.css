@@ -1,13 +1,9 @@
 .wrap {
   display: grid;
-  gap: var(--space-6);
-  padding: var(--space-6);
+  gap: var(--space-7);
+  padding: var(--space-7) var(--space-5) var(--space-8);
   max-width: 980px;
   margin: 0 auto;
-}
-
-.wrap h1 {
-  font-size: var(--fs-xxl);
 }
 
 .sub,
@@ -25,15 +21,24 @@
   font-size: var(--fs-l);
 }
 
+/* Sections are separated by a hairline and space, not by wrapping each one in
+   a box. */
 .sectionHead {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
   gap: var(--space-4);
   flex-wrap: wrap;
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
 }
 
-/* ── ratings row ────────────────────────────────────────────────── */
+.section > h2 {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--border);
+}
+
+/* ── ratings row ───────────────────────────────────────────────────────── */
 
 .dials {
   display: grid;
@@ -45,39 +50,43 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-l);
-  padding: var(--space-4);
+  padding: var(--space-5) var(--space-4);
   display: grid;
   justify-items: center;
-  gap: var(--space-2);
-  box-shadow: var(--elev-1);
+  gap: var(--space-3);
 }
 
 .dialCard[data-locked='true'] {
-  opacity: 0.72;
+  background: transparent;
+  border-style: dashed;
 }
 
-/* ── heatmap ────────────────────────────────────────────────────── */
+/* ── heatmap ───────────────────────────────────────────────────────────── */
 
 .heatScroll {
   overflow-x: auto;
+  padding-bottom: var(--space-2);
 }
 
 .heatGrid {
   border-collapse: separate;
-  border-spacing: 3px;
+  border-spacing: 4px;
   font-size: var(--fs-xs);
 }
 
 .heatGrid th {
   color: var(--text-3);
   font-weight: 500;
+  font-family: var(--font-mono);
   padding: 0 var(--space-1);
   white-space: nowrap;
 }
 
 .heatGrid th[scope='row'] {
   text-align: right;
-  padding-right: var(--space-2);
+  padding-right: var(--space-3);
+  font-family: var(--font-ui);
+  color: var(--text-2);
 }
 
 .cell {
@@ -88,15 +97,19 @@
   padding: 0;
   cursor: pointer;
   background: var(--surface-2);
-  transition: transform var(--dur-fast) var(--ease);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
 }
 
 .cell:disabled {
   cursor: default;
+  border-style: dashed;
 }
 
 .cell:not(:disabled):hover {
-  transform: scale(1.12);
+  transform: scale(1.1);
+  border-color: var(--border-strong);
 }
 
 .cell:focus-visible {
@@ -113,17 +126,17 @@
 }
 
 .legendSwatch {
-  width: 20px;
+  width: 22px;
   height: 12px;
   border-radius: 3px;
   border: 1px solid var(--border);
 }
 
-/* ── badges ─────────────────────────────────────────────────────── */
+/* ── badges ────────────────────────────────────────────────────────────── */
 
 .badgeWall {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
   gap: var(--space-3);
 }
 
@@ -131,13 +144,19 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: var(--space-3);
+  padding: var(--space-4);
   display: grid;
-  gap: 2px;
+  gap: var(--space-1);
 }
 
 .badge[data-earned='false'] {
-  opacity: 0.55;
+  background: transparent;
+  border-style: dashed;
+  color: var(--text-3);
+}
+
+.badge[data-earned='true'] .badgeMark {
+  color: var(--accent-text);
 }
 
 .badgeTitle {
@@ -146,19 +165,21 @@
 }
 
 .badgeMark {
-  font-size: var(--fs-l);
+  color: var(--text-3);
   line-height: 1;
+  margin-bottom: var(--space-1);
 }
 
-/* ── replays ────────────────────────────────────────────────────── */
+/* ── replays ───────────────────────────────────────────────────────────── */
 
 .replay {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
-  padding: var(--space-3);
+  padding: var(--space-4);
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
+  justify-items: start;
 }
 
 .replayHead {
@@ -188,8 +209,8 @@
 .pairWrap {
   display: grid;
   gap: var(--space-3);
-  background: color-mix(in srgb, var(--accent) 6%, var(--surface));
-  border: 1px solid color-mix(in srgb, var(--accent) 22%, var(--border));
+  background: var(--surface);
+  border: 1px solid var(--accent-line);
   border-radius: var(--radius-l);
   padding: var(--space-4);
 }
@@ -208,7 +229,7 @@
   flex-wrap: wrap;
 }
 
-/* ── recap ──────────────────────────────────────────────────────── */
+/* ── recap ─────────────────────────────────────────────────────────────── */
 
 .recapCard {
   background: var(--surface);
@@ -232,7 +253,8 @@
 
 .statValue {
   font-size: var(--fs-xl);
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
   font-variant-numeric: tabular-nums;
 }
 
@@ -241,14 +263,22 @@
   font-size: var(--fs-xs);
 }
 
+/* The empty state is the first thing a new learner sees here: composed, and
+   it says exactly how to fill the page. */
 .empty {
   background: var(--surface);
-  border: 1px dashed var(--border);
+  border: 1px dashed var(--border-strong);
   border-radius: var(--radius-l);
-  padding: var(--space-6);
+  padding: var(--space-8) var(--space-6);
   text-align: center;
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   justify-items: center;
   color: var(--text-2);
+  max-width: 52ch;
+  margin: 0 auto;
+}
+
+.empty :global(button) {
+  margin-top: var(--space-3);
 }

@@ -33,8 +33,8 @@ export function AppShell() {
     <div className={styles['shell']}>
       <nav className={styles['sidebar']} data-expanded={expanded} aria-label="Main">
         <div className={styles['logo']}>
-          <span className={styles['logoMark']} aria-hidden>
-            ◆
+          <span className={styles['logoMark']}>
+            <Icon name="keys" size={22} weight="fill" />
           </span>
           {expanded && <span className={styles['logoText']}>{APP_NAME}</span>}
         </div>

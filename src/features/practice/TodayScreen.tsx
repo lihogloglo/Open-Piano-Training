@@ -17,14 +17,15 @@ import { ATOMS } from '@/progress/atoms';
 import { localDateString, type SessionBlock, type SessionPlan } from '@/progress/sessionBuilder';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
+import { Icon, type IconName } from '@/ui/Icon';
 import { toast } from '@/ui/Toast';
 import styles from './TodayScreen.module.css';
 
-const BLOCK_ICON: Record<SessionBlock['kind'], string> = {
-  warmup: '🔥',
-  new: '📍',
-  review: '🔁',
-  create: '✨',
+const BLOCK_ICON: Record<SessionBlock['kind'], IconName> = {
+  warmup: 'warmup',
+  new: 'new',
+  review: 'review',
+  create: 'create',
 };
 
 function blockLabel(block: SessionBlock): string {
@@ -88,15 +89,21 @@ export function TodayScreen() {
           <p className={styles['sub']}>Small daily steps beat weekend marathons.</p>
         </div>
         <div className={styles['streakBox']}>
-          <span className={styles['flame']} data-active={streak.streak > 0}>
-            🔥 <span className="tabular">{streak.streak}</span>
+          <span
+            className={styles['flame']}
+            data-active={streak.streak > 0}
+            aria-label={`${streak.streak} day streak`}
+          >
+            <Icon name="streak" size={18} weight={streak.streak > 0 ? 'fill' : 'regular'} />
+            <span className="tabular">{streak.streak}</span>
           </span>
           {streak.freezes > 0 && (
             <span className={styles['freeze']} title={`${streak.freezes} rest-day freeze banked`}>
-              🛡 {streak.freezes}
+              <Icon name="freeze" size={14} />
+              <span className="tabular">{streak.freezes}</span>
             </span>
           )}
-          <div className={styles['week']}>
+          <div className={styles['week']} aria-hidden>
             {dots.map((d) => (
               <span
                 key={d.date}
@@ -111,12 +118,12 @@ export function TodayScreen() {
 
       {plan.catchUp && (
         <div className={styles['banner']}>
-          Big review day — lots of skills are due. Want a catch-up workout instead?{' '}
+          Big review day. Lots of skills are due. Want a catch-up workout instead?{' '}
           <Button
             variant="ghost"
             onClick={() => {
               void startWorkout().then((w) => {
-                if (w.blocks.length === 0) toast('Nothing due right now — nice!');
+                if (w.blocks.length === 0) toast('Nothing due right now. Nice!');
                 else void navigate(`/drill/${w.id}/0`);
               });
             }}
@@ -132,22 +139,26 @@ export function TodayScreen() {
           <span className={styles['minutes']}>~{plan.blocks.reduce((m, b) => m + b.minutes, 0)} min</span>
         </div>
         {plan.blocks.length === 0 ? (
-          <p className={styles['sub']}>All caught up — nothing scheduled. Try a workout or the sandbox.</p>
+          <p className={styles['sub']}>All caught up. Nothing scheduled. Try a workout or the sandbox.</p>
         ) : (
           <>
             {caughtUp && (
               // 05: the caught-up state is about there being nothing *due*, not
               // an empty plan — a warmup and a create prompt are always offered.
               <p className={styles['sub']}>
-                All caught up — no new unit and nothing due for review. What&apos;s below is optional, and a
+                All caught up. No new unit and nothing due for review. What&apos;s below is optional, and a
                 rating challenge is a good use of the time.
               </p>
             )}
             <ul className={styles['blocks']}>
               {plan.blocks.map((block, i) => (
                 <li key={i} className={styles['block']} data-done={plan.completedBlocks.includes(i)}>
-                  <span className={styles['blockIcon']} aria-hidden>
-                    {plan.completedBlocks.includes(i) ? '✓' : BLOCK_ICON[block.kind]}
+                  <span className={styles['blockIcon']}>
+                    {plan.completedBlocks.includes(i) ? (
+                      <Icon name="check" size={16} />
+                    ) : (
+                      <Icon name={BLOCK_ICON[block.kind]} size={16} />
+                    )}
                   </span>
                   <span className={styles['blockLabel']}>{blockLabel(block)}</span>
                   <span className={styles['blockMin']}>{block.minutes} min</span>
@@ -158,8 +169,8 @@ export function TodayScreen() {
         )}
         {allDone ? (
           <p className={styles['doneLine']}>
-            Session complete — {plan.blocks.length} blocks, {plan.blocks.reduce((m, b) => m + b.minutes, 0)}{' '}
-            minutes of real practice. See you tomorrow. 🌙
+            Session complete: {plan.blocks.length} blocks, {plan.blocks.reduce((m, b) => m + b.minutes, 0)}{' '}
+            minutes of real practice. See you tomorrow.
           </p>
         ) : (
           plan.blocks.length > 0 && (
@@ -211,7 +222,7 @@ export function TodayScreen() {
           )}
           {recap.highlight && (
             <p className={styles['sub']}>
-              {recap.highlight.label} — you first played this {recap.highlight.daysApart} days ago.{' '}
+              {recap.highlight.label}, first played {recap.highlight.daysApart} days ago.{' '}
               <Button variant="ghost" onClick={() => void navigate('/progress')}>
                 Hear then vs now
               </Button>
@@ -221,12 +232,14 @@ export function TodayScreen() {
       )}
 
       {suggestions.length > 0 && (
-        <Card className={styles['smallCard'] ?? ''}>
-          <h3>Rating challenge</h3>
-          <p className={styles['sub']}>
-            Optional, never required. Ten items at your level in {STRAND_LABEL[suggestions[0]!].toLowerCase()}
-            .
-          </p>
+        <Card className={styles['promoCard'] ?? ''}>
+          <div>
+            <h3>Rating challenge</h3>
+            <p className={styles['sub']}>
+              Optional, never required. Ten items at your level in{' '}
+              {STRAND_LABEL[suggestions[0]!].toLowerCase()}.
+            </p>
+          </div>
           <Button onClick={() => void navigate(`/rating/${suggestions[0]}`)}>Take the challenge</Button>
         </Card>
       )}
@@ -238,7 +251,7 @@ export function TodayScreen() {
           <Button
             onClick={() => {
               void startWorkout().then((w) => {
-                if (w.blocks.length === 0) toast('Nothing due right now — nice!');
+                if (w.blocks.length === 0) toast('Nothing due right now. Nice!');
                 else void navigate(`/drill/${w.id}/0`);
               });
             }}

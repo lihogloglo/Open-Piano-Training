@@ -1,7 +1,17 @@
+.wrap {
+  display: grid;
+  gap: var(--space-5);
+  padding: var(--space-7) var(--space-5) var(--space-8);
+  max-width: 720px;
+  margin: 0 auto;
+}
+
 .creditList {
   list-style: none;
   display: grid;
   gap: var(--space-3);
+  margin: 0;
+  padding: 0;
 }
 
 .credit {
@@ -24,42 +34,48 @@
 
 .licenseTag {
   flex-shrink: 0;
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--text-2);
   background: var(--surface-2);
-  border-radius: 999px;
+  border: 1px solid var(--border);
+  border-radius: var(--radius-pill);
   padding: 2px var(--space-3);
   white-space: nowrap;
-}
-
-.wrap {
-  display: grid;
-  gap: var(--space-5);
-  padding: var(--space-7);
-  max-width: 720px;
 }
 
 .row {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  gap: var(--space-4);
   margin-top: var(--space-4);
 }
 
+/* Segmented control: one radius on the outside, none between the segments. */
 .segmented {
   display: inline-flex;
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
   overflow: hidden;
+  background: var(--surface-2);
 }
 
 .segmented button {
   border: none;
   background: transparent;
-  padding: var(--space-2) var(--space-4);
+  padding: 6px var(--space-4);
   cursor: pointer;
   font-size: var(--fs-s);
+  font-weight: 500;
   color: var(--text-2);
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
+}
+
+.segmented button:hover {
+  color: var(--text);
 }
 
 .segmented button[data-selected='true'] {
@@ -71,6 +87,7 @@
   color: var(--text-2);
   font-size: var(--fs-s);
   margin: var(--space-3) 0;
+  max-width: 62ch;
 }
 
 .dataRow {

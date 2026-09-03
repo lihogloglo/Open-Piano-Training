@@ -51,7 +51,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { create: 3, ear: 1 },
     concepts: ['improv:degrees123'],
     prerequisites: ['s6.cp'],
-    minutes: 10,
+    minutes: 12,
     kind: 'lesson',
     steps: [
       {
@@ -68,9 +68,40 @@ export const stage7Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Nothing here is scored. There is no wrong note in a three-note palette, which is exactly why we start here.',
+            md: 'Nothing you improvise here is scored. There is no wrong note in a three-note palette, which is exactly why we start here.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play degrees **1, 2 and 3** of C major.',
+            notes: ['C', 'D', 'E'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Three neighbours. That is the entire palette for this lesson.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now end a phrase properly: play **3**, then **2**, then land on **1**.',
+            notes: ['E', 'D', 'C'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Stepping down onto the tonic is the oldest ending there is, and it works every time.',
+          },
+          {
+            kind: 'text',
+            md: 'One thing does get checked: whether you can **hear** which of the three you are on. That is the drill below — the app plays a degree, you find it. Improvising without that is guessing with good manners.',
           },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's7.u1.g1',
+        exercise: wait('ear-degree', { key: C, degreePool: [1, 2, 3], count: 4 }, 'rh', 'by-ear'),
+      },
+      {
+        kind: 'graded',
+        id: 's7.u1.q1',
+        passScore: 0.75,
+        exercise: wait('ear-degree', { key: C, degreePool: [1, 2, 3], count: 6 }, 'rh', 'by-ear'),
       },
       {
         kind: 'create',
@@ -89,7 +120,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { keys: 2, create: 2 },
     concepts: ['scale:c:majorpent:rh', 'scale:g:majorpent:rh', 'improv:pent'],
     prerequisites: ['s7.u1'],
-    minutes: 11,
+    minutes: 13,
     kind: 'lesson',
     steps: [
       {
@@ -120,7 +151,33 @@ export const stage7Units: Unit[] = [
             kind: 'text',
             md: 'This is why it is the safety net: over a I-V-vi-IV loop you can play any of those five notes at any moment and it will work. Use that freedom to practise **phrasing**, not note-picking.',
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play the two notes major pentatonic **leaves out** of C major.',
+            notes: ['F', 'B'],
+            count: 2,
+            distinct: 'name',
+            hint: 'The 4th and the 7th — the two that argue with the chords. Everything else stays.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now the five that remain: C, D, E, G, A.',
+            notes: ['C', 'D', 'E', 'G', 'A'],
+            count: 5,
+            distinct: 'name',
+            hint: 'No half steps anywhere in that set. That is the whole trick.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's7.u2.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'C', scaleType: 'major-pentatonic', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
@@ -168,7 +225,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { keys: 2, create: 2, ear: 1 },
     concepts: ['improv:chordtones'],
     prerequisites: ['s7.u2'],
-    minutes: 11,
+    minutes: 12,
     kind: 'lesson',
     steps: [
       {
@@ -186,6 +243,22 @@ export const stage7Units: Unit[] = [
           {
             kind: 'text',
             md: 'Two halves to this. The drill below waits for you at each chord, so it only asks **which** note is home. Then the backing loop plays in time and asks **when** — and that half is unscored, because rushing a landing to satisfy a computer is the opposite of the skill.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'The chord is **Am**. Play any note that is home in it.',
+            notes: ['A', 'C', 'E'],
+            count: 1,
+            distinct: 'name',
+            hint: 'Root, 3rd or 5th — any one of the three. There is no single right answer here, which is the point.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now an **approach note** into that A: play the key a half step below it, then the A itself.',
+            notes: ['G#', 'A'],
+            count: 2,
+            distinct: 'name',
+            hint: 'G♯ is not in the key at all — and it still sounds intentional, because it resolves.',
           },
         ],
       },
@@ -247,7 +320,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['theory:blues12', 'scale:c:blues:rh', 'improv:blues', 'song:blue-monday-blues'],
     prerequisites: ['s7.u3'],
-    minutes: 12,
+    minutes: 17,
     kind: 'lesson',
     steps: [
       {
@@ -285,18 +358,58 @@ export const stage7Units: Unit[] = [
               ],
             },
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play the **blue note** of the C blues scale — the flat 5.',
+            notes: ['Gb'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Between F and G. It belongs to no chord in the progression, and that is exactly why it sounds like the blues.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play the three roots of the 12-bar form in C: **C, F, G**.',
+            notes: ['C', 'F', 'G'],
+            count: 3,
+            distinct: 'name',
+            hint: 'I, IV and V — the same three chords as Stage 1, all turned into dominant 7ths.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's7.u4.g1',
+        exercise: wait(
+          'scale-run',
+          { tonic: 'C', scaleType: 'blues', hand: 'rh', direction: 'up' },
+          'rh',
+          'keys-lit',
+        ),
       },
       {
         kind: 'ladder',
         id: 's7.u4.l1',
-        tempos: [0.75, 1],
+        tempos: [0.6, 0.8, 1],
         exercise: tempo(
           'scale-run',
           { tonic: 'C', scaleType: 'blues', hand: 'rh', direction: 'updown' },
           88,
           'rh',
           'keys-lit',
+        ),
+      },
+      {
+        // The ladder above ramps the blues scale. Comping the twelve-bar form
+        // with both hands is a separate skill, so it gets its own ramp.
+        kind: 'ladder',
+        id: 's7.u4.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'chart-play',
+          { songId: 'blue-monday-blues', style: 'boomchuck', voicing: 'shell17' },
+          88,
+          'both',
+          'lead-sheet',
         ),
       },
       {
@@ -333,7 +446,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { keys: 3 },
     concepts: ['comp:swing'],
     prerequisites: ['s7.u4'],
-    minutes: 10,
+    minutes: 16,
     kind: 'lesson',
     steps: [
       {
@@ -366,7 +479,28 @@ export const stage7Units: Unit[] = [
             kind: 'text',
             md: 'The comping figure that goes with it: chord on beat 1, chord on the "and" of 3. Two stabs a bar, and the band swings.',
           },
+          {
+            kind: 'playCheck',
+            ask: 'Count "one and two and" in triplets — long, short, long, short. Then play a **C** on the swung "and" of 1.',
+            notes: ['C'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Late and leaning, not evenly halfway. If it feels slightly behind, that is right.',
+          },
+          {
+            kind: 'text',
+            md: 'The scoring windows are the same as always here — swing is a placement, not an excuse. What changes is where the grid puts the offbeat.',
+          },
         ],
+      },
+      {
+        kind: 'guided',
+        id: 's7.u5.g1',
+        exercise: wait(
+          'progression-play',
+          { key: C, roman: ['ii7', 'V7', 'Imaj7'], loops: 1, voicing: 'shell17' },
+          'both',
+        ),
       },
       {
         kind: 'ladder',
@@ -388,6 +522,20 @@ export const stage7Units: Unit[] = [
         ),
       },
       {
+        // Red Clay Road is a new chart at the fastest tempo in the course. It
+        // gets a full ramp from 60 rather than arriving at 100 cold.
+        kind: 'ladder',
+        id: 's7.u5.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'chart-play',
+          { songId: 'red-clay-road', style: 'swing', voicing: 'shell17', swing: 0.667 },
+          100,
+          'both',
+          'lead-sheet',
+        ),
+      },
+      {
         kind: 'graded',
         id: 's7.u5.q1',
         passScore: 0.75,
@@ -397,6 +545,18 @@ export const stage7Units: Unit[] = [
           100,
           'both',
           'lead-sheet',
+        ),
+      },
+      {
+        kind: 'create',
+        id: 's7.u5.c1',
+        prompt:
+          'The backing plays straight — you swing against it. Two stabs a bar, left hand on the roots, and let the offbeat arrive late on purpose. Feel is a decision you make with your hands, not a setting.',
+        exercise: wait(
+          'improv',
+          { key: C, palette: 'chordtones', roman: ['ii7', 'V7', 'Imaj7'], loops: 3, bpm: 92 },
+          'both',
+          'by-ear',
         ),
       },
     ],
@@ -409,7 +569,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { ear: 4 },
     concepts: ['ear:findkey', 'ear:prog:advanced'],
     prerequisites: ['s7.u5'],
-    minutes: 11,
+    minutes: 13,
     kind: 'lesson',
     steps: [
       {
@@ -441,6 +601,22 @@ export const stage7Units: Unit[] = [
             },
             options: ['On C', 'On F'],
             correctIndex: 0,
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Step 1, by hand: that cadence wanted to land somewhere. Play the tonic it was pointing at.',
+            notes: ['C'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Hum the note the phrase wants next, then hunt for it. The hunting is the skill; the humming is the answer.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Step 2: play the **bass notes** of a I–V–vi–IV in C — C, G, A, F.',
+            notes: ['C', 'G', 'A', 'F'],
+            count: 4,
+            distinct: 'name',
+            hint: 'Nine times out of ten the bass note is the chord root. Follow it and the chords come free.',
           },
         ],
       },
@@ -482,6 +658,18 @@ export const stage7Units: Unit[] = [
           'by-ear',
         ),
       },
+      {
+        kind: 'create',
+        id: 's7.u6.c1',
+        prompt:
+          'Backing on, and this time work backwards: play only the bass notes, one per bar, until you can predict the next one before it arrives. Then add the chords. That order — bass first, chords after — is how the procedure actually feels in the wild.',
+        exercise: wait(
+          'improv',
+          { key: C, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3, bpm: 76 },
+          'both',
+          'by-ear',
+        ),
+      },
     ],
   },
   {
@@ -492,7 +680,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { ear: 4, keys: 1 },
     concepts: ['skill:transcribe'],
     prerequisites: ['s7.u6'],
-    minutes: 12,
+    minutes: 14,
     kind: 'lesson',
     steps: [
       {
@@ -506,6 +694,14 @@ export const stage7Units: Unit[] = [
           {
             kind: 'text',
             md: 'You will get some wrong. That is fine and expected; the skill is the hunt, not a perfect score. Every wrong guess narrows the field.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Warm the procedure up: play a **C**, then the note a fifth above it, then the note a fourth above it.',
+            notes: ['C', 'G', 'F'],
+            count: 3,
+            distinct: 'name',
+            hint: 'Up a fifth, up a fourth — the two bass moves you will hear most often. Learn their distance by feel and half of transcription is done.',
           },
         ],
       },
@@ -548,6 +744,18 @@ export const stage7Units: Unit[] = [
           'by-ear',
         ),
       },
+      {
+        kind: 'create',
+        id: 's7.u7.c1',
+        prompt:
+          'Put the tool down. Play the loop by ear with the backing muted in your head — start it, then stop listening and keep going alone. Playing on when the reference disappears is the last thing that separates transcribing from following.',
+        exercise: wait(
+          'improv',
+          { key: C, palette: 'chordtones', roman: ['I', 'vi', 'IV', 'V'], loops: 3, bpm: 76 },
+          'both',
+          'by-ear',
+        ),
+      },
     ],
   },
   {
@@ -558,7 +766,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { theory: 2, keys: 2, create: 1 },
     concepts: ['voicing:colors', 'voicing:rootless-preview'],
     prerequisites: ['s7.u7'],
-    minutes: 11,
+    minutes: 13,
     kind: 'lesson',
     steps: [
       {
@@ -573,6 +781,22 @@ export const stage7Units: Unit[] = [
             kind: 'text',
             md: "And one look further down the road: **rootless voicings**. Once a bass player has the root, your left hand is free to play only 3rd, 7th and colour tones. That is where jazz piano goes next — Mark Levine's *The Jazz Piano Book* and PianoWithJonny are the usual next stops.",
           },
+          {
+            kind: 'playCheck',
+            ask: 'Play **Csus4**, then resolve it: move the 4th down to the 3rd.',
+            notes: ['F', 'E'],
+            count: 2,
+            distinct: 'name',
+            hint: 'The F is the suspension and the E is the release. A sus chord is a promise; the resolution is keeping it.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Now **C6** and **Cadd9** share the triad. Play the two notes that make them different: A, then D.',
+            notes: ['A', 'D'],
+            count: 2,
+            distinct: 'name',
+            hint: '6th and 9th. Neither one pulls anywhere — they just colour the chord you already had.',
+          },
         ],
       },
       {
@@ -586,13 +810,30 @@ export const stage7Units: Unit[] = [
         }),
       },
       {
+        kind: 'ladder',
+        id: 's7.u8.l1',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'flashcard',
+          {
+            kind: 'spell',
+            roots: ['C', 'F', 'G', 'D', 'A', 'Bb'],
+            qualities: ['sus4', '6', 'add9'],
+            count: 8,
+          },
+          46,
+        ),
+      },
+      {
         kind: 'graded',
         id: 's7.u8.q1',
         passScore: 0.8,
         exercise: wait('flashcard', {
           kind: 'spell',
           roots: ['C', 'D', 'E', 'F', 'G', 'A', 'Bb', 'Eb'],
-          qualities: ['sus2', 'sus4', '6', 'add9', 'maj7'],
+          // No sus2: the unit teaches sus4, 6 and add9, and nothing on the path
+          // ever teaches sus2.
+          qualities: ['sus4', '6', 'add9', 'maj7'],
           count: 10,
         }),
       },
@@ -600,7 +841,13 @@ export const stage7Units: Unit[] = [
         kind: 'create',
         id: 's7.u8.c1',
         prompt:
-          'Take any progression you like and replace one chord with its sus4, then resolve it. Then try an add9 on the last chord instead of a plain triad. Small changes, big difference.',
+          'Take the loop and replace one chord with its sus4, then resolve it. Then end on an add9 instead of a plain triad. Small changes, and the difference between a chord that is correct and one that sounds like a record.',
+        exercise: wait(
+          'improv',
+          { key: C, palette: 'chordtones', roman: ['I', 'vi', 'IV', 'V'], loops: 3, bpm: 76 },
+          'both',
+          'by-ear',
+        ),
       },
     ],
   },
@@ -612,7 +859,7 @@ export const stage7Units: Unit[] = [
     strandWeights: { keys: 3, ear: 3, create: 2 },
     concepts: [],
     prerequisites: ['s7.u8'],
-    minutes: 15,
+    minutes: 18,
     kind: 'checkpoint',
     steps: [
       {
@@ -668,6 +915,36 @@ export const stage7Units: Unit[] = [
           'rh',
           'by-ear',
         ),
+      },
+      {
+        kind: 'graded',
+        id: 's7.cp.q4',
+        passScore: 0.75,
+        exercise: tempo(
+          'progression-play',
+          {
+            key: C,
+            roman: ['ii7', 'V7', 'Imaj7'],
+            beatsPerChord: 4,
+            loops: 2,
+            style: 'swing',
+            voicing: 'shell17',
+            swing: 0.667,
+          },
+          92,
+          'both',
+        ),
+      },
+      {
+        kind: 'graded',
+        id: 's7.cp.q5',
+        passScore: 0.8,
+        exercise: wait('flashcard', {
+          kind: 'spell',
+          roots: ['C', 'D', 'E', 'F', 'G', 'A', 'Bb', 'Eb'],
+          qualities: ['maj7', '7', 'm7', 'sus4', '6', 'add9'],
+          count: 10,
+        }),
       },
       {
         kind: 'create',

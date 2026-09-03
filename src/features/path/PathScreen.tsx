@@ -8,6 +8,7 @@ import { ProgressRing } from '@/ui/ProgressRing';
 import { StarRating } from '@/ui/StarRating';
 import { Modal } from '@/ui/Modal';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
 import { toast } from '@/ui/Toast';
 import styles from './PathScreen.module.css';
 
@@ -53,14 +54,20 @@ export function PathScreen() {
         return (
           <section key={stage.id} className={styles['stage']}>
             <div className={styles['stageHeader']}>
-              <div>
+              <div className={styles['stageText']}>
                 <h2>
-                  Stage {stage.ordinal} — {stage.title}
+                  <span className={styles['stageNo']}>Stage {stage.ordinal}</span>
+                  {stage.title}
                 </h2>
                 <p className={styles['tagline']}>{stage.tagline}</p>
                 <p className={styles['summary']}>{stage.summary}</p>
               </div>
-              <ProgressRing fraction={real.length ? passed / real.length : 0} />
+              <div className={styles['stageRing']}>
+                <ProgressRing fraction={real.length ? passed / real.length : 0} />
+                <span className={styles['stageCount']}>
+                  {passed}/{real.length} units
+                </span>
+              </div>
             </div>
             <div className={styles['spine']}>
               {nodes.map((node, i) => {
@@ -72,6 +79,9 @@ export function PathScreen() {
                     key={node.id}
                     ref={isHere ? hereRef : undefined}
                     className={styles['node']}
+                    // One node per row, alternating sides: the spine runs
+                    // between the two columns and each node ties into it.
+                    style={{ gridRow: i + 1 }}
                     data-side={i % 2 === 0 ? 'left' : 'right'}
                     data-status={status}
                     data-kind={node.kind}
@@ -81,7 +91,7 @@ export function PathScreen() {
                       if (node.kind === 'review') {
                         void startWorkout().then((plan) => {
                           if (plan.blocks.length === 0) {
-                            toast('Nothing due to review — keep walking the path!');
+                            toast('Nothing due to review. Keep walking the path!');
                             return;
                           }
                           void navigate(`/drill/${plan.id}/0`);
@@ -92,7 +102,8 @@ export function PathScreen() {
                     }}
                   >
                     <span className={styles['dot']}>
-                      {status === 'passed' ? '✓' : status === 'locked' ? '' : ''}
+                      {status === 'passed' && <Icon name="check" size={15} weight="fill" />}
+                      {status === 'locked' && <Icon name="locked" size={13} />}
                     </span>
                     <span className={styles['nodeBody']}>
                       <span className={styles['nodeTitle']}>
@@ -124,7 +135,7 @@ export function PathScreen() {
         );
       })}
       <p className={styles['moreSoon']}>
-        Stage 5 — “The whole map” is being written. The path grows from here.
+        “The whole map”, Stage 5, is being written. The path grows from here.
       </p>
 
       {selected?.unit && (
@@ -140,7 +151,7 @@ export function PathScreen() {
           </div>
           {progress.get(selected.id)?.status === 'passed' && (
             <p>
-              Best score: {Math.round((progress.get(selected.id)?.bestScore ?? 0) * 100)}% — replay any time,
+              Best score: {Math.round((progress.get(selected.id)?.bestScore ?? 0) * 100)}%. Replay any time,
               your best stands.
             </p>
           )}

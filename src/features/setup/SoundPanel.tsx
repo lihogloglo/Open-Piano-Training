@@ -40,7 +40,7 @@ export function SoundPanel() {
       )}
       {sampler.state === 'error' && (
         <p className={styles['hint']} data-tone="err">
-          The piano samples didn't load — check your connection and try again. Everything else still works.
+          The piano samples didn't load. Check your connection and try again. Everything else still works.
         </p>
       )}
     </div>

@@ -1,6 +1,7 @@
 .viewportNotice {
-  background: color-mix(in srgb, var(--info) 14%, var(--surface));
-  border-bottom: 1px solid color-mix(in srgb, var(--info) 35%, var(--border));
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  box-shadow: inset 3px 0 0 var(--info);
   color: var(--text);
   font-size: var(--fs-s);
   padding: var(--space-2) var(--space-4);
@@ -8,8 +9,9 @@
 }
 
 .offlineBanner {
-  background: color-mix(in srgb, var(--warn) 14%, var(--surface));
-  border-bottom: 1px solid color-mix(in srgb, var(--warn) 35%, var(--border));
+  background: var(--surface-2);
+  border-bottom: 1px solid var(--border);
+  box-shadow: inset 3px 0 0 var(--warn);
   color: var(--text);
   font-size: var(--fs-s);
   padding: var(--space-2) var(--space-4);
@@ -19,45 +21,58 @@
 .shell {
   display: flex;
   height: 100%;
+  background: var(--bg);
 }
 
+/* The rail is part of the page, not a panel floating on it: same ground,
+   one hairline, no shadow. */
 .sidebar {
   display: flex;
   flex-direction: column;
-  width: 72px;
+  width: 68px;
   flex-shrink: 0;
   border-right: 1px solid var(--border);
-  background: var(--surface);
-  padding: var(--space-3);
-  gap: var(--space-4);
+  background: var(--bg);
+  padding: var(--space-4) var(--space-3) var(--space-3);
+  gap: var(--space-5);
   transition: width var(--dur-med) var(--ease);
 }
 
 .sidebar[data-expanded='true'] {
-  width: 220px;
+  width: 208px;
 }
 
 .logo {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2);
-  font-weight: 650;
-  font-size: var(--fs-l);
+  gap: var(--space-3);
+  padding: var(--space-1) var(--space-2);
+  min-height: 28px;
 }
 
 .logoMark {
-  color: var(--accent-text);
+  display: grid;
+  place-items: center;
+  color: var(--accent);
+  flex-shrink: 0;
+}
+
+.logoText {
+  font-weight: 600;
+  font-size: var(--fs-l);
+  letter-spacing: var(--track-tight);
+  white-space: nowrap;
 }
 
 .navList {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 2px;
   flex: 1;
 }
 
 .navItem {
+  position: relative;
   display: flex;
   align-items: center;
   gap: var(--space-3);
@@ -65,7 +80,12 @@
   border-radius: var(--radius-m);
   color: var(--text-2);
   font-weight: 500;
-  transition: background var(--dur-fast) var(--ease);
+  font-size: var(--fs-m);
+  white-space: nowrap;
+  text-decoration: none;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .navItem:hover {
@@ -73,15 +93,35 @@
   color: var(--text);
 }
 
-.active {
+/* Current section: a filled row plus an accent rail on the leading edge, so
+   the state survives greyscale and colour-blind viewing. */
+.active,
+.active:hover {
   background: var(--surface-2);
   color: var(--text);
+  font-weight: 600;
+}
+
+.active::before {
+  content: '';
+  position: absolute;
+  left: calc(var(--space-3) * -1 + 1px);
+  top: 50%;
+  height: 18px;
+  width: 3px;
+  border-radius: var(--radius-pill);
+  background: var(--accent);
+  transform: translateY(-50%);
+}
+
+.active svg {
+  color: var(--accent-text);
 }
 
 .bottom {
   display: flex;
   flex-direction: column;
-  gap: var(--space-2);
+  gap: 2px;
 }
 
 .midiStatus {
@@ -91,11 +131,22 @@
   padding: var(--space-2) var(--space-3);
   color: var(--text-3);
   font-size: var(--fs-s);
+  border-radius: var(--radius-m);
+  text-decoration: none;
+  white-space: nowrap;
+  transition: background var(--dur-fast) var(--ease);
 }
 
+.midiStatus:hover {
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+/* The one place a coloured dot is allowed: it reports real hardware state. */
 .dot {
-  width: 10px;
-  height: 10px;
+  width: 8px;
+  height: 8px;
+  margin: 0 6px;
   border-radius: 50%;
   background: var(--text-3);
   flex-shrink: 0;
@@ -103,6 +154,7 @@
 
 .dot[data-status='connected'] {
   background: var(--ok);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--ok) 22%, transparent);
 }
 .dot[data-status='none'] {
   background: var(--warn);
@@ -119,10 +171,16 @@
   padding: var(--space-2);
   border-radius: var(--radius-m);
   align-self: flex-start;
+  display: grid;
+  place-items: center;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .collapse:hover {
   background: var(--surface-2);
+  color: var(--text);
 }
 
 .main {

@@ -118,7 +118,13 @@ export async function scheduleTempoRun(page: Page, s: Snap): Promise<void> {
  */
 const LESSON_BUDGET_MS = 15 * 60_000;
 
-export async function driveLesson(page: Page, until?: (url: string) => boolean): Promise<void> {
+export async function driveLesson(
+  page: Page,
+  until?: (url: string) => boolean,
+  /** Called with every snapshot taken while driving, so a test can assert on
+   *  a step it passes through without re-implementing the drive loop. */
+  watch?: (s: Snap) => void,
+): Promise<void> {
   await waitForApp(page);
   const scheduledAnchors = new Set<number>();
   const deadline = Date.now() + LESSON_BUDGET_MS;
@@ -139,6 +145,7 @@ export async function driveLesson(page: Page, until?: (url: string) => boolean):
     }
 
     const s = await snap(page);
+    watch?.(s);
     if (s.mode === 'wait' && s.phase === 'running') {
       // Ear previews gate input; pressing during them is harmlessly ignored.
       if (s.currentTargetMidis.length > 0) await playChord(page, s.currentTargetMidis);

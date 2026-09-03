@@ -37,7 +37,7 @@ export interface SessionInputs {
 
 const CREATE_PROMPTS = [
   'Two minutes of free play. Pick three notes you can name and build a tiny riff.',
-  'Play something that sounds like rain. No rules — just listen while you do it.',
+  'Play something that sounds like rain. No rules, just listen while you do it.',
   'Take the last pattern you practiced and change one note. Better or worse? Why?',
   'Play the lowest note you know by name, then the highest. Fill the middle with anything.',
 ];

@@ -23,7 +23,7 @@ export function ScoreDial({ score, size = 110 }: { score: number; size?: number 
         x="50"
         y="56"
         textAnchor="middle"
-        style={{ fontSize: 22, fontWeight: 650, fill: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}
+        style={{ fontSize: 22, fontWeight: 600, fill: 'var(--text)', fontVariantNumeric: 'tabular-nums' }}
       >
         {pct}%
       </text>

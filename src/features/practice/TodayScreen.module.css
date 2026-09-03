@@ -1,7 +1,7 @@
 .wrap {
-  max-width: 720px;
+  max-width: 740px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
+  padding: var(--space-7) var(--space-5) var(--space-8);
   display: grid;
   gap: var(--space-5);
 }
@@ -10,66 +10,47 @@
   display: flex;
   justify-content: space-between;
   align-items: flex-start;
-  gap: var(--space-4);
+  gap: var(--space-5);
+  padding-bottom: var(--space-2);
 }
 
 .sub {
   color: var(--text-2);
   font-size: var(--fs-s);
+  margin-top: var(--space-2);
 }
 
-/* Weekly recap card (07): the honest numbers, dismissible. */
-.recapCard {
-  display: grid;
-  gap: var(--space-3);
-}
-
-.recapHead {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--space-3);
-}
-
-.recapStats {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
-  gap: var(--space-3);
-}
-
-.stat {
-  display: grid;
-  gap: 2px;
-}
-
-.statValue {
-  font-size: var(--fs-xl);
-  font-weight: 650;
-  font-variant-numeric: tabular-nums;
-}
-
-.statLabel {
-  color: var(--text-3);
-  font-size: var(--fs-xs);
-}
+/* ── streak module ─────────────────────────────────────────────────────── */
 
 .streakBox {
   display: grid;
   gap: var(--space-2);
   justify-items: end;
+  flex-shrink: 0;
 }
 
 .flame {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   font-size: var(--fs-l);
-  font-weight: 650;
-  opacity: 0.5;
+  font-weight: 600;
+  color: var(--text-3);
+  line-height: 1;
 }
 
 .flame[data-active='true'] {
-  opacity: 1;
+  color: var(--text);
+}
+
+.flame[data-active='true'] svg {
+  color: var(--warn);
 }
 
 .freeze {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
   font-size: var(--fs-xs);
   color: var(--info);
 }
@@ -80,8 +61,8 @@
 }
 
 .dayDot {
-  width: 9px;
-  height: 9px;
+  width: 8px;
+  height: 8px;
   border-radius: 50%;
   background: var(--surface-2);
   border: 1px solid var(--border);
@@ -94,75 +75,149 @@
 
 .dayDot[data-today='true'] {
   outline: 2px solid var(--accent);
-  outline-offset: 1px;
+  outline-offset: 2px;
 }
+
+/* ── catch-up banner ───────────────────────────────────────────────────── */
 
 .banner {
   display: flex;
   align-items: center;
-  gap: var(--space-3);
-  border: 1px solid var(--warn);
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  box-shadow: inset 3px 0 0 var(--warn);
   border-radius: var(--radius-m);
   padding: var(--space-3) var(--space-4);
   font-size: var(--fs-s);
+  color: var(--text-2);
 }
+
+/* ── today's session: the one thing this page is for ───────────────────── */
 
 .sessionCard {
   display: grid;
   gap: var(--space-4);
+  padding: var(--space-5) var(--space-5) var(--space-5);
 }
 
 .sessionHead {
   display: flex;
   justify-content: space-between;
   align-items: baseline;
+  gap: var(--space-4);
 }
 
 .minutes {
   color: var(--text-3);
-  font-size: var(--fs-s);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
 }
 
+/* Hairlines, not nested boxes: the blocks are one list, not four cards. */
 .blocks {
   list-style: none;
   margin: 0;
   padding: 0;
   display: grid;
-  gap: var(--space-2);
+  border-top: 1px solid var(--border);
 }
 
 .block {
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  padding: var(--space-2) var(--space-3);
-  border-radius: var(--radius-m);
-  background: var(--surface-2);
+  padding: var(--space-3) var(--space-1);
+  border-bottom: 1px solid var(--border);
 }
 
-.block[data-done='true'] {
-  opacity: 0.6;
+.blockIcon {
+  display: grid;
+  place-items: center;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: var(--radius-s);
+  background: var(--surface-2);
+  color: var(--text-2);
+}
+
+.block[data-done='true'] .blockLabel,
+.block[data-done='true'] .blockMin {
+  color: var(--text-3);
+  text-decoration: line-through;
+  text-decoration-color: var(--border-strong);
 }
 
 .block[data-done='true'] .blockIcon {
-  color: var(--ok);
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 
 .blockLabel {
   flex: 1;
   font-weight: 500;
   font-size: var(--fs-s);
+  min-width: 0;
 }
 
 .blockMin {
   color: var(--text-3);
+  font-family: var(--font-mono);
   font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+}
+
+.sessionCard :global(button) {
+  width: 100%;
 }
 
 .doneLine {
   color: var(--ok);
+  font-size: var(--fs-s);
   font-weight: 500;
 }
+
+/* ── weekly recap ──────────────────────────────────────────────────────── */
+
+.recapCard {
+  display: grid;
+  gap: var(--space-4);
+}
+
+.recapHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+}
+
+.recapStats {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(90px, 1fr));
+  gap: var(--space-4);
+}
+
+.stat {
+  display: grid;
+  gap: 2px;
+}
+
+.statValue {
+  font-size: var(--fs-xl);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  font-variant-numeric: tabular-nums;
+}
+
+.statLabel {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+}
+
+/* ── secondary actions ─────────────────────────────────────────────────── */
 
 .secondary {
   display: grid;
@@ -170,8 +225,47 @@
   gap: var(--space-4);
 }
 
+@media (max-width: 640px) {
+  .secondary {
+    grid-template-columns: 1fr;
+  }
+  .header {
+    flex-direction: column;
+  }
+  .streakBox {
+    justify-items: start;
+  }
+}
+
+/* An offer, not a task: it sits on one line so it never competes with the
+   session card above it. */
+.promoCard {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-5);
+  padding: var(--space-4) var(--space-5);
+}
+
+.promoCard .sub {
+  margin-top: 4px;
+}
+
+@media (max-width: 640px) {
+  .promoCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+}
+
 .smallCard {
   display: grid;
-  gap: var(--space-3);
+  gap: var(--space-2);
   justify-items: start;
+  align-content: start;
+}
+
+.smallCard :global(button) {
+  margin-top: var(--space-2);
 }

@@ -35,7 +35,7 @@ test('going offline is reported as information, not an error', async ({ page, co
   await page.evaluate(() => window.dispatchEvent(new Event('offline')));
   const banner = page.getByTestId('offline-banner');
   await expect(banner).toBeVisible();
-  await expect(banner).toContainText('everything still works');
+  await expect(banner).toContainText(/everything still works/i);
 
   await context.setOffline(false);
   await page.evaluate(() => window.dispatchEvent(new Event('online')));

@@ -12,6 +12,7 @@ export const scaleRunParams = z.object({
     'major-pentatonic',
     'minor-pentatonic',
     'blues',
+    'chromatic',
   ]),
   hand: z.enum(['rh', 'lh']),
   octaves: z.union([z.literal(1), z.literal(2)]).default(1),
@@ -27,6 +28,7 @@ const SCALE_LABEL: Record<ScaleType, string> = {
   'major-pentatonic': 'major pentatonic',
   'minor-pentatonic': 'minor pentatonic',
   blues: 'blues',
+  chromatic: 'chromatic',
 };
 
 export function generateScaleRun(def: ExerciseDef, _seed: number): ExerciseInstance {
@@ -76,8 +78,8 @@ export function generateScaleRun(def: ExerciseDef, _seed: number): ExerciseInsta
 }
 
 function key(p: ScaleRunParams): { tonic: string; mode: 'major' | 'minor' } {
-  return {
-    tonic: p.tonic,
-    mode: p.scaleType === 'major' || p.scaleType === 'major-pentatonic' ? 'major' : 'minor',
-  };
+  // Chromatic has no mode; call it major so the walk is spelled with sharps,
+  // which is the convention for an ascending chromatic line.
+  const majorish = ['major', 'major-pentatonic', 'chromatic'];
+  return { tonic: p.tonic, mode: majorish.includes(p.scaleType) ? 'major' : 'minor' };
 }

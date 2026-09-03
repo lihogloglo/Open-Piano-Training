@@ -46,13 +46,13 @@ export function RatingDial({
         y="52"
         textAnchor="middle"
         style={{
-          fontSize: pending ? 16 : 24,
-          fontWeight: 650,
+          fontSize: pending ? 12 : 24,
+          fontWeight: 600,
           fill: pending ? 'var(--text-3)' : 'var(--text)',
           fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {pending ? '—' : levelDisplay(level)}
+        {pending ? 'unrated' : levelDisplay(level)}
       </text>
       <text x="50" y="70" textAnchor="middle" style={{ fontSize: 11, fill: 'var(--text-2)' }}>
         {label}

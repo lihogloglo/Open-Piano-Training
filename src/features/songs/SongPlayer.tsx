@@ -45,10 +45,7 @@ export function SongPlayer() {
     return useRunStore.subscribe((s, prev) => {
       if (s.phase === 'done' && prev.phase !== 'done' && s.result) {
         const pct = Math.round(s.result.score * 100);
-        toast(
-          s.result.passed ? `Nice — ${pct}%` : `${pct}% — loop it again`,
-          s.result.passed ? 'ok' : 'info',
-        );
+        toast(s.result.passed ? `Nice, ${pct}%` : `${pct}%, loop it again`, s.result.passed ? 'ok' : 'info');
       }
     });
   }, []);
@@ -132,7 +129,7 @@ export function SongPlayer() {
           </div>
         ) : (
           <div className={styles['intro']}>
-            <p>One chord per bar, root at the bottom, any voicing. Pick a key — the chart follows you.</p>
+            <p>One chord per bar, root at the bottom, any voicing. Pick a key and the chart follows you.</p>
             {result && <p>Last take: {Math.round(result.score * 100)}%</p>}
           </div>
         )}

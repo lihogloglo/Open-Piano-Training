@@ -1,7 +1,8 @@
 .text {
   font-size: var(--fs-l);
   line-height: 1.6;
-  max-width: 560px;
+  max-width: 62ch;
+  color: var(--text);
 }
 
 .demo {
@@ -46,13 +47,22 @@
   padding: var(--space-3) var(--space-4);
   cursor: pointer;
   min-width: 64px;
-  transition: transform var(--dur-fast) var(--ease);
+  transition:
+    transform var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
 }
 
 .chip:hover {
   transform: translateY(-2px);
+  border-color: var(--border-strong);
 }
 
+.chip:active {
+  transform: translateY(0);
+}
+
+/* Degree colour is never the only cue: the roman numeral is always printed
+   next to it. */
 .chip[data-degree='1'] .roman {
   color: var(--deg-1);
 }
@@ -76,8 +86,9 @@
 }
 
 .roman {
+  font-family: var(--font-mono);
   font-size: var(--fs-xl);
-  font-weight: 650;
+  font-weight: 600;
 }
 
 .chipRoot {
@@ -90,11 +101,46 @@
   height: 240px;
 }
 
+.playCheck {
+  display: grid;
+  gap: var(--space-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-l);
+  padding: var(--space-4);
+  background: var(--surface);
+  max-width: 560px;
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+/* Satisfied state is a border + a tick, never colour alone. */
+.playCheck[data-done] {
+  border-color: var(--accent);
+}
+
+/* Not yet its turn: legible, but visibly not the thing to answer. */
+.playCheck[data-waiting] {
+  opacity: 0.55;
+}
+
+.checkMark {
+  display: inline-flex;
+  width: 18px;
+  color: var(--accent);
+}
+
+/* The running count sits at the far edge and never wraps mid-fraction. */
+.checkCount {
+  margin-left: auto;
+  white-space: nowrap;
+  color: var(--text-3);
+  font-size: var(--fs-s);
+}
+
 .earCheck {
   display: flex;
   flex-direction: column;
   gap: var(--space-2);
-  padding: var(--space-3);
+  padding: var(--space-4);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
   background: var(--surface-2);

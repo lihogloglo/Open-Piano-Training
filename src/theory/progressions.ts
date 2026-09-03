@@ -68,5 +68,8 @@ export const PROGRESSION_CATALOG: NamedProgression[] = [
   { id: 'ii-v-i', name: 'ii–V–I', romans: ['ii7', 'V7', 'Imaj7'], mode: 'major' },
   { id: 'i-iii-iv-v', name: 'Climbing ballad', romans: ['I', 'iii', 'IV', 'V'], mode: 'major' },
   { id: 'min-i-vi-iii-vii', name: 'Minor anthem', romans: ['i', 'VI', 'III', 'VII'], mode: 'minor' },
-  { id: 'min-i-iv-v', name: 'Minor three chords', romans: ['i', 'iv', 'v'], mode: 'minor' },
+  // V, not v: s5.u4 teaches the raised 7th of harmonic minor precisely so a
+  // minor key gets a dominant with a leading tone in it. A natural-minor v is
+  // limp, and the curriculum never teaches it.
+  { id: 'min-i-iv-v', name: 'Minor three chords', romans: ['i', 'iv', 'V'], mode: 'minor' },
 ];

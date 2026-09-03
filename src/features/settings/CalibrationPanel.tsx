@@ -41,7 +41,7 @@ export function CalibrationPanel() {
         setTimeout(() => {
           stop();
           if (deltas.length < 4) {
-            toast('Not enough presses — try again and hit every click', 'warn');
+            toast('Not enough presses. Try again and hit every click', 'warn');
             return;
           }
           const offset = calibrationOffset(deltas);

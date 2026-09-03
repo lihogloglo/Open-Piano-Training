@@ -3,27 +3,37 @@
   align-items: center;
   justify-content: center;
   gap: var(--space-2);
+  /* One radius for every button, at every size. */
   border-radius: var(--radius-m);
   border: 1px solid var(--border);
   background: var(--surface);
-  padding: var(--space-2) var(--space-4);
+  color: var(--text);
+  padding: 7px var(--space-4);
   font-size: var(--fs-m);
   font-weight: 500;
+  letter-spacing: -0.006em;
+  /* Labels never wrap: a two-line button is a broken button. */
+  white-space: nowrap;
   cursor: pointer;
   transition:
     background var(--dur-fast) var(--ease),
     border-color var(--dur-fast) var(--ease),
+    box-shadow var(--dur-fast) var(--ease),
     transform var(--dur-fast) var(--ease);
 }
 
 .button:hover:not(:disabled) {
   background: var(--surface-2);
+  border-color: var(--border-strong);
 }
+
+/* Tactile: the control moves under the press. */
 .button:active:not(:disabled) {
   transform: translateY(1px);
 }
+
 .button:disabled {
-  opacity: 0.5;
+  opacity: 0.45;
   cursor: not-allowed;
 }
 
@@ -31,18 +41,32 @@
   background: var(--accent);
   border-color: var(--accent);
   color: var(--accent-contrast);
+  box-shadow: var(--elev-1);
 }
+
 .primary:hover:not(:disabled) {
-  background: color-mix(in srgb, var(--accent) 88%, black);
+  background: color-mix(in srgb, var(--accent) 88%, var(--text));
+  border-color: color-mix(in srgb, var(--accent) 88%, var(--text));
+}
+
+/* The focus ring needs a gap it can read against on a filled button. */
+.primary:focus-visible {
+  outline-offset: 3px;
 }
 
 .ghost {
   background: transparent;
+  border-color: transparent;
+  color: var(--accent-text);
+  padding-inline: var(--space-3);
+}
+
+.ghost:hover:not(:disabled) {
+  background: var(--surface-2);
   border-color: transparent;
 }
 
 .large {
   padding: var(--space-3) var(--space-5);
   font-size: var(--fs-l);
-  border-radius: var(--radius-l);
 }

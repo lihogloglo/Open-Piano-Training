@@ -95,7 +95,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
       const nextIdx = plan.blocks.findIndex(
         (_, i) => i !== blockIdx && !plan.completedBlocks.includes(i) && i > blockIdx,
       );
-      toast(block.kind === 'create' ? 'Nice — session block done' : 'Block complete!', 'ok');
+      toast(block.kind === 'create' ? 'Nice, session block done' : 'Block complete!', 'ok');
       if (nextIdx !== -1) {
         const next = plan.blocks[nextIdx];
         if (next?.kind === 'new') {
@@ -154,7 +154,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
           <div className={styles['createPrompt']}>
             <h2>Make something</h2>
             <p>{block.prompt}</p>
-            <p className={styles['sub']}>No score, no clock — just play.</p>
+            <p className={styles['sub']}>No score, no clock. Just play.</p>
           </div>
         </div>
         <Keyboard

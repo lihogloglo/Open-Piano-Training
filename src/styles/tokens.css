@@ -1,24 +1,54 @@
-:root {
-  /* light */
-  --bg: #f7f7f5;
-  --surface: #ffffff;
-  --surface-2: #efefec;
-  --border: #dededa;
-  --text: #1a1b1e;
-  --text-2: #5c5f66;
-  --text-3: #656873;
-  --accent: #3e63dd;
-  /* The accent as TEXT (links, eyebrows). Kept separate from --accent so the
-     fill colour can stay vivid while the text tint clears AA on the surface. */
-  --accent-text: #3355cc;
-  --accent-contrast: #ffffff;
+/**
+ * Keysense design tokens.
+ *
+ * The language is "ink and ivory": a keyboard is black, white and nothing
+ * else, so the interface chrome stays achromatic and every colour on screen
+ * carries musical meaning. One accent (jade) marks what is interactive or
+ * current. Degrees, judgements and feedback own the rest of the spectrum.
+ *
+ * Rules this file encodes, so nothing drifts later:
+ *   - ONE accent. Jade. It is the only decorative colour in the chrome.
+ *   - ONE corner-radius system: s = controls, m = buttons/rows, l = panels,
+ *     pill = status badges only. Nothing else invents a radius.
+ *   - ONE neutral family. Cool grey, very slightly green, in both themes.
+ *     No warm greys anywhere.
+ *   - Shadows are tinted to the neutral, never pure black.
+ *   - No pure #000 and no pure #fff as a surface.
+ */
 
-  /* feedback */
-  --ok: #218358;
-  --warn: #d97706;
-  --err: #ce2c31;
-  --info: #0072d3;
-  --judge-perfect: #21a66e;
+:root {
+  color-scheme: light;
+
+  /* ── neutrals (light) ────────────────────────────────────────────────── */
+  --bg: #f1f3f1;
+  --surface: #fbfbfa;
+  --surface-2: #e7eae7;
+  --surface-3: #dde1dd;
+  --border: #d4d8d3;
+  --border-strong: #b9bfb9;
+  --text: #14181a;
+  --text-2: #4f5559;
+  --text-3: #5c6367;
+
+  /* ── accent ──────────────────────────────────────────────────────────── */
+  --accent: #0e786a;
+  /* The accent as TEXT (links, labels). Kept separate from --accent so the
+     fill colour can stay vivid while the text tint clears AA on the surface. */
+  --accent-text: #0a6053;
+  --accent-contrast: #ffffff;
+  /* Tints, so components stop hand-rolling color-mix with different ratios. */
+  --accent-soft: #dff0ec;
+  --accent-line: #a7d4cb;
+
+  /* ── feedback ────────────────────────────────────────────────────────── */
+  --ok: #2c7d40;
+  --warn: #9a5b09;
+  --err: #c22a2f;
+  --info: #0a67c0;
+
+  /* ── judgement (fixed in both themes: these are read at a glance, side by
+     side, and must not shift meaning when the theme flips) ─────────────── */
+  --judge-perfect: #22a05a;
   --judge-good: #7bc96a;
   --judge-ok: #d9a514;
   --judge-wrong: #e5484d;
@@ -26,7 +56,8 @@
   --judge-early: #e8a33d;
   --judge-late: #4fa9f2;
 
-  /* degree colors — FIXED, identical in both themes, always paired with a numeral */
+  /* ── degrees — FIXED, identical in both themes, always paired with a
+     numeral so colour is never the only cue ──────────────────────────── */
   --deg-1: #e5484d;
   --deg-2: #f76b15;
   --deg-3: #ffc53d;
@@ -36,15 +67,19 @@
   --deg-7: #8e4ec6;
   --deg-x: #8b8d98; /* non-diatonic */
 
-  /* keyboard */
-  --key-white: #fafaf8;
-  --key-black: #26282c;
-  --key-border: #c9c9c4;
-  --key-active: #3e63dd;
+  /* ── keyboard ────────────────────────────────────────────────────────── */
+  --key-white: #fbfbf9;
+  --key-black: #22262a;
+  --key-border: #c3c9c3;
+  --key-active: #0e786a;
 
-  --radius-s: 6px;
-  --radius-m: 10px;
-  --radius-l: 16px;
+  /* ── shape ───────────────────────────────────────────────────────────── */
+  --radius-s: 4px; /* inputs, selects, small chips */
+  --radius-m: 8px; /* buttons, list rows, tiles */
+  --radius-l: 14px; /* cards, panels, modals */
+  --radius-pill: 999px; /* status badges only */
+
+  /* ── space (4px base) ────────────────────────────────────────────────── */
   --space-1: 4px;
   --space-2: 8px;
   --space-3: 12px;
@@ -52,33 +87,62 @@
   --space-5: 24px;
   --space-6: 32px;
   --space-7: 48px;
-  --font-ui: 'Inter', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'JetBrains Mono', monospace;
+  --space-8: 72px;
+
+  /* ── type ────────────────────────────────────────────────────────────── */
+  --font-ui: 'Geist Variable', 'Geist', system-ui, -apple-system, sans-serif;
+  --font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, monospace;
   --fs-xs: 12px;
   --fs-s: 13.5px;
   --fs-m: 15px;
   --fs-l: 18px;
-  --fs-xl: 24px;
-  --fs-xxl: 34px;
-  --elev-1: 0 1px 2px rgb(0 0 0 / 0.06);
-  --elev-2: 0 4px 16px rgb(0 0 0 / 0.1);
+  --fs-xl: 22px;
+  --fs-xxl: 30px;
+  --fs-display: 40px;
+  --track-tight: -0.022em;
+  --track-label: 0.08em;
+
+  /* ── elevation (tinted to the neutral, never pure black) ─────────────── */
+  --elev-1: 0 1px 1px rgb(20 24 26 / 0.04), 0 2px 6px -2px rgb(20 24 26 / 0.06);
+  --elev-2: 0 2px 4px -2px rgb(20 24 26 / 0.08), 0 16px 36px -12px rgb(20 24 26 / 0.18);
+
+  /* ── motion ──────────────────────────────────────────────────────────── */
   --dur-fast: 120ms;
   --dur-med: 200ms;
+  --dur-slow: 380ms;
   --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
 [data-theme='dark'] {
-  --bg: #0f1115;
-  --surface: #16181d;
-  --surface-2: #1d2026;
-  --border: #2a2e36;
-  --text: #edeef0;
-  --text-2: #a7abb4;
-  --text-3: #9096a3;
-  --accent-text: #8aa4f2;
-  --key-white: #e8e8e4;
-  --key-black: #17181b;
-  --key-border: #3a3e46;
-  --elev-1: 0 1px 2px rgb(0 0 0 / 0.4);
-  --elev-2: 0 8px 24px rgb(0 0 0 / 0.5);
+  color-scheme: dark;
+
+  --bg: #0b0d0e;
+  --surface: #131718;
+  --surface-2: #1c2122;
+  --surface-3: #262b2c;
+  --border: #2b3132;
+  --border-strong: #3c4344;
+  --text: #ecefed;
+  --text-2: #9ea6a5;
+  --text-3: #949c9b;
+
+  --accent: #2fcfad;
+  --accent-text: #4fddbe;
+  --accent-contrast: #04211c;
+  --accent-soft: #10302b;
+  --accent-line: #1d5a4e;
+
+  --ok: #43b95c;
+  --warn: #d59a35;
+  --err: #ee6a6e;
+  --info: #57a8f4;
+
+  --key-white: #e7e9e6;
+  --key-black: #16191a;
+  --key-border: #3a4142;
+  --key-active: #2fcfad;
+
+  --elev-1: 0 1px 1px rgb(0 0 0 / 0.4), 0 2px 8px -2px rgb(0 0 0 / 0.5);
+  --elev-2: 0 2px 6px -2px rgb(0 0 0 / 0.5), 0 20px 44px -16px rgb(0 0 0 / 0.7);
 }

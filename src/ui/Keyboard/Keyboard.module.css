@@ -13,10 +13,14 @@
     transform 80ms var(--ease);
 }
 
+/* Key labels sit on the key face, so they follow the key's own ink rather
+   than the page text colour: white keys stay light in both themes. */
 .label {
   font-family: var(--font-ui);
   font-size: 9px;
-  fill: var(--text-3);
+  font-weight: 500;
+  fill: var(--key-black);
+  opacity: 0.62;
   pointer-events: none;
 }
 

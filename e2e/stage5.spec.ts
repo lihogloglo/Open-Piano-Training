@@ -1,7 +1,10 @@
 import { test, expect } from '@playwright/test';
 import { completeLesson, seedOnboarded, seedPassedUnits } from './drive';
 
-test.describe.configure({ mode: 'serial', timeout: 600_000 });
+// 15 min, not 10: the rehearsal lint pass gave s5.u4-u8 a guided rep and a
+// ladder each, so driving one of these units now takes ~6 min locally and more
+// on slower CI hardware.
+test.describe.configure({ mode: 'serial', timeout: 900_000 });
 
 const THROUGH_STAGE4 = [
   ...['s0.u1', 's0.u2', 's0.u3', 's0.u4', 's0.u5', 's0.u6', 's0.cp'],

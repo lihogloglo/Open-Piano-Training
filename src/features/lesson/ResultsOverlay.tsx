@@ -50,7 +50,7 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
           <ScoreDial score={p.result.score} />
           <div className={styles['summary']}>
             <StarRating stars={p.result.stars} />
-            <h3>{p.result.passed ? 'Passed!' : 'Not yet — you’re close'}</h3>
+            <h3>{p.result.passed ? 'Passed!' : 'Not yet, you’re close'}</h3>
             <p className={styles['split']}>
               Notes {Math.round(p.result.pitchAccuracy * 100)}%
               {p.isTempo && <> · Timing {Math.round(p.result.timingAccuracy * 100)}%</>}

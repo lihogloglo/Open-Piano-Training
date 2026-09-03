@@ -9,18 +9,21 @@ export function ProgressRing({ fraction, size = 44 }: { fraction: number; size?:
       role="img"
       aria-label={`${Math.round(fraction * 100)}% complete`}
     >
-      <circle cx="22" cy="22" r={r} fill="none" stroke="var(--surface-2)" strokeWidth="4" />
-      <circle
-        cx="22"
-        cy="22"
-        r={r}
-        fill="none"
-        stroke="var(--accent)"
-        strokeWidth="4"
-        strokeLinecap="round"
-        strokeDasharray={`${c * fraction} ${c}`}
-        transform="rotate(-90 22 22)"
-      />
+      <circle cx="22" cy="22" r={r} fill="none" stroke="var(--surface-3)" strokeWidth="4" />
+      {/* A round cap on a zero-length arc draws a dot, which reads as 1%. */}
+      {fraction > 0 && (
+        <circle
+          cx="22"
+          cy="22"
+          r={r}
+          fill="none"
+          stroke="var(--accent)"
+          strokeWidth="4"
+          strokeLinecap="round"
+          strokeDasharray={`${c * fraction} ${c}`}
+          transform="rotate(-90 22 22)"
+        />
+      )}
       <text
         x="22"
         y="26"

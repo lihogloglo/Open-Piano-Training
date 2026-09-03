@@ -59,11 +59,19 @@ const FINAL_CHECKPOINT = 's7.cp';
  * tint the whole key rather than lying about which notes are "in".
  */
 function improvTint(
-  params: { key?: KeyContext; palette?: string } | undefined,
+  params: { key?: KeyContext; palette?: string; tintDegrees?: number[] } | undefined,
 ): { tonic: string; degrees?: readonly number[] } | null {
   if (!params?.key) return null;
-  const degrees =
-    params.palette === 'degrees123' ? [1, 2, 3] : params.palette === 'pentatonic' ? [1, 2, 3, 5, 6] : null;
+  // An authored `tintDegrees` wins: a create step that says "only C and F"
+  // should light C and F, not the whole key. (Ignored by the generator's
+  // schema, which strips it — it is a presentation hint, not exercise data.)
+  const degrees = params.tintDegrees?.length
+    ? params.tintDegrees
+    : params.palette === 'degrees123'
+      ? [1, 2, 3]
+      : params.palette === 'pentatonic'
+        ? [1, 2, 3, 5, 6]
+        : null;
   return degrees ? { tonic: params.key.tonic, degrees } : { tonic: params.key.tonic };
 }
 
@@ -95,11 +103,11 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
     if (placement) {
       const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
       if (next) {
-        toast(`${unit.title} — passed! Next checkpoint…`, 'ok');
+        toast(`${unit.title} passed! Next checkpoint…`, 'ok');
         void navigate(`/lesson/${next}?placement=1`);
         return;
       }
-      toast('Placement complete — the path opens well ahead!', 'ok');
+      toast('Placement complete. The path opens well ahead!', 'ok');
       void navigate('/path');
       return;
     }
@@ -108,7 +116,7 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
       void navigate('/epilogue');
       return;
     }
-    toast(`${unit.title} — complete!`, 'ok');
+    toast(`${unit.title} complete!`, 'ok');
     if (sessionId && sessionBlock !== null) {
       // Minutes already counted above; the block just gets ticked off.
       await markBlockComplete(sessionId, Number(sessionBlock), 0);
@@ -130,7 +138,7 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
     const running = useRunStore.getState().phase !== 'idle' && useRunStore.getState().phase !== 'done';
     if (running && !exitArmed) {
       setExitArmed(true);
-      toast('Mid-exercise — press ✕ or Esc again to leave');
+      toast('Mid-exercise. Press Esc again to leave');
       setTimeout(() => setExitArmed(false), 3000);
       return;
     }
@@ -164,6 +172,10 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
           {STEP_CHIP[step.kind]}
         </span>
       </header>
+      {/* The step counter says where you are; the rail shows how far that is. */}
+      <div className={styles['progress']} aria-hidden>
+        <span style={{ width: `${((stepIdx + 1) / unit.steps.length) * 100}%` }} />
+      </div>
 
       {/* Explain steps need the instrument too — their demos play through the
           sampler, and a missing keyboard is better learned early than late. */}
@@ -198,12 +210,33 @@ function ExplainStep({
   onDone: () => void;
 }) {
   const activeNotes = useMidiStore((s) => s.activeNotes);
+  // Play-checks on one step take turns: a note answers the earliest unsatisfied
+  // one, so "play a C" and "now play three Cs" cannot both be solved at once.
+  const [satisfied, setSatisfied] = useState<ReadonlySet<number>>(new Set());
+  const markSatisfied = useCallback((i: number) => {
+    setSatisfied((prev) => (prev.has(i) ? prev : new Set([...prev, i])));
+  }, []);
+  const pendingCheck = step.blocks.findIndex((b, i) => b.kind === 'playCheck' && !satisfied.has(i));
+
+  // The listening check borrows this keyboard, so a learner with no MIDI device
+  // answers by clicking the same keys everyone else plays.
+  const offerRef = useRef<((midi: number) => void) | null>(null);
+  const registerOffer = useCallback((handler: ((midi: number) => void) | null) => {
+    offerRef.current = handler;
+  }, []);
+
   return (
     <>
       <div className={styles['promptZone']}>
         <div className={styles['blocks']}>
           {step.blocks.map((b, i) => (
-            <ExplainBlockView key={i} block={b} />
+            <ExplainBlockView
+              key={i}
+              block={b}
+              active={pendingCheck === -1 || i <= pendingCheck}
+              onSatisfied={() => markSatisfied(i)}
+              registerOffer={registerOffer}
+            />
           ))}
         </div>
       </div>
@@ -211,7 +244,10 @@ function ExplainStep({
         range={[48, 84]}
         pressed={activeNotes}
         height={150}
-        onKeyDown={(m) => playNote(m)}
+        onKeyDown={(m) => {
+          playNote(m);
+          offerRef.current?.(m);
+        }}
         onKeyUp={(m) => stopNote(m)}
       />
       <div className={styles['footer']}>
@@ -260,7 +296,8 @@ function CreateStep({
   // A create step carrying an improv exercise gets a looping backing track.
   const improv = step.exercise?.generator === 'improv' ? step.exercise : null;
   const improvParams = improv?.params as
-    { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string } | undefined;
+    | { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string; tintDegrees?: number[] }
+    | undefined;
 
   const stopBacking = useCallback(() => {
     backing.current?.stop();
@@ -314,11 +351,12 @@ function CreateStep({
         <div className={styles['createPrompt']}>
           <h2>Make something</h2>
           <p>{step.prompt}</p>
-          <p className={styles['hintText']}>There's no score here — just play. Your take lands in Replays.</p>
+          <p className={styles['hintText']}>There's no score here. Just play. Your take lands in Replays.</p>
           {improvParams?.key && (
             <>
               <Button variant={backingOn ? 'primary' : 'secondary'} onClick={toggleBacking}>
-                {backingOn ? '◼ Stop backing' : '▶ Play backing'}
+                <Icon name={backingOn ? 'stop' : 'play'} size={16} />
+                {backingOn ? 'Stop backing' : 'Play backing'}
               </Button>
               {backingOn && barIdx >= 0 && improvParams.roman && improvParams.roman.length > 0 && (
                 <p className={styles['hintText']} aria-live="off">
@@ -438,12 +476,12 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
           });
           if (pip + 1 < tempos.length) {
             setPip(pip + 1);
-            toast(`Clean at ${Math.round((tempos[pip] ?? 1) * 100)}% — next tempo!`, 'ok');
+            toast(`Clean at ${Math.round((tempos[pip] ?? 1) * 100)}%, next tempo!`, 'ok');
           } else {
-            toast('Full tempo — nailed it', 'ok');
+            toast('Full tempo, nailed it', 'ok');
           }
         } else {
-          toast('Almost — same tempo again', 'info');
+          toast('Almost. Same tempo again', 'info');
         }
         return;
       }
@@ -474,7 +512,7 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
             />
           ) : (
             <h2 className={styles['promptMain']}>
-              {listening ? '🔊 Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
+              {listening ? 'Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
             </h2>
           )}
           {instance && (
@@ -500,7 +538,7 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
               placement
                 ? () => {
                     abortRun();
-                    toast('Good place to start — the path is yours from here', 'ok');
+                    toast('Good place to start. The path is yours from here', 'ok');
                     void navigate('/path');
                   }
                 : undefined

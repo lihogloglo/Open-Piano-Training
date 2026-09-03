@@ -40,7 +40,7 @@ export function EpilogueScreen() {
         <ul className={styles['list']}>
           <li>
             <strong>Reviews keep running.</strong> The daily session no longer has new units to teach, so it
-            becomes maintenance — the schedule keeps what you have earned.
+            becomes maintenance, and the schedule keeps what you have earned.
           </li>
           <li>
             <strong>Ratings are the new ladder.</strong> Keys, theory and ear challenges are always open, and

@@ -46,6 +46,23 @@ export const explainBlockSchema = z.discriminatedUnion('kind', [
     options: z.array(z.string()).min(2).max(4),
     correctIndex: z.number().int().min(0),
   }),
+  /**
+   * The teaching half of a unit with hands on the keys: the learner has to play
+   * the thing before the explanation moves on. Never *gates* Continue — a
+   * learner with no MIDI device must still be able to read the lesson — but it
+   * answers, and a wrong note is named back rather than buzzed.
+   */
+  z.object({
+    kind: z.literal('playCheck'),
+    ask: z.string().max(120),
+    /** Note names without octave that satisfy it; any octave counts. */
+    notes: z.array(z.string()).min(1),
+    /** How many accepted notes to collect before the check is satisfied. */
+    count: z.number().int().min(1).max(12).default(1),
+    /** What makes a second hit count: a new octave of the same name, or a new name. */
+    distinct: z.enum(['octave', 'name']).default('octave'),
+    hint: z.string().max(160).optional(),
+  }),
 ]);
 export type ExplainBlock = z.infer<typeof explainBlockSchema>;
 

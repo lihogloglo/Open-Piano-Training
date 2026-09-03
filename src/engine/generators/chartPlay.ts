@@ -32,7 +32,9 @@ export const chartPlayParams = z.object({
   songId: z.string(),
   /** Target tonic; the song's romanized chart makes any key free. */
   transposeTo: z.string().optional(),
-  style: z.enum(['block', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing']).default('block'),
+  style: z
+    .enum(['block', 'rootchord', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing'])
+    .default('block'),
   voiceLead: z.enum(['free', 'smooth']).default('free'),
   /** Comping voicing (Stage 6): shells and guide tones instead of full triads. */
   voicing: z.enum(['triad', 'shell17', 'shell13', 'guidetones']).default('triad'),
@@ -79,9 +81,13 @@ export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInsta
   const styleNote =
     p.style === 'brokenLH'
       ? 'LH broken pattern'
-      : p.style === 'block'
-        ? 'one chord per bar'
-        : COMP_PATTERNS[p.style].label;
+      : p.style === 'rootchord'
+        ? def.hand === 'both'
+          ? 'LH root, RH chord — one per bar'
+          : 'one chord per bar'
+        : p.style === 'block'
+          ? 'one chord per bar'
+          : COMP_PATTERNS[p.style].label;
   return {
     def,
     seed,

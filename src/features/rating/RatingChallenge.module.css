@@ -1,47 +1,54 @@
 .player {
   display: flex;
   flex-direction: column;
-  height: 100vh;
+  height: 100dvh;
   background: var(--bg);
 }
 
 .topbar {
   display: flex;
   align-items: center;
-  gap: var(--space-4);
+  gap: var(--space-3);
   height: 56px;
   padding: 0 var(--space-4);
   border-bottom: 1px solid var(--border);
-  background: var(--surface);
+  background: var(--bg);
   flex-shrink: 0;
 }
 
 .close {
   border: none;
   background: transparent;
-  color: var(--text-2);
+  color: var(--text-3);
   cursor: pointer;
   padding: var(--space-2);
   border-radius: var(--radius-m);
   display: grid;
   place-items: center;
+  transition:
+    background var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
 .close:hover {
   background: var(--surface-2);
+  color: var(--text);
 }
 
 .title {
   font-weight: 600;
+  letter-spacing: -0.01em;
 }
 
 .levelBadge {
+  font-family: var(--font-mono);
   font-variant-numeric: tabular-nums;
-  font-weight: 650;
-  font-size: var(--fs-s);
+  font-weight: 500;
+  font-size: var(--fs-xs);
   color: var(--accent-text);
-  background: color-mix(in srgb, var(--accent) 12%, transparent);
-  border-radius: 999px;
+  background: var(--accent-soft);
+  border: 1px solid var(--accent-line);
+  border-radius: var(--radius-pill);
   padding: 2px var(--space-3);
 }
 
@@ -49,7 +56,7 @@
   flex: 1;
 }
 
-/* 10 pips, one per item: pending · passed · missed. */
+/* Ten pips, one per item: pending, passed, missed. */
 .pips {
   display: flex;
   gap: 5px;
@@ -58,9 +65,9 @@
 
 .pip {
   width: 18px;
-  height: 6px;
-  border-radius: 999px;
-  background: var(--surface-2);
+  height: 5px;
+  border-radius: var(--radius-pill);
+  background: var(--surface-3);
   transition: background var(--dur-med) var(--ease);
 }
 
@@ -81,20 +88,22 @@
   min-height: 0;
   display: grid;
   place-items: center;
-  padding: var(--space-5);
+  padding: var(--space-6) var(--space-5);
 }
 
 .prompt {
   display: grid;
-  gap: var(--space-2);
+  gap: var(--space-3);
   text-align: center;
   justify-items: center;
   max-width: 560px;
 }
 
 .promptMain {
-  font-size: 42px;
-  font-weight: 650;
+  font-size: var(--fs-display);
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
+  line-height: 1.1;
 }
 
 .sub {
@@ -107,7 +116,7 @@
   font-weight: 500;
 }
 
-/* ── intro & result ─────────────────────────────────────────────── */
+/* ── intro & result ────────────────────────────────────────────────────── */
 
 .center {
   flex: 1;
@@ -120,7 +129,7 @@
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-l);
-  padding: var(--space-6);
+  padding: var(--space-7) var(--space-6);
   max-width: 460px;
   display: grid;
   gap: var(--space-4);
@@ -135,14 +144,15 @@
 
 .card p {
   color: var(--text-2);
-  font-size: var(--fs-m);
+  font-size: var(--fs-s);
 }
 
 .deltaUp,
 .deltaDown,
 .deltaHold {
   font-size: var(--fs-l);
-  font-weight: 650;
+  font-weight: 600;
+  font-variant-numeric: tabular-nums;
 }
 
 .deltaUp {
@@ -170,9 +180,10 @@
   justify-content: center;
 }
 
+/* The result rises once, to mark that the number just changed. */
 @media (prefers-reduced-motion: no-preference) {
   .dialWrap {
-    animation: rise var(--dur-med) var(--ease);
+    animation: rise var(--dur-med) var(--ease-out);
   }
 }
 

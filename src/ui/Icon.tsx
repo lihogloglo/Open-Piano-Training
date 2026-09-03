@@ -1,33 +1,86 @@
-const PATHS = {
-  today:
-    'M12 3v2M12 19v2M3 12h2M19 12h2M5.6 5.6l1.4 1.4M17 17l1.4 1.4M18.4 5.6L17 7M7 17l-1.4 1.4M12 8a4 4 0 1 0 0 8 4 4 0 0 0 0-8z',
-  path: 'M6 3v6a3 3 0 0 0 3 3h6a3 3 0 0 1 3 3v6M6 3a2 2 0 1 0 0 .01M18 21a2 2 0 1 0 0-.01',
-  songs: 'M9 18V6l10-2v12M9 18a3 3 0 1 1-6 0 3 3 0 0 1 6 0zM19 16a3 3 0 1 1-6 0 3 3 0 0 1 6 0z',
-  sandbox: 'M4 6h16M4 12h16M4 18h16M8 4v4M14 10v4M10 16v4',
-  progress: 'M4 20V10M10 20V4M16 20v-7M22 20H2',
-  settings:
-    'M12 9a3 3 0 1 0 0 6 3 3 0 0 0 0-6zm8 3a8 8 0 0 0-.1-1.3l2-1.5-2-3.4-2.4 1a8 8 0 0 0-2.2-1.3L15 3h-4l-.4 2.5a8 8 0 0 0-2.2 1.3l-2.4-1-2 3.4 2 1.5A8 8 0 0 0 4 12c0 .4 0 .9.1 1.3l-2 1.5 2 3.4 2.4-1c.7.5 1.4 1 2.2 1.3L9 21h4l.4-2.5a8 8 0 0 0 2.2-1.3l2.4 1 2-3.4-2-1.5c.1-.4.1-.9.1-1.3z',
-  close: 'M6 6l12 12M18 6L6 18',
-  chevronLeft: 'M14 6l-6 6 6 6',
-  chevronRight: 'M10 6l6 6-6 6',
-} as const;
+import { Sun } from '@phosphor-icons/react/Sun';
+import { Path as PathIcon } from '@phosphor-icons/react/Path';
+import { MusicNotes } from '@phosphor-icons/react/MusicNotes';
+import { SlidersHorizontal } from '@phosphor-icons/react/SlidersHorizontal';
+import { ChartBar } from '@phosphor-icons/react/ChartBar';
+import { GearSix } from '@phosphor-icons/react/GearSix';
+import { X } from '@phosphor-icons/react/X';
+import { CaretLeft } from '@phosphor-icons/react/CaretLeft';
+import { CaretRight } from '@phosphor-icons/react/CaretRight';
+import { Check } from '@phosphor-icons/react/Check';
+import { Fire } from '@phosphor-icons/react/Fire';
+import { MapPin } from '@phosphor-icons/react/MapPin';
+import { ArrowsClockwise } from '@phosphor-icons/react/ArrowsClockwise';
+import { Sparkle } from '@phosphor-icons/react/Sparkle';
+import { Shield } from '@phosphor-icons/react/Shield';
+import { Moon } from '@phosphor-icons/react/Moon';
+import { PianoKeys } from '@phosphor-icons/react/PianoKeys';
+import { Lock } from '@phosphor-icons/react/Lock';
+import { SealCheck } from '@phosphor-icons/react/SealCheck';
+import { Circle } from '@phosphor-icons/react/Circle';
+import { Play } from '@phosphor-icons/react/Play';
+import { Stop } from '@phosphor-icons/react/Stop';
+import { SpeakerHigh } from '@phosphor-icons/react/SpeakerHigh';
+import type { ComponentType } from 'react';
 
-export type IconName = keyof typeof PATHS;
+/**
+ * One icon family for the whole app (Phosphor), one weight, one size scale.
+ * Nothing here draws SVG paths by hand: a missing glyph means importing
+ * another Phosphor icon, never inventing one.
+ */
+const ICONS = {
+  today: Sun,
+  path: PathIcon,
+  songs: MusicNotes,
+  sandbox: SlidersHorizontal,
+  progress: ChartBar,
+  settings: GearSix,
+  close: X,
+  chevronLeft: CaretLeft,
+  chevronRight: CaretRight,
+  check: Check,
+  streak: Fire,
+  warmup: Fire,
+  new: MapPin,
+  review: ArrowsClockwise,
+  create: Sparkle,
+  freeze: Shield,
+  rest: Moon,
+  keys: PianoKeys,
+  locked: Lock,
+  badge: SealCheck,
+  badgeEmpty: Circle,
+  play: Play,
+  stop: Stop,
+  listen: SpeakerHigh,
+} satisfies Record<string, ComponentType<IconGlyphProps>>;
 
-export function Icon({ name, size = 20 }: { name: IconName; size?: number }) {
-  return (
-    <svg
-      width={size}
-      height={size}
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth={1.7}
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      <path d={PATHS[name]} />
-    </svg>
+interface IconGlyphProps {
+  size?: number;
+  weight?: 'regular' | 'fill';
+  alt?: string;
+  'aria-hidden'?: boolean;
+}
+
+export type IconName = keyof typeof ICONS;
+
+export function Icon({
+  name,
+  size = 20,
+  weight = 'regular',
+  alt,
+}: {
+  name: IconName;
+  size?: number;
+  /** `fill` is the documented state variant: earned, done, currently active. */
+  weight?: 'regular' | 'fill';
+  /** Only when the icon is the whole message. Otherwise it stays decorative. */
+  alt?: string;
+}) {
+  const Glyph = ICONS[name];
+  return alt ? (
+    <Glyph size={size} weight={weight} alt={alt} />
+  ) : (
+    <Glyph size={size} weight={weight} aria-hidden />
   );
 }

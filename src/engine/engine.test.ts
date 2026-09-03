@@ -477,6 +477,47 @@ describe('generators', () => {
     expect(inst.prompt.perTarget?.[0]?.label).toContain('major 3rd above C');
   });
 
+  it('rootchord puts the root in the left hand and the chord in the right', () => {
+    const inst = generate(
+      {
+        ...def('progression-play', {
+          key: { tonic: 'C', mode: 'major' },
+          roman: ['I', 'IV', 'V', 'I'],
+          style: 'rootchord',
+          loops: 1,
+        }),
+        hand: 'both',
+      },
+      1,
+    );
+    // One target per bar — both hands land together, so it is one chord to play.
+    expect(inst.targets).toHaveLength(4);
+    const first = inst.targets[0];
+    expect(first?.kind).toBe('set');
+    if (first?.kind === 'set') {
+      expect(first.midis).toEqual([36, 60, 64, 67]); // C2 under C4-E4-G4
+      // Exact octaves: the bass root must not be satisfied by a right-hand C.
+      expect(first.octaveFlexible).toBeFalsy();
+      expect(noteBelongsToTarget(48, first)).toBe(false);
+    }
+    const fourth = inst.targets[2];
+    if (fourth?.kind === 'set') expect(fourth.midis[0]).toBe(43); // G2 under the V
+  });
+
+  it('rootchord with one hand stays a single-hand exercise', () => {
+    const inst = generate(
+      def('progression-play', {
+        key: { tonic: 'C', mode: 'major' },
+        roman: ['I', 'IV'],
+        style: 'rootchord',
+        loops: 1,
+      }),
+      1,
+    );
+    const first = inst.targets[0];
+    if (first?.kind === 'set') expect(first.midis).toEqual([48, 52, 55]);
+  });
+
   it('unknown generator throws', () => {
     expect(() => generate(def('nope', {}), 1)).toThrow('Unknown generator');
   });

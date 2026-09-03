@@ -20,7 +20,7 @@ export const BADGES: readonly BadgeDef[] = [
   { id: 'spelling-bee', title: 'Spelling bee', criterion: 'Land 20 chord grips in under 3 seconds each' },
   { id: 'circle-complete', title: 'Circle complete', criterion: 'Reach all 12 key signatures' },
   { id: 'smooth-operator', title: 'Smooth operator', criterion: 'Three stars on a voice-led progression' },
-  { id: 'all-twelve', title: 'All twelve', criterion: 'Pass ii–V–I in all 12 keys' },
+  { id: 'all-twelve', title: 'All twelve', criterion: 'Pass ii-V-I in all 12 keys' },
   { id: 'chart-slayer', title: 'Chart slayer', criterion: 'Pass an unseen chart on the first try' },
   { id: 'bluesman', title: 'Bluesman', criterion: 'Pass the blues form' },
   { id: 'by-ear', title: 'By ear', criterion: 'Transcribe a song by ear' },

@@ -46,10 +46,10 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 0,
     title: 'Meet the keyboard',
-    strandWeights: { keys: 2, theory: 1 },
+    strandWeights: { keys: 3, theory: 1, create: 1 },
     concepts: ['note:find:c', 'note:find:f'],
     prerequisites: [],
-    minutes: 6,
+    minutes: 9,
     kind: 'lesson',
     steps: [
       {
@@ -58,11 +58,23 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The black keys come in groups of **two** and **three**. That pattern repeats all the way up — one repeat is called an **octave**.',
+            md: 'Eighty-eight keys, but only **twelve** of them are different. Look at the black keys: they come in groups of **two** and **three**, over and over. One full repeat is an **octave**.',
           },
           {
             kind: 'text',
-            md: '**C** sits just left of every group of two black keys. Find one C and you can find them all.',
+            md: 'So you never learn the whole keyboard. You learn one pattern, then find it everywhere.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Before any names: put a finger on a group of **two** black keys, and play the **white key just to their left**.',
+            notes: ['C'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Any octave. Play it on your keyboard, or click the keys below.',
+          },
+          {
+            kind: 'text',
+            md: 'That note is **C** — and it is the same note in every one of those groups. Hear them stack up:',
           },
           {
             kind: 'keyboardDemo',
@@ -79,6 +91,14 @@ export const stage0Units: Unit[] = [
               ],
             },
           },
+          {
+            kind: 'playCheck',
+            ask: 'Your turn: play **three different Cs** — a low one, a middle one, a high one.',
+            notes: ['C'],
+            count: 3,
+            distinct: 'octave',
+            hint: 'Same shape, different octave. Look for the two-black-key group each time.',
+          },
         ],
       },
       { kind: 'guided', id: 's0.u1.g1', exercise: wait('note-find', { notes: ['C'], count: 5 }) },
@@ -88,16 +108,60 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: '**F** has a landmark too: just left of every group of **three** black keys.',
+            md: 'One landmark is enough to get lost with. Take a second: **F** sits just left of every group of **three** black keys.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Find an **F** — white key, left edge of a group of three.',
+            notes: ['F'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Three blacks, not two. The nearest white key on their left.',
+          },
+          {
+            kind: 'text',
+            md: 'Two landmarks, and the keyboard stops being a wall. Everything else is counted from C or from F — which is exactly what the next lesson does.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Last check: play a **C**, then an **F**, then a **C** again.',
+            notes: ['C', 'F'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Two different letters. Any octave, either hand.',
           },
         ],
       },
       { kind: 'guided', id: 's0.u1.g2', exercise: wait('note-find', { notes: ['C', 'F'], count: 8 }) },
       {
+        kind: 'graded',
+        id: 's0.u1.q1',
+        passScore: 0.8,
+        exercise: wait('note-find', { notes: ['C', 'F'], count: 12 }),
+      },
+      {
         kind: 'create',
         id: 's0.u1.c1',
         prompt:
-          'Free play: wander the keys for a minute. Try playing only Cs and Fs — low, high, both hands.',
+          'Press Play backing: it rocks between two chords, one built on C and one built on F. Play only Cs and Fs over it — any octave, either hand, any rhythm. Land on C when the C chord comes round and hear it click into place.',
+        // Two chords rather than a drone: the landmarks the lesson just taught
+        // are also the roots underneath, so "it fits" is audible, not asserted.
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'C', mode: 'major' },
+            palette: 'chordtones',
+            roman: ['I', 'IV'],
+            beatsPerChord: 4,
+            loops: 4,
+            tintDegrees: [1, 4],
+          },
+          mode: 'wait',
+          bpm: 72,
+          rung: 'keys-lit',
+          hand: 'both',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -106,10 +170,10 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 1,
     title: 'Every note has a name',
-    strandWeights: { keys: 2, theory: 2 },
+    strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['note:find:d', 'note:find:e', 'note:find:g', 'note:find:a', 'note:find:b'],
     prerequisites: ['s0.u1'],
-    minutes: 8,
+    minutes: 10,
     kind: 'lesson',
     steps: [
       {
@@ -118,15 +182,78 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The white keys walk up the alphabet from C: **C D E F G A B** — then C again. D lives *between* the two black keys. G and A live inside the group of three.',
+            md: 'The white keys walk up the alphabet from C: **C D E F G A B** — then C again, forever. Seven letters, no eighth.',
+          },
+          {
+            kind: 'keyboardDemo',
+            caption: 'C D E F G A B C — say the letters along with it.',
+            demo: {
+              bpm: 100,
+              loop: false,
+              events: [60, 62, 64, 65, 67, 69, 71, 72].map((midi, i) => ({
+                midi,
+                atBeat: i,
+                durBeats: 1,
+              })),
+            },
+          },
+          {
+            kind: 'text',
+            md: 'You do not have to count from C every time. The black-key groups name the whites around them. **D is the one trapped between the two blacks** — dead centre of the pair.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play a **D**: the white key sitting between two black keys.',
+            notes: ['D'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'The group of two, not three. D is the filling in the sandwich.',
+          },
+          {
+            kind: 'text',
+            md: 'Inside the group of **three**, two whites are trapped the same way: **G** between the first and second black, **A** between the second and third.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play **G**, then **A** — the two whites inside the group of three.',
+            notes: ['G', 'A'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Left gap is G, right gap is A. Alphabet order still holds.',
           },
         ],
       },
-      { kind: 'guided', id: 's0.u2.g1', exercise: wait('note-find', { notes: ['C', 'D', 'E'], count: 6 }) },
+      {
+        kind: 'guided',
+        id: 's0.u2.g1',
+        exercise: wait('note-find', { notes: ['C', 'D', 'G', 'A'], count: 6 }),
+      },
+      {
+        kind: 'explain',
+        id: 's0.u2.e2',
+        blocks: [
+          {
+            kind: 'text',
+            md: 'That leaves **E** and **B** — and they hide in plain sight. C and F sit on the **left** edge of their black-key group; E and B sit on the **right** edge of the same group.',
+          },
+          {
+            kind: 'text',
+            md: 'So each group is bracketed: **C–[two blacks]–E**, and **F–[three blacks]–B**. E and B are the two whites with no black key above them.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Play **E** (right of the two blacks), then **B** (right of the three).',
+            notes: ['E', 'B'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Look for the two places where two white keys touch. E and B are the left one of each pair.',
+          },
+        ],
+      },
       {
         kind: 'guided',
         id: 's0.u2.g2',
-        exercise: wait('note-find', { notes: ['F', 'G', 'A', 'B'], count: 8 }),
+        exercise: wait('note-find', { notes: ['E', 'F', 'B', 'C'], count: 8 }),
       },
       {
         kind: 'graded',
@@ -137,7 +264,23 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u2.c1',
-        prompt: 'Pick any three note names and play them as a little pattern. Repeat it low, then high.',
+        prompt:
+          'Spell something. Start the backing, then play the letters of your name that are also note names — A B C D E F G. "BEA" and "ADE" and "CAGE" all work; most names give you two or three. Play them low, then high, and say each letter as it sounds.',
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'C', mode: 'major' },
+            palette: 'chordtones',
+            roman: ['I'],
+            beatsPerChord: 4,
+            loops: 6,
+          },
+          mode: 'wait',
+          bpm: 72,
+          rung: 'keys-lit',
+          hand: 'both',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -146,10 +289,10 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 2,
     title: 'Half steps & the black keys',
-    strandWeights: { keys: 1, theory: 2 },
+    strandWeights: { keys: 2, theory: 2, create: 1 },
     concepts: ['note:find:sharps', 'theory:halfwhole'],
     prerequisites: ['s0.u2'],
-    minutes: 7,
+    minutes: 10,
     kind: 'lesson',
     steps: [
       {
@@ -158,29 +301,91 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The smallest move on the keyboard is a **half step** — the very next key, black or white. A black key is named from its neighbors: a half step *up* from C is **C♯**; the same key seen from D is **D♭**.',
+            md: 'The smallest move on the keyboard is a **half step**: the very next key, whichever colour it happens to be. Nothing fits between them.',
           },
           {
-            kind: 'keyboardDemo',
-            caption: 'A chromatic walk: twelve half steps from C to C.',
-            demo: {
-              bpm: 140,
-              loop: false,
-              events: Array.from({ length: 13 }, (_, i) => ({ midi: 60 + i, atBeat: i, durBeats: 1 })),
-            },
+            kind: 'playCheck',
+            ask: 'Play a **C**, then the key a half step **above** it — the black key immediately to its right.',
+            notes: ['C#'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Not the next white key. The very next key of any colour.',
           },
           {
             kind: 'text',
-            md: 'Two half steps make a **whole step** (C to D). Whole and half steps are the rulers every scale is measured with — they come back in the next stage.',
+            md: 'That black key has no letter of its own, so it borrows one and says which direction it came from. Up a half step from C is **C♯**. The same key, approached down from D, is **D♭**. One key, two names.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Find **E♭** — the black key a half step *below* E. (You could also call it D♯.)',
+            notes: ['Eb'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'Start on E and move one key left. It is the right-hand black key of the group of two.',
+          },
+          {
+            kind: 'text',
+            md: 'Two half steps make a **whole step** — C to D, or E to F♯. Careful: **E to F is only a half step**, and so is B to C. Those are the two places the pattern has no black key to spare.',
           },
         ],
       },
-      { kind: 'guided', id: 's0.u3.g1', exercise: wait('note-find', { notes: ['C#', 'F#'], count: 6 }) },
+      {
+        kind: 'guided',
+        id: 's0.u3.g1',
+        // The plan's chromatic walk: every key in order, RH 1-3 fingering shown.
+        exercise: wait('scale-run', { tonic: 'C', scaleType: 'chromatic', hand: 'rh', direction: 'up' }),
+      },
+      {
+        kind: 'guided',
+        id: 's0.u3.g2',
+        exercise: wait('note-find', { notes: ['C#', 'F#', 'Bb'], count: 6 }),
+      },
+      {
+        kind: 'explain',
+        id: 's0.u3.e2',
+        blocks: [
+          {
+            kind: 'text',
+            md: 'Sharp means *up one*, flat means *down one*. That is the whole rule — and it is why the same black key answers to two names depending on where you came from.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Prove it: play **A♯**, then **B♭**.',
+            notes: ['A#'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'They are the same key. Play it once and both names are true.',
+          },
+        ],
+      },
       {
         kind: 'graded',
         id: 's0.u3.q1',
         passScore: 0.8,
         exercise: wait('note-find', { notes: ['C', 'Eb', 'F#', 'A', 'Bb', 'D'], count: 10 }),
+      },
+      {
+        kind: 'create',
+        id: 's0.u3.c1',
+        prompt:
+          'The five black keys sound good together no matter what you do — that is a real property of them, not encouragement. Start the backing and play **only black keys**, one finger, no plan. Slide up, slide down, leave gaps.',
+        // F♯ major pentatonic is exactly the five black keys, so the palette
+        // tint lights the black keys and nothing else.
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'F#', mode: 'major' },
+            palette: 'pentatonic',
+            roman: ['I'],
+            beatsPerChord: 4,
+            loops: 6,
+          },
+          mode: 'wait',
+          bpm: 76,
+          rung: 'by-ear',
+          hand: 'both',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -189,10 +394,10 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 3,
     title: 'Your right hand: the five-finger home',
-    strandWeights: { keys: 3 },
+    strandWeights: { keys: 4, create: 1 },
     concepts: ['fivefinger:c:maj:rh'],
     prerequisites: ['s0.u3'],
-    minutes: 8,
+    minutes: 10,
     kind: 'lesson',
     steps: [
       {
@@ -201,11 +406,36 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Rest your right hand so the **thumb sits on C** and one finger covers each of the next four white keys. Curved fingers, loose wrist — like holding a bubble.',
+            md: 'Until now you have been pointing at keys. From here you play them with a **hand shape** — five fingers already in place, so nothing has to travel.',
           },
           {
             kind: 'text',
-            md: 'Fingers are numbered **1 (thumb) to 5 (pinky)**. The key labels below show which finger plays each note.',
+            md: 'Rest your right hand so the **thumb sits on C** and one finger covers each of the next four white keys: C D E F G. Curved fingers, loose wrist — like holding a bubble. Nothing else moves.',
+          },
+          {
+            kind: 'keyboardDemo',
+            caption: 'Up and back down, one finger per key. No hand movement at all.',
+            demo: {
+              bpm: 92,
+              loop: false,
+              events: [60, 62, 64, 65, 67, 65, 64, 62, 60].map((midi, i) => ({
+                midi,
+                atBeat: i,
+                durBeats: 1,
+              })),
+            },
+          },
+          {
+            kind: 'text',
+            md: 'Fingers are numbered **1 (thumb) to 5 (pinky)** — the same numbers in every method book you will ever open. The key labels in the next step show which finger takes which note.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Set the shape and play all five: **C D E F G**, one finger each, without sliding the hand.',
+            notes: ['C', 'D', 'E', 'F', 'G'],
+            count: 5,
+            distinct: 'name',
+            hint: 'Thumb on C, pinky on G. If you have to reach, the hand is in the wrong place.',
           },
         ],
       },
@@ -217,7 +447,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'ladder',
         id: 's0.u4.l1',
-        tempos: [0.6, 0.8, 1],
+        // 48 → 60 → 80: the plan's 60→80 with a slower rung under it, because
+        // this is the first time the hand has to keep a shape *and* a pulse.
+        tempos: [0.6, 0.75, 1],
         exercise: tempo('five-finger', { tonic: 'C', hand: 'rh', pattern: 'updown' }, 80),
       },
       {
@@ -230,7 +462,23 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u4.c1',
         prompt:
-          'Make a tiny melody using only these five keys. Start and end on C — hear how that feels like home.',
+          'Keep the shape, lose the order. Over the backing, make a tiny melody from those five keys only — start and end on C and hear how it lands like home. Sing or say the finger number as you play each note; that is the honour system, and it is worth doing.',
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'C', mode: 'major' },
+            palette: 'chordtones',
+            roman: ['I'],
+            beatsPerChord: 4,
+            loops: 6,
+            tintDegrees: [1, 2, 3, 4, 5],
+          },
+          mode: 'wait',
+          bpm: 76,
+          rung: 'keys-lit',
+          hand: 'rh',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -239,10 +487,16 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 4,
     title: 'Your left hand joins',
-    strandWeights: { keys: 3 },
-    concepts: ['fivefinger:c:maj:lh', 'fivefinger:g:maj:rh', 'fivefinger:g:maj:lh', 'fivefinger:f:maj:rh'],
+    strandWeights: { keys: 4, create: 1 },
+    concepts: [
+      'fivefinger:c:maj:lh',
+      'fivefinger:g:maj:rh',
+      'fivefinger:g:maj:lh',
+      'fivefinger:f:maj:rh',
+      'fivefinger:f:maj:lh',
+    ],
     prerequisites: ['s0.u4'],
-    minutes: 9,
+    minutes: 12,
     kind: 'lesson',
     steps: [
       {
@@ -251,7 +505,34 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Left hand mirrors right: the **pinky (5)** takes the low C, thumb the G above. Same shape, other direction.',
+            md: 'Piano is a two-hand instrument, and the left hand does not get to arrive late. It learns the same shape, mirrored: **pinky (5)** on the low C, thumb (1) on the G above.',
+          },
+          {
+            kind: 'keyboardDemo',
+            caption: 'Left hand, an octave below middle C: 5 4 3 2 1 and back.',
+            demo: {
+              bpm: 88,
+              loop: false,
+              events: [48, 50, 52, 53, 55, 53, 52, 50, 48].map((midi, i) => ({
+                midi,
+                atBeat: i,
+                durBeats: 1,
+              })),
+            },
+          },
+          {
+            kind: 'text',
+            md: 'The numbers mirror too: 1 is the thumb in **both** hands, so the fingers count outwards from the middle of the keyboard.',
+          },
+          {
+            kind: 'playCheck',
+            // MIDI cannot see which hand played a note; the pitch is checked,
+            // the hand is on trust. Saying so is better than pretending.
+            ask: 'With your **left** hand, play C D E F G below middle C. (The app hears the notes, not the hand — this one is on you.)',
+            notes: ['C', 'D', 'E', 'F', 'G'],
+            count: 5,
+            distinct: 'name',
+            hint: 'Pinky starts it. If your thumb started, you are playing it right-handed.',
           },
         ],
       },
@@ -266,7 +547,19 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The five-finger shape moves anywhere. Shift it up to **G**, then over to **F** — new home, same hand.',
+            md: 'The shape is portable. Move the whole hand so the thumb (or pinky) lands on **G** instead, and every finger keeps its job — new home, same hand, no new information.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Put the shape on **G** and play its two ends: **G** and **D**.',
+            notes: ['G', 'D'],
+            count: 2,
+            distinct: 'name',
+            hint: 'Thumb on G, five white keys up to D under the little finger. Same span as C to G was.',
+          },
+          {
+            kind: 'text',
+            md: 'That portability is the point of learning shapes rather than notes. By Stage 2 you will move this one to all twelve starting keys without thinking about it.',
           },
         ],
       },
@@ -281,10 +574,40 @@ export const stage0Units: Unit[] = [
         exercise: wait('five-finger', { tonic: 'G', hand: 'lh', pattern: 'asc' }, 'lh'),
       },
       {
+        kind: 'ladder',
+        id: 's0.u5.l1',
+        // The left hand gets its own tempo ramp rather than borrowing the
+        // right hand's — it is slower, and pretending otherwise teaches nothing.
+        tempos: [0.6, 0.75, 1],
+        exercise: tempo('five-finger', { tonic: 'F', hand: 'lh', pattern: 'updown' }, 76, 'lh'),
+      },
+      {
         kind: 'graded',
         id: 's0.u5.q1',
         passScore: 0.8,
         exercise: tempo('five-finger', { tonic: 'F', hand: 'rh', pattern: 'updown' }, 76),
+      },
+      {
+        kind: 'create',
+        id: 's0.u5.c1',
+        prompt:
+          'Both hands, one shape. Put the left hand on the low C five-finger home and the right hand on the middle C one, then play the same little melody in both at once — an octave apart, moving together. It will feel clumsy for about a minute. That is the minute that matters.',
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'C', mode: 'major' },
+            palette: 'chordtones',
+            roman: ['I'],
+            beatsPerChord: 4,
+            loops: 6,
+            tintDegrees: [1, 2, 3, 4, 5],
+          },
+          mode: 'wait',
+          bpm: 72,
+          rung: 'keys-lit',
+          hand: 'both',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -293,10 +616,10 @@ export const stage0Units: Unit[] = [
     stageId: 's0',
     ordinal: 5,
     title: 'Keeping time',
-    strandWeights: { keys: 2, theory: 1 },
+    strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['rhythm:basic'],
     prerequisites: ['s0.u5'],
-    minutes: 8,
+    minutes: 11,
     kind: 'lesson',
     steps: [
       {
@@ -305,18 +628,58 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Music lives on a steady pulse. The metronome clicks it; you place notes **on** it. From now on, timing gets feedback too.',
+            md: 'Music lives on a steady **pulse** — an even click underneath everything, whether or not anyone plays on it. The metronome makes it audible; your job is to place notes *on* it, not near it.',
           },
           {
             kind: 'text',
-            md: 'Colors after each note: **green** = on the beat, **amber** = early, **blue** = late. Early and late still count — they just tell you which way to lean.',
+            md: 'Notes are measured in beats. A **quarter note** takes one beat, a **half note** two, a **whole note** four. Same pitch, different amounts of time:',
+          },
+          {
+            kind: 'keyboardDemo',
+            caption: 'Four quarters, two halves, one whole — all C, all the same pulse underneath.',
+            demo: {
+              bpm: 80,
+              loop: false,
+              events: [
+                { midi: 60, atBeat: 0, durBeats: 1 },
+                { midi: 60, atBeat: 1, durBeats: 1 },
+                { midi: 60, atBeat: 2, durBeats: 1 },
+                { midi: 60, atBeat: 3, durBeats: 1 },
+                { midi: 60, atBeat: 4, durBeats: 2 },
+                { midi: 60, atBeat: 6, durBeats: 2 },
+                { midi: 60, atBeat: 8, durBeats: 4 },
+              ],
+            },
+          },
+          {
+            kind: 'text',
+            md: 'Every timed exercise starts with a **count-in**: four clicks, nothing played. Use them. Breathe on click three and start moving on four, so the first note lands instead of arriving.',
+          },
+          {
+            kind: 'playCheck',
+            ask: 'Try it dry: count four out loud at a walking pace, then play **C** exactly on the next one.',
+            notes: ['C'],
+            count: 1,
+            distinct: 'octave',
+            hint: 'One note, but placed on purpose. Counting out loud is not optional — it is the skill.',
+          },
+          {
+            kind: 'text',
+            md: 'From here, timing is scored too. Colours after each note: **green** = on the beat, **amber** = early, **blue** = late. Early and late still count — they only tell you which way you lean.',
           },
         ],
       },
       {
+        kind: 'guided',
+        id: 's0.u6.g1',
+        // First timed rep at 60: slow enough that the click is a companion
+        // rather than a chase, which is the whole lesson of this unit.
+        exercise: tempo('five-finger', { tonic: 'C', hand: 'rh', pattern: 'asc' }, 60),
+      },
+      {
         kind: 'ladder',
         id: 's0.u6.l1',
-        tempos: [0.6, 0.8, 1],
+        tempos: [0.6, 0.75, 1],
         exercise: tempo('five-finger', { tonic: 'C', hand: 'rh', pattern: 'asc' }, 80),
       },
       {
@@ -324,6 +687,28 @@ export const stage0Units: Unit[] = [
         id: 's0.u6.q1',
         passScore: 0.8,
         exercise: tempo('five-finger', { tonic: 'C', hand: 'rh', pattern: 'updown' }, 80),
+      },
+      {
+        kind: 'create',
+        id: 's0.u6.c1',
+        prompt:
+          'Two notes, any rhythm. Over the backing play only **C** and **G** — but make something rhythmic out of them: long-long-short, or four quick ones then a gap. Leave silence in it. Silence is rhythm too, and it is the part beginners skip.',
+        exercise: {
+          generator: 'improv',
+          params: {
+            key: { tonic: 'C', mode: 'major' },
+            palette: 'chordtones',
+            roman: ['I'],
+            beatsPerChord: 4,
+            loops: 8,
+            tintDegrees: [1, 5],
+          },
+          mode: 'wait',
+          bpm: 80,
+          rung: 'keys-lit',
+          hand: 'both',
+          seedPolicy: 'random',
+        },
       },
     ],
   },
@@ -335,7 +720,7 @@ export const stage0Units: Unit[] = [
     strandWeights: { keys: 2, theory: 1 },
     concepts: [],
     prerequisites: ['s0.u6'],
-    minutes: 6,
+    minutes: 8,
     kind: 'checkpoint',
     steps: [
       {
@@ -344,7 +729,7 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Show what you found: any note on demand, and a steady five-finger pattern in three keys. Pass this and Stage 1 opens.',
+            md: 'Show what you found: any white key on demand, the black keys by either name, and a steady five-finger shape in three keys with both hands. Pass this and Stage 1 opens.',
           },
         ],
       },
@@ -352,17 +737,31 @@ export const stage0Units: Unit[] = [
         kind: 'graded',
         id: 's0.cp.q1',
         passScore: 0.8,
-        exercise: wait('note-find', { notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B', 'F#', 'Bb'], count: 12 }),
+        exercise: wait('note-find', { notes: ['C', 'D', 'E', 'F', 'G', 'A', 'B'], count: 12 }),
+      },
+      {
+        // The accidentals sampled on their own, spelled both ways — s0.u3 is
+        // the one stage concept the old checkpoint only glanced at.
+        kind: 'graded',
+        id: 's0.cp.q2',
+        passScore: 0.8,
+        exercise: wait('note-find', { notes: ['F#', 'Bb', 'C#', 'Eb', 'Ab'], count: 8 }),
       },
       {
         kind: 'graded',
-        id: 's0.cp.q2',
+        id: 's0.cp.q3',
         passScore: 0.8,
         exercise: tempo('five-finger', { tonic: 'G', hand: 'rh', pattern: 'updown' }, 80),
       },
       {
         kind: 'graded',
-        id: 's0.cp.q3',
+        id: 's0.cp.q4',
+        passScore: 0.8,
+        exercise: tempo('five-finger', { tonic: 'F', hand: 'rh', pattern: 'updown' }, 80),
+      },
+      {
+        kind: 'graded',
+        id: 's0.cp.q5',
         passScore: 0.8,
         exercise: tempo('five-finger', { tonic: 'C', hand: 'lh', pattern: 'asc' }, 80, 'lh'),
       },

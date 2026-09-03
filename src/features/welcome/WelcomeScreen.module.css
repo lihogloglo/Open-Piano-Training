@@ -3,6 +3,7 @@
   place-items: center;
   min-height: 100%;
   padding: var(--space-6);
+  background: var(--bg);
 }
 
 .inner {
@@ -10,27 +11,38 @@
   gap: var(--space-5);
   text-align: center;
   justify-items: center;
-  max-width: 640px;
+  max-width: 620px;
   width: 100%;
 }
 
+/* This is the one screen with a hero, so it gets the one display size. */
+.inner h1 {
+  font-size: 44px;
+  letter-spacing: -0.03em;
+}
+
 .tagline {
-  color: var(--text-2);
+  color: var(--text);
   font-size: var(--fs-l);
+  font-weight: 500;
+  margin-top: calc(var(--space-2) * -1);
 }
 
 .body {
   color: var(--text-2);
-  max-width: 480px;
+  max-width: 48ch;
 }
 
+/* A real keyboard, playing a real C major triad: the product itself is the
+   hero image. */
 .demo {
   width: 100%;
   max-width: 480px;
   border: 1px solid var(--border);
   border-radius: var(--radius-l);
-  padding: var(--space-3);
+  padding: var(--space-4);
   background: var(--surface);
+  box-shadow: var(--elev-1);
 }
 
 .panelBox {
@@ -52,17 +64,21 @@
 .dots {
   display: flex;
   gap: var(--space-2);
-  margin-top: var(--space-3);
+  margin-top: var(--space-4);
 }
 
 .dot {
-  width: 8px;
-  height: 8px;
+  width: 6px;
+  height: 6px;
   border-radius: 50%;
-  background: var(--border);
-  transition: background var(--dur-fast) var(--ease);
+  background: var(--border-strong);
+  transition:
+    background var(--dur-fast) var(--ease),
+    width var(--dur-med) var(--ease-out);
 }
 
 .dot[data-active='true'] {
   background: var(--accent);
+  width: 18px;
+  border-radius: var(--radius-pill);
 }

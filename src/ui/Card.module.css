@@ -1,7 +1,10 @@
+/* A card is a container of last resort: it earns its border only when the
+   group inside it is a real unit of work. Elevation stays almost flat, so
+   the page reads as one surface with quiet divisions rather than a pile of
+   floating boxes. */
 .card {
   background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-l);
-  box-shadow: var(--elev-1);
   padding: var(--space-5);
 }

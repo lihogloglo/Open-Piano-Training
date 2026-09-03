@@ -101,8 +101,8 @@ test('workout reviews due atoms, grades them, and counts practice', async ({ pag
   }
   expect(Object.values(state.practice).reduce((a, b) => a + b, 0)).toBeGreaterThanOrEqual(5);
 
-  // Streak flame lights up after today's practice.
-  await expect(page.locator('text=🔥 1')).toBeVisible();
+  // Streak lights up after today's practice.
+  await expect(page.getByLabel('1 day streak')).toBeVisible();
 });
 
 test("today's session lists new unit + review + create for a fresh-ish profile", async ({ page }) => {

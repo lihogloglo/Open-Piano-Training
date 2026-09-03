@@ -22,7 +22,7 @@ export function ConnectionBanner() {
   if (online) return null;
   return (
     <div className={styles['offlineBanner']} role="status" data-testid="offline-banner">
-      Offline — everything still works. New piano samples will wait for the network.
+      Offline. Everything still works. New piano samples will wait for the network.
     </div>
   );
 }

@@ -1,8 +1,9 @@
 .wrap {
   display: grid;
   gap: var(--space-3);
-  padding: var(--space-7);
+  padding: var(--space-7) var(--space-5);
   max-width: 720px;
+  margin: 0 auto;
 }
 
 .note {

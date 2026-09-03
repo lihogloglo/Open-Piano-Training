@@ -23,3 +23,5 @@ This is the build specification for the product described in [PLAN.md](PLAN.md).
 | [06-curriculum-content.md](docs/implementation/06-curriculum-content.md)   | Authoring guide + the complete unit-by-unit content plan for Stages 0–7                              |
 | [07-progress-scheduling.md](docs/implementation/07-progress-scheduling.md) | Skill atoms, FSRS integration, session builder, mastery gates, skill ratings, streaks/badges         |
 | [08-build-order.md](docs/implementation/08-build-order.md)                 | Phased task breakdown with acceptance criteria and test checklists                                   |
+| [content-audit.md](docs/content-audit.md)                                  | What the built curriculum actually teaches, measured; the gaps against these docs and against piano  |
+| [song-sourcing.md](docs/song-sourcing.md)                                  | Where real repertoire can legally come from: the 1930 PD cutoff, corpora, and the import path        |

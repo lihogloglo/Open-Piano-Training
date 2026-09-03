@@ -401,7 +401,7 @@ export function LabScreen() {
           </Button>
           <Button onClick={abortRun}>Abort</Button>
           <Button onClick={playPerfect} disabled={!window.__fakeMidi} title="Requires ?midi=fake">
-            ▶ Play perfectly (fake)
+            Play perfectly (fake)
           </Button>
           <Button onClick={stress} disabled={!window.__fakeMidi} title="Requires ?midi=fake">
             Stress 30n/s
@@ -414,10 +414,10 @@ export function LabScreen() {
           phase: <strong>{phase}</strong>
         </span>
         <span>
-          target: <strong className="tabular">{targetIndex + 1}</strong>/{instance?.targets.length ?? '–'}
+          target: <strong className="tabular">{targetIndex + 1}</strong>/{instance?.targets.length ?? '-'}
         </span>
         <span>
-          beat: <strong className="tabular">{beatIndex ?? '–'}</strong>
+          beat: <strong className="tabular">{beatIndex ?? '-'}</strong>
         </span>
         {mode === 'tempo' && (
           <span>
@@ -445,7 +445,7 @@ export function LabScreen() {
       {result && (
         <Card>
           <h3>
-            Result — score {(result.score * 100).toFixed(0)}% · {'★'.repeat(result.stars) || '—'}{' '}
+            Result: score {(result.score * 100).toFixed(0)}% {'★'.repeat(result.stars)}{' '}
             {result.passed ? '· passed' : '· not yet'}
           </h3>
           <pre className={styles['dump']}>

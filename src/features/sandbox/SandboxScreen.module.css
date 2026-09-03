@@ -2,20 +2,19 @@
   display: flex;
   flex-direction: column;
   gap: var(--space-4);
-  padding: var(--space-5);
-  max-width: 960px;
+  padding: var(--space-7) var(--space-5) var(--space-8);
+  max-width: 980px;
   margin: 0 auto;
   width: 100%;
 }
 
 .wrap h1 {
-  font-size: var(--fs-xxl);
   margin: 0;
 }
 
 .tabs {
   display: flex;
-  gap: var(--space-2);
+  gap: var(--space-1);
   border-bottom: 1px solid var(--border);
 }
 
@@ -24,12 +23,19 @@
   background: none;
   border: none;
   border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
   color: var(--text-2);
   font: inherit;
   font-weight: 500;
-  padding: var(--space-2) var(--space-3);
+  padding: var(--space-3);
   cursor: pointer;
-  transition: color var(--dur-fast) var(--ease);
+  transition:
+    color var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease);
+}
+
+.tab:hover {
+  color: var(--text);
 }
 
 .tab[data-active='true'] {
@@ -37,6 +43,7 @@
   border-bottom-color: var(--accent);
 }
 
+/* The readout is the instrument's display: big symbol, quiet detail. */
 .readout {
   display: flex;
   justify-content: space-between;
@@ -47,12 +54,13 @@
 
 .bigSymbol {
   font-size: var(--fs-xxl);
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: var(--track-tight);
 }
 
 .detail {
   color: var(--text-2);
-  font-size: var(--fs-m);
+  font-size: var(--fs-s);
   margin-top: var(--space-1);
 }
 
@@ -60,20 +68,28 @@
 .controlsRow label {
   display: flex;
   flex-direction: column;
-  gap: var(--space-1);
+  gap: 3px;
   font-size: var(--fs-xs);
-  color: var(--text-2);
+  color: var(--text-3);
 }
 
 .keyPick select,
 .controlsRow select,
 .controlsRow input {
   font: inherit;
+  font-size: var(--fs-s);
   color: var(--text);
-  background: var(--surface-2);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
-  padding: var(--space-1) var(--space-2);
+  padding: 4px var(--space-2);
+  transition: border-color var(--dur-fast) var(--ease);
+}
+
+.keyPick select:hover,
+.controlsRow select:hover,
+.controlsRow input:hover {
+  border-color: var(--border-strong);
 }
 
 .controlsRow input {
@@ -92,11 +108,12 @@
 .addChip {
   appearance: none;
   font: inherit;
-  background: var(--surface-2);
+  font-size: var(--fs-s);
+  background: var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius-s);
   color: var(--text);
-  padding: var(--space-1) var(--space-2);
+  padding: var(--space-1) var(--space-3);
   cursor: pointer;
   transition:
     border-color var(--dur-fast) var(--ease),
@@ -104,8 +121,10 @@
 }
 
 .historyChip:hover,
-.addChip:hover {
-  border-color: var(--accent);
+.addChip:hover,
+.loopChip:hover {
+  border-color: var(--border-strong);
+  background: var(--surface-2);
 }
 
 .inv {
@@ -124,6 +143,7 @@
   color: var(--text-2);
   font-size: var(--fs-s);
   margin: var(--space-3) 0 0;
+  max-width: 62ch;
 }
 
 .palette {
@@ -135,19 +155,29 @@
 .degreeToggle {
   appearance: none;
   font: inherit;
-  font-weight: 650;
+  font-family: var(--font-mono);
+  font-weight: 600;
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  border: 2px solid var(--border);
-  background: var(--surface-2);
+  border: 1.5px solid var(--border-strong);
+  background: var(--surface);
   color: var(--text-3);
   cursor: pointer;
-  transition: all var(--dur-fast) var(--ease);
+  transition:
+    background var(--dur-fast) var(--ease),
+    border-color var(--dur-fast) var(--ease),
+    color var(--dur-fast) var(--ease);
 }
 
+.degreeToggle:hover {
+  color: var(--text);
+}
+
+/* Degree colours are fixed across the app; the numeral inside stays the
+   primary cue. */
 .degreeToggle[data-on='true'] {
-  color: #fff;
+  color: #ffffff;
 }
 
 .degreeToggle[data-on='true'][data-degree='1'] {
@@ -161,6 +191,7 @@
 .degreeToggle[data-on='true'][data-degree='3'] {
   background: var(--deg-3);
   border-color: var(--deg-3);
+  color: #1a1400;
 }
 .degreeToggle[data-on='true'][data-degree='4'] {
   background: var(--deg-4);
@@ -195,13 +226,15 @@
 }
 
 .loopChip {
-  font-weight: 650;
+  font-family: var(--font-mono);
+  font-weight: 600;
   font-size: var(--fs-l);
 }
 
 .loopChip[data-current='true'] {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 18%, var(--surface-2));
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 
 .chips {

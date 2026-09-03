@@ -40,7 +40,7 @@ export function MidiSetupPanel() {
       )}
       {isFirefox && status !== 'unsupported' && (
         <p className={styles['hint']}>
-          Firefox asks you to approve a small site permission add-on the first time — that's normal.
+          Firefox asks you to approve a small site permission add-on the first time. That's normal.
         </p>
       )}
 
@@ -48,7 +48,7 @@ export function MidiSetupPanel() {
         <div className={styles['devices']}>
           {devices.length === 0 ? (
             <p className={styles['hint']}>
-              No keyboard detected yet. Plug it in and switch it on — it'll appear here by itself.
+              No keyboard detected yet. Plug it in and switch it on, and it'll appear here by itself.
             </p>
           ) : (
             <div role="radiogroup" aria-label="MIDI device" className={styles['deviceList']}>
@@ -86,12 +86,12 @@ export function MidiSetupPanel() {
           onKeyUp={(m) => stopNote(m)}
         />
         <p className={styles['hearYou']} data-heard={heard}>
-          {heard ? '✓ We hear you!' : 'Play any key — it should light up here.'}
+          {heard ? '✓ We hear you!' : 'Play any key. It should light up here.'}
         </p>
         <p className={styles['hint']}>
-          No keyboard handy? Your computer keys work too: <kbd>A</kbd>–<kbd>K</kbd> play notes, <kbd>W</kbd>/
-          <kbd>E</kbd>/<kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> the black keys, <kbd>Z</kbd>/<kbd>X</kbd> shift
-          octaves.
+          No keyboard handy? Your computer keys work too: <kbd>A</kbd> to <kbd>K</kbd> play notes,{' '}
+          <kbd>W</kbd>/<kbd>E</kbd>/<kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> the black keys, <kbd>Z</kbd>/
+          <kbd>X</kbd> shift octaves.
         </p>
       </div>
     </div>

@@ -2,96 +2,34 @@
 
 ## Design language
 
-Calm, precise, musical. Dark "stage" theme is the default identity; a full light theme exists and is selectable (and follows `prefers-color-scheme` when set to "system"). Depth via subtle borders and elevation, not heavy shadows. Motion is quick (120–200ms, ease-out) and purposeful; anything decorative respects `prefers-reduced-motion`.
+Calm, precise, musical. Dark "stage" theme is the default identity; a full light theme exists and is selectable (and follows `prefers-color-scheme` when set to "system"). Depth via subtle borders and elevation, not heavy shadows; cards are used only where a group is a real unit of work, hairlines and space elsewhere. Motion is quick (120–200ms, ease-out) and purposeful; anything decorative respects `prefers-reduced-motion`.
 
 ## Tokens (`src/styles/tokens.css`) — single source of truth
 
-```css
-:root {
-  /* light */
-  --bg: #f7f7f5;
-  --surface: #ffffff;
-  --surface-2: #efefec;
-  --border: #dededa;
-  --text: #1a1b1e;
-  --text-2: #5c5f66;
-  --text-3: #8b8d98;
-  --accent: #3e63dd;
-  --accent-contrast: #ffffff;
-  /* feedback */
-  --ok: #218358;
-  --warn: #d97706;
-  --err: #ce2c31;
-  --info: #0072d3;
-  --judge-perfect: #21a66e;
-  --judge-good: #7bc96a;
-  --judge-ok: #d9a514;
-  --judge-wrong: #e5484d;
-  --judge-missed: #9ba1a6;
-  --judge-early: #e8a33d;
-  --judge-late: #4fa9f2;
-  /* degree colors — FIXED, identical in both themes, always paired with a numeral */
-  --deg-1: #e5484d;
-  --deg-2: #f76b15;
-  --deg-3: #ffc53d;
-  --deg-4: #46a758;
-  --deg-5: #00a2c7;
-  --deg-6: #3e63dd;
-  --deg-7: #8e4ec6;
-  --deg-x: #8b8d98; /* non-diatonic */
-  /* keyboard */
-  --key-white: #fafaf8;
-  --key-black: #26282c;
-  --key-border: #c9c9c4;
-  --key-active: #3e63dd; /* learner is holding it */
-  --key-target: #ffffff00; /* target ring drawn with --accent outline */
-  --radius-s: 6px;
-  --radius-m: 10px;
-  --radius-l: 16px;
-  --space-1: 4px;
-  --space-2: 8px;
-  --space-3: 12px;
-  --space-4: 16px;
-  --space-5: 24px;
-  --space-6: 32px;
-  --space-7: 48px;
-  --font-ui: 'Inter', system-ui, sans-serif;
-  --font-mono: ui-monospace, 'JetBrains Mono', monospace;
-  --fs-xs: 12px;
-  --fs-s: 13.5px;
-  --fs-m: 15px;
-  --fs-l: 18px;
-  --fs-xl: 24px;
-  --fs-xxl: 34px;
-  --elev-1: 0 1px 2px rgb(0 0 0 / 0.06);
-  --elev-2: 0 4px 16px rgb(0 0 0 / 0.1);
-  --dur-fast: 120ms;
-  --dur-med: 200ms;
-  --ease: cubic-bezier(0.2, 0.8, 0.2, 1);
-}
-[data-theme='dark'] {
-  --bg: #0f1115;
-  --surface: #16181d;
-  --surface-2: #1d2026;
-  --border: #2a2e36;
-  --text: #edeef0;
-  --text-2: #a7abb4;
-  --text-3: #6e7480;
-  --key-white: #e8e8e4;
-  --key-black: #17181b;
-  --key-border: #3a3e46;
-  --elev-1: 0 1px 2px rgb(0 0 0 / 0.4);
-  --elev-2: 0 8px 24px rgb(0 0 0 / 0.5);
-}
-```
+The palette is "ink and ivory": a keyboard is black, white and nothing else, so
+the chrome stays achromatic and every colour on screen carries musical meaning.
+One accent (jade) marks what is interactive or current; degrees, judgements and
+feedback own the rest of the spectrum.
+
+Rules the token file encodes, so nothing drifts:
+
+- **One accent.** Jade (`#0e786a` light, `#2fcfad` dark). The only decorative colour in the chrome.
+- **One radius system.** `--radius-s` controls, `--radius-m` buttons and rows, `--radius-l` panels, `--radius-pill` status badges only.
+- **One neutral family.** Cool grey, faintly green, in both themes. No warm greys anywhere.
+- **Shadows are tinted** to the neutral, never pure black. No pure `#000` or `#fff` as a surface.
+- **Degree and judgement colours are fixed** across both themes, and always paired with a numeral or label.
+
+`scripts/check-contrast.mjs` gates the whole palette at WCAG AA on every
+surface, in both themes, and runs as part of `npm run check`. Read the current
+values from `src/styles/tokens.css`; they are not duplicated here.
 
 **Color precedence on keys** (strict order, highest wins): judgment flash (during/just after grading) → active (held) → target outline → degree tint (when the exercise's label mode shows degrees) → plain. Degree tints on keys are 35%-opacity fills so held/judgment states stay readable. Feedback colors are never used for degrees and vice versa; every colored element carries its numeral/label (a11y).
 
-Typography: Inter (self-hosted via `@fontsource/inter`, weights 400/500/650). Numbers in stats/timers use `font-variant-numeric: tabular-nums`. Musical accidentals use real glyphs (♭ ♯ ♮) from Inter, never `b`/`#` in learner-facing text (parser accepts both).
+Typography: Geist and Geist Mono (self-hosted via `@fontsource-variable/geist` and `@fontsource-variable/geist-mono`, variable weight). Geist Mono carries every figure that is read as data: tempos, counts, step positions, roman numerals. Numbers in stats/timers use `font-variant-numeric: tabular-nums`. Musical accidentals use real glyphs (♭ ♯ ♮) from Geist, never `b`/`#` in learner-facing text (parser accepts both). Icons come from Phosphor (`@phosphor-icons/react`) at one weight; no icon SVG is drawn by hand, and emoji are not used in the interface.
 
 ## Navigation & routes
 
-Left sidebar (72px collapsed / 220px expanded, persisted): logo, then **Today** (`/practice`), **Path** (`/path`), **Songs** (`/songs`), **Sandbox** (`/sandbox`), **Progress** (`/progress`), bottom: **Settings** (`/settings`) + MIDI status dot (green connected / amber no-device / red unsupported; click → `/setup`).
+Left sidebar (68px collapsed / 208px expanded, persisted): logo, then **Today** (`/practice`), **Path** (`/path`), **Songs** (`/songs`), **Sandbox** (`/sandbox`), **Progress** (`/progress`), bottom: **Settings** (`/settings`) + MIDI status dot (green connected / amber no-device / red unsupported; click → `/setup`).
 
 | Route                      | Screen                                                      |
 | -------------------------- | ----------------------------------------------------------- |

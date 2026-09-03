@@ -1,7 +1,9 @@
 .backdrop {
   position: fixed;
   inset: 0;
-  background: rgb(0 0 0 / 0.45);
+  /* Tinted to the page ground, not pure black. */
+  background: color-mix(in srgb, var(--bg) 72%, transparent);
+  backdrop-filter: blur(3px);
   display: grid;
   place-items: center;
   z-index: 50;
@@ -14,16 +16,16 @@
   border-radius: var(--radius-l);
   box-shadow: var(--elev-2);
   padding: var(--space-6);
-  max-width: 480px;
+  max-width: 460px;
   width: 100%;
   display: grid;
   gap: var(--space-4);
-  animation: modalIn var(--dur-med) var(--ease);
+  animation: modalIn var(--dur-med) var(--ease-out);
 }
 
 @keyframes modalIn {
   from {
     opacity: 0;
-    transform: translateY(8px);
+    transform: translateY(8px) scale(0.99);
   }
 }

@@ -23,7 +23,9 @@ export const progressionPlayParams = z.object({
   beatsPerChord: z.number().int().min(1).max(8).default(4),
   loops: z.number().int().min(1).max(4).default(2),
   voiceLead: z.enum(['free', 'smooth']).default('free'),
-  style: z.enum(['block', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing']).default('block'),
+  style: z
+    .enum(['block', 'rootchord', 'brokenLH', 'straight8', 'ballad', 'boomchuck', 'swing'])
+    .default('block'),
   /** Comping voicing (Stage 6): shells and guide tones instead of full triads. */
   voicing: z.enum(['triad', 'shell17', 'shell13', 'guidetones']).default('triad'),
   /** Swing ratio for the eighth-note grid; 0.5 = straight. */
@@ -55,7 +57,7 @@ const FUNCTION_GROUPS: Record<number, number[]> = {
 };
 
 export interface ProgressionStyleOpts {
-  style: 'block' | 'brokenLH' | CompPattern;
+  style: 'block' | 'rootchord' | 'brokenLH' | CompPattern;
   voiceLead: 'free' | 'smooth';
   hand: 'rh' | 'lh' | 'both';
   voicing?: VoicingStyle;
@@ -138,6 +140,20 @@ export function progressionTargets(
         ideal.push([]);
         labels.push(comp.labels[k] ?? symbol);
       }
+    } else if (opts.style === 'rootchord' && opts.hand === 'both') {
+      // The first two-hand texture there is: left hand takes the root, right
+      // hand takes the chord, both landing on the bar line. One target, played
+      // together — which is how a beginner actually meets two hands.
+      const midis = voicing?.midis ?? buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 60);
+      targets.push({
+        kind: 'set',
+        midis: [lowRoot(e.root), ...midis],
+        atBeat: e.atBeat,
+        label: symbol,
+        octaveFlexible: false,
+      });
+      ideal.push([]);
+      labels.push(symbol);
     } else if (opts.style === 'brokenLH') {
       // LH broken pattern: root · fifth · root+octave · fifth, one per beat.
       const lhRoot = lowRoot(e.root);
@@ -230,11 +246,13 @@ export function generateProgressionPlay(def: ExerciseDef, seed: number): Exercis
 
   const styleNote = isCompPattern(p.style)
     ? `${COMP_PATTERNS[p.style].label} · ${VOICING_LABEL[p.voicing]}`
-    : p.style === 'brokenLH'
-      ? 'LH broken pattern'
-      : p.voicing !== 'triad'
-        ? VOICING_LABEL[p.voicing]
-        : 'block chords';
+    : p.style === 'rootchord' && def.hand === 'both'
+      ? 'LH root, RH chord'
+      : p.style === 'brokenLH'
+        ? 'LH broken pattern'
+        : p.voicing !== 'triad'
+          ? VOICING_LABEL[p.voicing]
+          : 'block chords';
   const leadNote = p.voiceLead === 'smooth' ? ' · smallest possible moves' : '';
   return {
     def,

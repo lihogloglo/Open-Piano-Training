@@ -74,7 +74,7 @@ export const useMidiStore = create<MidiState>((set, get) => ({
       if (selectedId && !devices.some((d) => d.id === selectedId)) {
         set({ selectedId: null });
         useSettingsStore.getState().setDeviceId(null);
-        toast('Keyboard disconnected — listening to all devices', 'warn');
+        toast('Keyboard disconnected. Listening to all devices', 'warn');
       }
       set({ devices });
       if (status === 'connected' || status === 'no-device') {

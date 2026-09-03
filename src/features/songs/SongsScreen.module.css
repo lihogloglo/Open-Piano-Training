@@ -1,25 +1,35 @@
 .wrap {
-  max-width: 860px;
+  max-width: 880px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5);
+  padding: var(--space-7) var(--space-5) var(--space-8);
   display: grid;
-  gap: var(--space-4);
+  gap: var(--space-3);
 }
 
 .sub {
   color: var(--text-2);
   font-size: var(--fs-s);
+  max-width: 62ch;
 }
 
 .grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+  grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
   gap: var(--space-4);
+  margin-top: var(--space-3);
 }
 
 .card {
   padding: 0;
   overflow: hidden;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    transform var(--dur-fast) var(--ease);
+}
+
+.card:has(.cardButton:hover:not([aria-disabled='true'])) {
+  border-color: var(--border-strong);
+  transform: translateY(-2px);
 }
 
 .cardButton {
@@ -27,6 +37,8 @@
   gap: var(--space-2);
   padding: var(--space-5);
   width: 100%;
+  height: 100%;
+  align-content: start;
   border: none;
   background: transparent;
   text-align: left;
@@ -34,17 +46,28 @@
 }
 
 .cardButton[aria-disabled='true'] {
-  opacity: 0.45;
   cursor: not-allowed;
 }
 
-.cardButton:hover:not([aria-disabled='true']) {
-  background: var(--surface-2);
+.cardButton[aria-disabled='true'] .title,
+.cardButton[aria-disabled='true'] .style,
+.cardButton[aria-disabled='true'] .romans {
+  color: var(--text-3);
+}
+
+.cardTop {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-3);
+  color: var(--text-3);
 }
 
 .title {
   font-size: var(--fs-l);
-  font-weight: 650;
+  font-weight: 600;
+  letter-spacing: -0.012em;
+  color: var(--text);
 }
 
 .style {
@@ -52,13 +75,32 @@
   font-size: var(--fs-s);
 }
 
+/* Metadata sits in columns, not strung together with separator dots. */
 .meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-1) var(--space-3);
   color: var(--text-3);
   font-size: var(--fs-xs);
+  margin-top: var(--space-1);
+}
+
+.lockNote {
+  color: var(--warn);
 }
 
 .romans {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  margin-top: var(--space-2);
+}
+
+.roman {
   font-family: var(--font-mono);
   font-size: var(--fs-xs);
   color: var(--accent-text);
+  background: var(--accent-soft);
+  border-radius: var(--radius-s);
+  padding: 1px 6px;
 }

@@ -10,6 +10,7 @@ import { useMidiStore } from '@/store/midiStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
 import { Card } from '@/ui/Card';
 import styles from './SandboxScreen.module.css';
 
@@ -102,7 +103,7 @@ function ChordExplorer() {
   const spelling = detected
     ? buildChord({ root: detected.root, quality: detected.quality, inversion: 0 }, 60)
         .map((m) => midiToPcName(m, { tonic: detected.root, mode: 'major' }))
-        .join(' – ')
+        .join(' - ')
     : '';
 
   return (
@@ -223,11 +224,12 @@ function DroneImprov() {
             ))}
           </div>
           <Button variant={droneOn ? 'primary' : 'secondary'} onClick={() => setDroneOn((v) => !v)}>
-            {droneOn ? '◼ Stop drone' : '▶ Start drone'}
+            <Icon name={droneOn ? 'stop' : 'play'} size={16} />
+            {droneOn ? 'Stop drone' : 'Start drone'}
           </Button>
         </div>
         <p className={styles['hint']}>
-          The pad holds home for you. Wander the tinted notes, come back to 1, leave again. No wrong notes —
+          The pad holds home for you. Wander the tinted notes, come back to 1, leave again. No wrong notes,
           only stories.
         </p>
       </Card>
@@ -351,7 +353,7 @@ function ProgressionLooper() {
               <option value="">choose…</option>
               {PROGRESSION_CATALOG.filter((p) => p.mode === 'major').map((p) => (
                 <option key={p.id} value={p.id}>
-                  {p.name} — {p.romans.join('–')}
+                  {p.name}: {p.romans.join('-')}
                 </option>
               ))}
             </select>
@@ -379,7 +381,8 @@ function ProgressionLooper() {
             />
           </label>
           <Button variant={running ? 'primary' : 'secondary'} onClick={running ? stopLoop : startLoop}>
-            {running ? '◼ Stop' : '▶ Loop it'}
+            <Icon name={running ? 'stop' : 'play'} size={16} />
+            {running ? 'Stop' : 'Loop it'}
           </Button>
         </div>
         <div className={styles['builder']}>

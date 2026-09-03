@@ -1,9 +1,9 @@
 .wrap {
-  max-width: 760px;
+  max-width: 780px;
   margin: 0 auto;
-  padding: var(--space-6) var(--space-5) var(--space-7);
+  padding: var(--space-7) var(--space-5) var(--space-8);
   display: grid;
-  gap: var(--space-6);
+  gap: var(--space-7);
 }
 
 .title {
@@ -15,10 +15,12 @@
   gap: var(--space-5);
 }
 
+/* ── stage header ──────────────────────────────────────────────────────── */
+
 .stageHeader {
   display: flex;
   justify-content: space-between;
-  align-items: flex-start;
+  align-items: center;
   gap: var(--space-5);
   background: var(--surface);
   border: 1px solid var(--border);
@@ -26,33 +28,80 @@
   padding: var(--space-5);
 }
 
+.stageText {
+  min-width: 0;
+}
+
+.stageText h2 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-3);
+}
+
+/* The stage number is navigation data, printed as a figure, not a decorative
+   label above the title. */
+.stageNo {
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  color: var(--text-3);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-s);
+  padding: 2px 7px;
+  white-space: nowrap;
+}
+
 .tagline {
   color: var(--accent-text);
   font-weight: 500;
-  margin-top: var(--space-1);
+  font-size: var(--fs-s);
+  margin-top: var(--space-2);
 }
 
 .summary {
   color: var(--text-2);
   margin-top: var(--space-2);
   font-size: var(--fs-s);
-  max-width: 480px;
+  max-width: 46ch;
 }
 
+.stageRing {
+  display: grid;
+  justify-items: center;
+  gap: var(--space-2);
+  flex-shrink: 0;
+}
+
+.stageCount {
+  color: var(--text-3);
+  font-family: var(--font-mono);
+  font-size: var(--fs-xs);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+/* ── the spine ─────────────────────────────────────────────────────────── */
+
+/* Two columns with the spine running down the gap between them. Each node
+   claims its own row, so the path reads as a ladder you climb. */
 .spine {
   display: grid;
-  gap: var(--space-3);
+  grid-template-columns: 1fr 1fr;
+  column-gap: var(--space-7);
+  row-gap: var(--space-3);
   position: relative;
-  padding: 0 var(--space-5);
+  padding: var(--space-2) var(--space-2);
 }
 
 .spine::before {
   content: '';
   position: absolute;
   left: 50%;
-  top: 0;
-  bottom: 0;
-  width: 2px;
+  top: var(--space-4);
+  bottom: var(--space-4);
+  width: 1px;
   background: var(--border);
   transform: translateX(-50%);
 }
@@ -61,10 +110,10 @@
   display: flex;
   align-items: center;
   gap: var(--space-3);
-  width: 46%;
+  grid-column: 1;
   border: 1px solid var(--border);
   background: var(--surface);
-  border-radius: var(--radius-l);
+  border-radius: var(--radius-m);
   padding: var(--space-3) var(--space-4);
   cursor: pointer;
   text-align: left;
@@ -72,23 +121,51 @@
   z-index: 1;
   transition:
     transform var(--dur-fast) var(--ease),
-    border-color var(--dur-fast) var(--ease);
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
 }
 
 .node:hover:not(:disabled) {
-  transform: translateY(-2px);
-  border-color: var(--accent);
+  transform: translateY(-1px);
+  border-color: var(--border-strong);
+  background: var(--surface-2);
+}
+
+.node:active:not(:disabled) {
+  transform: translateY(0);
 }
 
 .node[data-side='right'] {
-  margin-left: auto;
+  grid-column: 2;
+}
+
+/* The tie-line from the node to the spine. Half the column gap, so it always
+   lands exactly on the centre line. */
+.node::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  width: calc(var(--space-7) / 2);
+  height: 1px;
+  background: var(--border);
+}
+
+.node[data-side='left']::after {
+  right: calc(var(--space-7) / -2);
+}
+
+.node[data-side='right']::after {
+  left: calc(var(--space-7) / -2);
 }
 
 .node[data-status='locked'] {
-  opacity: 0.45;
+  opacity: 0.5;
   cursor: not-allowed;
+  background: transparent;
 }
 
+/* Node shape carries the kind, so the three types are told apart without
+   reading: circle = unit, square = review, diamond = checkpoint. */
 .node[data-kind='review'] .dot {
   border-radius: var(--radius-s);
 }
@@ -99,36 +176,43 @@
 }
 
 .dot {
-  width: 30px;
-  height: 30px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
-  border: 2px solid var(--border);
+  border: 1.5px solid var(--border-strong);
   background: var(--surface-2);
   display: grid;
   place-items: center;
   flex-shrink: 0;
-  font-size: var(--fs-s);
-  color: var(--accent-contrast);
+  color: var(--text-3);
+}
+
+/* Where you are: the only pulse on the page, and it stops after two beats. */
+.node[data-status='available'] {
+  border-color: var(--accent-line);
 }
 
 .node[data-status='available'] .dot {
   border-color: var(--accent);
-  animation: pulse 1.6s var(--ease) 2;
+  color: var(--accent-text);
+  animation: pulse 1.8s var(--ease) 2;
 }
 
 .node[data-status='in-progress'] .dot {
   border-color: var(--accent);
-  background: color-mix(in srgb, var(--accent) 40%, var(--surface-2));
+  background: var(--accent-soft);
+  color: var(--accent-text);
 }
 
 .node[data-status='passed'] .dot {
   background: var(--accent);
   border-color: var(--accent);
+  color: var(--accent-contrast);
 }
 
 @keyframes pulse {
   50% {
-    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 25%, transparent);
+    box-shadow: 0 0 0 6px color-mix(in srgb, var(--accent) 22%, transparent);
   }
 }
 
@@ -141,6 +225,7 @@
 .nodeTitle {
   font-weight: 600;
   font-size: var(--fs-s);
+  letter-spacing: -0.006em;
 }
 
 .flag {
@@ -169,10 +254,11 @@
 
 .strandChip {
   font-size: var(--fs-xs);
-  font-weight: 600;
+  font-weight: 500;
   padding: 3px 10px;
-  border-radius: 999px;
+  border-radius: var(--radius-pill);
   background: var(--surface-2);
+  border: 1px solid var(--border);
   color: var(--text-2);
 }
 
@@ -185,4 +271,28 @@
 .node[data-flagged='true'] .dot {
   background: var(--warn);
   border-color: var(--warn);
+  color: var(--surface);
+}
+
+/* Below the fold of a phone the zigzag stops being a spine and becomes a
+   list; collapse it rather than shrinking it. */
+@media (max-width: 700px) {
+  .spine {
+    grid-template-columns: 1fr;
+    padding: 0;
+  }
+  .spine::before {
+    display: none;
+  }
+  .node,
+  .node[data-side='right'] {
+    grid-column: 1;
+  }
+  .node::after {
+    display: none;
+  }
+  .stageHeader {
+    flex-direction: column;
+    align-items: flex-start;
+  }
 }

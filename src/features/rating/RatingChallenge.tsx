@@ -153,7 +153,7 @@ function Challenge({
       void recordChallenge(strand, passedCount, tracked).then(async (out) => {
         setOutcome(out);
         setStage('done');
-        for (const badge of await refreshBadges()) toast(`Badge earned — ${badge.title}`, 'ok');
+        for (const badge of await refreshBadges()) toast(`Badge earned: ${badge.title}`, 'ok');
       });
     },
     [abortRun, strand, tracked],
@@ -193,7 +193,7 @@ function Challenge({
             </div>
             <h1>{STRAND_LABEL[strand]} challenge</h1>
             <p>
-              {CHALLENGE_ITEMS} items at your current level. One shot each — no retries, no clock pressure
+              {CHALLENGE_ITEMS} items at your current level. One shot each, no retries, no clock pressure
               beyond the exercise itself. Pass 8 and you move up two.
             </p>
             {range && level >= range.max && (
@@ -241,7 +241,7 @@ function Challenge({
               {outcome.verdict === 'up'
                 ? 'That material is yours now.'
                 : outcome.verdict === 'down'
-                  ? 'It slipped a little — the reviews will bring it back.'
+                  ? 'It slipped a little. The reviews will bring it back.'
                   : 'Solid ground. Another run will move it.'}
             </p>
             <div className={styles['actions']}>

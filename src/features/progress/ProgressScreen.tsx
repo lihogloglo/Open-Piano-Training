@@ -16,6 +16,7 @@ import { BADGES, findThenVsNowPairs, type ReplayPair } from '@/progress/badges';
 import { FAMILIES, HEATMAP_KEYS, buildHeatmap, type HeatCell } from '@/progress/heatmap';
 import { ATOMS } from '@/progress/atoms';
 import { Button } from '@/ui/Button';
+import { Icon } from '@/ui/Icon';
 import { RatingDial } from '@/ui/RatingDial';
 import { Sparkline } from '@/ui/Sparkline';
 import { toast } from '@/ui/Toast';
@@ -235,8 +236,12 @@ export function ProgressScreen() {
             const earned = badges.has(badge.id);
             return (
               <div key={badge.id} className={styles['badge']} data-earned={earned}>
-                <span className={styles['badgeMark']} aria-hidden>
-                  {earned ? '\u{1F3C5}' : '○'}
+                <span className={styles['badgeMark']}>
+                  {earned ? (
+                    <Icon name="badge" size={20} weight="fill" />
+                  ) : (
+                    <Icon name="badgeEmpty" size={20} />
+                  )}
                 </span>
                 <span className={styles['badgeTitle']}>{badge.title}</span>
                 <span className={styles['muted']}>{badge.criterion}</span>

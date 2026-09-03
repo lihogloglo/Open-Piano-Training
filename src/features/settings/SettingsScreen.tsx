@@ -49,7 +49,7 @@ export function SettingsScreen() {
   const doImport = async (file: File) => {
     try {
       await importAll(await file.text());
-      toast('Progress imported — welcome back', 'ok');
+      toast('Progress imported. Welcome back', 'ok');
     } catch (err) {
       toast(err instanceof Error ? err.message : 'Import failed', 'err');
     }
@@ -166,7 +166,7 @@ export function SettingsScreen() {
         <p className={styles['note']}>
           {APP_NAME} teaches the keyboard by ear and by symbol, not from the page. The reading strand is a
           separate, optional track: short generated phrases on a staff, plus its own rating. Turn it on
-          whenever you want it — nothing else changes.
+          whenever you want it, and nothing else changes.
         </p>
         <div className={styles['row']}>
           <span>Reading strand</span>
@@ -225,7 +225,7 @@ export function SettingsScreen() {
       <Card>
         <h3>About</h3>
         <p className={styles['note']}>
-          {APP_NAME} — {APP_TAGLINE} Works offline once loaded; nothing you play leaves this device.
+          {APP_NAME}. {APP_TAGLINE} Works offline once loaded; nothing you play leaves this device.
         </p>
         <div className={styles['dataRow']}>
           <Button onClick={() => void navigate('/licenses')}>Licenses &amp; credits</Button>

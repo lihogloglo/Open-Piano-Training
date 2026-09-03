@@ -9,13 +9,14 @@
   padding: var(--space-4);
   display: grid;
   gap: var(--space-2);
+  background: var(--surface);
 }
 
 .notice[data-tone='err'] {
-  border-color: var(--err);
+  box-shadow: inset 3px 0 0 var(--err);
 }
 .notice[data-tone='warn'] {
-  border-color: var(--warn);
+  box-shadow: inset 3px 0 0 var(--warn);
 }
 
 .hint {
@@ -26,10 +27,12 @@
 .hint kbd {
   background: var(--surface-2);
   border: 1px solid var(--border);
-  border-radius: 4px;
-  padding: 0 4px;
+  border-bottom-width: 2px;
+  border-radius: var(--radius-s);
+  padding: 1px 5px;
   font-family: var(--font-mono);
   font-size: 11px;
+  color: var(--text);
 }
 
 .deviceList {
@@ -40,15 +43,23 @@
 .device {
   display: flex;
   align-items: center;
-  gap: var(--space-2);
-  padding: var(--space-2) var(--space-3);
+  gap: var(--space-3);
+  padding: var(--space-3);
   border: 1px solid var(--border);
   border-radius: var(--radius-m);
   cursor: pointer;
+  transition:
+    border-color var(--dur-fast) var(--ease),
+    background var(--dur-fast) var(--ease);
+}
+
+.device:hover {
+  background: var(--surface-2);
 }
 
 .device:has(input:checked) {
   border-color: var(--accent);
+  background: var(--accent-soft);
 }
 
 .listen {

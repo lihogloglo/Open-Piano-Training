@@ -1,3 +1,5 @@
+import { exerciseRange } from '@/ui/Keyboard/utils';
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { generate } from '@/engine/generators';
@@ -29,7 +31,6 @@ import { StaffSnippet } from '@/ui/StaffSnippet';
 import { PlayerNotices } from '@/ui/PlayerNotices';
 import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
-import { playNote, stopNote } from '@/audio/sampler';
 import styles from './RatingChallenge.module.css';
 
 function isRatingStrand(value: string | undefined): value is RatingStrand {
@@ -305,15 +306,15 @@ function Challenge({
         </div>
       </div>
       <Keyboard
-        range={[48, 84]}
+        range={exerciseRange(instance)}
         pressed={activeNotes}
         targets={targets}
         judgments={judgments}
         fingerMap={fingerMap}
         labels={fingerMap.size > 0 ? 'fingers' : 'none'}
         height={190}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
       <TransportBar
         phase={phase}

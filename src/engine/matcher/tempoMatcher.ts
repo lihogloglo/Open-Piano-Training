@@ -99,12 +99,13 @@ export class TempoMatcher {
 
     if (!best) {
       // Pitch-wrong near some pending target → wrong; otherwise extra.
-      const nearPending = this.states.some(
-        (s) => !s.consumed && !s.missed && Math.abs(t - s.tExpect) <= this.windows.outer,
-      );
-      const verdict = nearPending ? 'wrong' : 'extra';
+      const nearest = this.states
+        .map((s, index) => ({ s, index }))
+        .filter(({ s }) => !s.consumed && !s.missed && Math.abs(t - s.tExpect) <= this.windows.outer)
+        .sort((a, b) => Math.abs(t - a.s.tExpect) - Math.abs(t - b.s.tExpect))[0];
+      const verdict = nearest ? 'wrong' : 'extra';
       const judgment: NoteJudgment = {
-        targetIndex: -1,
+        targetIndex: nearest?.index ?? -1,
         midi: e.midi,
         verdict,
         deltaMs: null,
@@ -181,7 +182,13 @@ export class TempoMatcher {
       if (t > s.tExpect + this.windows.outer) {
         s.missed = true;
         const midi =
-          s.target.kind === 'note' ? s.target.midi : s.target.kind === 'set' ? (s.target.midis[0] ?? 0) : 0;
+          s.target.kind === 'note'
+            ? s.target.midi
+            : s.target.kind === 'set'
+              ? (s.target.midis[0] ?? 0)
+              : s.target.kind === 'pitch-class-group'
+                ? (s.target.pitchClasses[0] ?? 0) + 60
+                : 0;
         const judgment: NoteJudgment = { targetIndex: i, midi, verdict: 'missed', deltaMs: null };
         this.judgments.push(judgment);
         events.push({ type: 'noteJudged', judgment });
@@ -211,13 +218,18 @@ export class TempoMatcher {
   }
 
   private finalResult() {
-    let result = scoreTake(this.judgments, this.instance.targets.length, 'tempo', 0.8);
+    let result = scoreTake(
+      this.judgments,
+      this.instance.targets.length,
+      'tempo',
+      this.instance.def.passScore ?? 0.8,
+    );
     const vl = this.instance.voiceLeading;
     if (vl) {
       const played = this.states.map((s) =>
         s.target.kind === 'set' && s.consumed && s.playedMidis.length > 0 ? s.playedMidis : null,
       );
-      result = applyVoiceLeading(result, played, vl.ideal);
+      result = applyVoiceLeading(result, played, vl.ideal, this.instance.def.passScore ?? 0.8);
     }
     return result;
   }

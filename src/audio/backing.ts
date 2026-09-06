@@ -3,7 +3,7 @@ import { progressionChords } from '@/theory/progressions';
 import type { KeyContext } from '@/theory/keys';
 import { COMP_PATTERNS, swingBeat, type CompPattern } from '@/engine/comp';
 import { onBeat, startMetronome, stopMetronome } from './metronome';
-import { playNote, stopNote } from './sampler';
+import { ensureSamplerLoaded, playNote, stopNote } from './sampler';
 import { unlockAudio } from './clock';
 
 export interface BackingOptions {
@@ -50,6 +50,9 @@ export async function startBacking(opts: BackingOptions): Promise<BackingHandle>
   };
 
   await unlockAudio();
+  // Backing and lesson demonstrations always need app audio. The live piano
+  // echo preference only controls whether incoming MIDI notes are repeated.
+  await ensureSamplerLoaded();
   startMetronome({ bpm: opts.bpm, countInBars: 0, volume: opts.metronomeVolume ?? 0 });
 
   const pattern = opts.pattern ?? 'block';

@@ -617,6 +617,18 @@ export const stage5Units: Unit[] = [
         ),
       },
       {
+        kind: 'ladder',
+        id: 's5.u5.l2',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'chart-play',
+          { songId: 'ember', style: 'brokenLH', voiceLead: 'smooth' },
+          76,
+          'both',
+          'lead-sheet',
+        ),
+      },
+      {
         kind: 'graded',
         id: 's5.u5.q1',
         passScore: 0.8,
@@ -634,18 +646,6 @@ export const stage5Units: Unit[] = [
         exercise: wait(
           'chart-play',
           { songId: 'ember', style: 'brokenLH', voiceLead: 'smooth' },
-          'both',
-          'lead-sheet',
-        ),
-      },
-      {
-        kind: 'ladder',
-        id: 's5.u5.l2',
-        tempos: [0.6, 0.8, 1],
-        exercise: tempo(
-          'chart-play',
-          { songId: 'ember', style: 'brokenLH', voiceLead: 'smooth' },
-          76,
           'both',
           'lead-sheet',
         ),
@@ -1304,10 +1304,9 @@ export const stage5Units: Unit[] = [
         kind: 'graded',
         id: 's5.cp.q1',
         passScore: 0.8,
-        exercise: tempo(
+        exercise: wait(
           'scale-run',
           { tonic: 'Eb', scaleType: 'major', hand: 'rh', direction: 'updown' },
-          66,
           'rh',
           'keys-lit',
         ),

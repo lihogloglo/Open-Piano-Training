@@ -747,6 +747,17 @@ export const stage1Units: Unit[] = [
         ),
       },
       {
+        kind: 'guided',
+        id: 's1.u7.g-roman',
+
+        exercise: wait(
+          'flashcard',
+          { kind: 'roman', keys: [C_MAJOR], romans: ['I', 'IV', 'V', 'vi'], count: 8 },
+          'rh',
+          'chord-symbols',
+        ),
+      },
+      {
         kind: 'graded',
         id: 's1.u7.q1',
         passScore: 0.8,
@@ -833,7 +844,7 @@ export const stage1Units: Unit[] = [
         exercise: tempo(
           'progression-play',
           { key: C_MAJOR, roman: ['I', 'V', 'vi', 'IV'], beatsPerChord: 4, loops: 2, style: 'rootchord' },
-          72,
+          70,
           'both',
           'chord-symbols',
         ),

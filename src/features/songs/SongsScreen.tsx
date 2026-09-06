@@ -1,3 +1,5 @@
+import { PIECES } from '@/curriculum/content/musicianship';
+import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { SONGS } from '@/curriculum/content/songs';
@@ -29,6 +31,14 @@ export function SongsScreen() {
   return (
     <div className={styles['wrap']}>
       <h1>Songs</h1>
+      <h2>Complete beginner pieces</h2>
+      <p>Original melodies with demonstrations, phrase loops, fingering, and three arrangements.</p>
+      {PIECES.map((p) => (
+        <p key={p.id}>
+          <Link to={`/studio/${p.id}`}>{p.title}</Link> - Suggested from Stage {p.stage}
+        </p>
+      ))}
+      <h2>Chord charts</h2>
       <p className={styles['sub']}>
         Original charts that use exactly what the path has taught. Every song works in every key.
       </p>

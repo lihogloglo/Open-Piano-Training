@@ -41,15 +41,20 @@ let tempoMatcher: TempoMatcher | null = null;
 let recorder: TakeRecorder | null = null;
 let unsubBeat: (() => void) | null = null;
 let finishTimer: ReturnType<typeof setTimeout> | undefined;
+let targetTimers: ReturnType<typeof setTimeout>[] = [];
 let tempoStartGate = 0; // ignore input earlier than this (count-in)
 const flashTimers = new Map<number, ReturnType<typeof setTimeout>>();
 let previewTimers: ReturnType<typeof setTimeout>[] = [];
 let previewUntilPerf = 0;
+let runGeneration = 0;
+const previewSounding = new Set<number>();
 
 function clearPreview(): void {
   for (const t of previewTimers) clearTimeout(t);
   previewTimers = [];
   previewUntilPerf = 0;
+  for (const midi of previewSounding) stopNote(midi);
+  previewSounding.clear();
 }
 
 /** Play a demo (ear prompts) through the sampler; gates input until done. */
@@ -65,14 +70,21 @@ function schedulePreview(
     const until = at + n.durBeats * beatMs;
     end = Math.max(end, until);
     previewTimers.push(
-      setTimeout(() => playNote(n.midi, 0.7), at),
-      setTimeout(() => stopNote(n.midi), until),
+      setTimeout(() => {
+        previewSounding.add(n.midi);
+        playNote(n.midi, 0.7);
+      }, at),
+      setTimeout(() => {
+        previewSounding.delete(n.midi);
+        stopNote(n.midi);
+      }, until),
     );
   }
   previewUntilPerf = performance.now() + end + 120;
   set({ listening: true });
   previewTimers.push(
     setTimeout(() => {
+      waitMatcher?.beginResponse(performance.now());
       set({ listening: false });
     }, end + 120),
   );
@@ -86,7 +98,7 @@ function computeHighlights(
   const map = new Map<number, 'target' | 'hint'>();
   const target = instance.targets[index];
   if (!target) return map;
-  const lit = instance.def.rung === 'keys-lit' || hint;
+  const lit = !instance.def.assessment && (instance.def.rung === 'keys-lit' || hint);
   if (!lit) return map;
   for (const midi of targetMidis(target)) map.set(midi, hint ? 'hint' : 'target');
   return map;
@@ -117,10 +129,13 @@ export const useRunStore = create<RunState>((set, get) => ({
 
   async startRun(instance) {
     get().abortRun();
+    const generation = runGeneration;
     const settings = useSettingsStore.getState();
     recorder = new TakeRecorder(performance.now());
     const fingerMap =
-      instance.def.rung === 'keys-lit' ? computeFingerMap(instance) : new Map<number, number>();
+      instance.def.rung === 'keys-lit' && !instance.def.assessment
+        ? computeFingerMap(instance)
+        : new Map<number, number>();
 
     if (instance.def.mode === 'wait') {
       waitMatcher = new WaitMatcher(instance);
@@ -139,6 +154,7 @@ export const useRunStore = create<RunState>((set, get) => ({
       });
       if (instance.audioPreview || instance.perTargetPreview) {
         await unlockAudio();
+        if (generation !== runGeneration) return;
         let lead = 150;
         if (instance.audioPreview) {
           schedulePreview(instance.audioPreview, set, lead);
@@ -147,19 +163,25 @@ export const useRunStore = create<RunState>((set, get) => ({
         const first = instance.perTargetPreview?.[0];
         if (first) schedulePreview(first, set, lead);
       }
-      processEvents(waitMatcher.start(), set, get);
+      processEvents(waitMatcher.start(performance.now()), set, get);
       return;
     }
 
     // Tempo mode: metronome + count-in.
     const bpm = instance.def.bpm ?? 80;
     await unlockAudio();
-    const anchor = startMetronome({ bpm, volume: settings.metronomeVolume });
+    if (generation !== runGeneration) return;
+    const anchor = startMetronome({
+      bpm,
+      timeSig: [instance.beatsPerBar ?? 4, 4],
+      volume: settings.metronomeVolume,
+    });
     const windows = TIER_WINDOWS[instance.def.timingTier ?? 'standard'];
     tempoStartGate = anchor.t0Perf - windows.outer;
     tempoMatcher = new TempoMatcher(instance, bpm, anchor.t0Perf, settings.latencyOffsetMs);
     set({
       phase: 'count-in',
+      beatsPerBar: instance.beatsPerBar ?? 4,
       instance,
       bpm,
       targetIndex: 0,
@@ -172,6 +194,20 @@ export const useRunStore = create<RunState>((set, get) => ({
       result: null,
     });
 
+    targetTimers = instance.targets.map((target, index) =>
+      setTimeout(
+        () => {
+          if (generation !== runGeneration) return;
+          set({ targetIndex: index, targets: computeHighlights(instance, index, false) });
+        },
+        Math.max(
+          0,
+          anchor.t0Perf +
+            ((target.atBeat ?? index * (instance.beatsPerTarget ?? 1)) * 60_000) / bpm -
+            performance.now(),
+        ),
+      ),
+    );
     unsubBeat = onBeat((beat) => handleBeat(beat, set, get));
     const endDelay = tempoMatcher.endTimePerf - performance.now() + 100;
     finishTimer = setTimeout(() => {
@@ -180,11 +216,14 @@ export const useRunStore = create<RunState>((set, get) => ({
   },
 
   abortRun() {
+    runGeneration += 1;
     stopMetronome();
     clearPreview();
     unsubBeat?.();
     unsubBeat = null;
     clearTimeout(finishTimer);
+    for (const timer of targetTimers) clearTimeout(timer);
+    targetTimers = [];
     for (const t of flashTimers.values()) clearTimeout(t);
     flashTimers.clear();
     waitMatcher = null;
@@ -214,12 +253,6 @@ function handleBeat(beat: BeatInfo, set: Set, get: Get): void {
   if (!instance || !tempoMatcher) return;
   set({ beatIndex: beat.beatIndex });
   if (beat.beatIndex >= 0 && phase === 'count-in') set({ phase: 'running' });
-  // Advance the highlighted target on the grid (keys-lit rung).
-  if (beat.beatIndex >= 0) {
-    const spacing = instance.beatsPerTarget ?? 1;
-    const index = Math.min(Math.floor(beat.beatIndex / spacing), instance.targets.length - 1);
-    set({ targetIndex: index, targets: computeHighlights(instance, index, false) });
-  }
   processEvents(tempoMatcher.tick(performance.now()), set, get);
 }
 
@@ -261,6 +294,8 @@ function processEvents(events: MatchEvent[], set: Set, get: Get): void {
       unsubBeat?.();
       unsubBeat = null;
       clearTimeout(finishTimer);
+      for (const timer of targetTimers) clearTimeout(timer);
+      targetTimers = [];
       const { instance, bpm } = get();
       let lastTake: Take | null = null;
       if (instance && recorder) {

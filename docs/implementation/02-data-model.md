@@ -6,15 +6,15 @@ All types live where noted; this doc is the source of truth. Use these names ver
 
 Deterministic, human-readable, lowercase:
 
-| Entity     | Pattern                                              | Examples                                                                                                                                                       |
-| ---------- | ---------------------------------------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Stage      | `s{n}`                                               | `s0`, `s3`                                                                                                                                                     |
-| Unit       | `s{n}.u{m}`                                          | `s1.u3`                                                                                                                                                        |
-| Checkpoint | `s{n}.cp`                                            | `s2.cp`                                                                                                                                                        |
-| Skill atom | `{kind}:{params-joined-by-:}`                        | `scale:d:major:rh:1oct`, `chord:eb:maj:inv1`, `prog:i-v-vi-iv:g`, `keysig:e:major`, `ear:degree:5`, `ear:quality:m7`                                           |
-| Generator  | kebab                                                | `scale-run`, `chord-grip`, `grip-interleave`, `progression-play`, `ear-degree`, `ear-progression`, `flashcard`, `chart-play`, `improv-sandbox`, `read-snippet` |
-| Song       | `song:{slug}`                                        | `song:axis-anthem`                                                                                                                                             |
-| Take       | ULID (library-free 26-char impl in `progress/db.ts`) | —                                                                                                                                                              |
+| Entity     | Pattern                                              | Examples                                                                                                                                                               |
+| ---------- | ---------------------------------------------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| Stage      | `s{n}`                                               | `s0`, `s3`                                                                                                                                                             |
+| Unit       | `s{n}.u{m}`                                          | `s1.u3`                                                                                                                                                                |
+| Checkpoint | `s{n}.cp`                                            | `s2.cp`                                                                                                                                                                |
+| Skill atom | `{kind}:{params-joined-by-:}`                        | `scale:d:major:rh:1oct`, `chord:eb:maj:inv1`, `prog:i-v-vi-iv:g`, `keysig:e:major`, `ear:degree:5`, `ear:quality:m7`                                                   |
+| Generator  | kebab                                                | `scale-run`, `chord-grip`, `grip-interleave`, `progression-play`, `ear-degree`, `ear-progression`, `flashcard`, `chart-play`, `unseen-chart`, `improv`, `read-snippet` |
+| Song       | `song:{slug}`                                        | `song:axis-anthem`                                                                                                                                                     |
+| Take       | ULID (library-free 26-char impl in `progress/db.ts`) | —                                                                                                                                                                      |
 
 ## MIDI & events (`src/midi/types.ts`)
 
@@ -93,11 +93,11 @@ export interface Stage {
   title: string;
   tagline: string;
   summary: string; // 2-3 sentences, shown on the path
-  unitIds: string[]; // ordered; last one may be the checkpoint
+  unitIds: string[]; // ordered; last one is the checkpoint
 }
 
 export interface Unit {
-  id: string;
+  id: string; // s{n}.u{m} or s{n}.cp
   stageId: string;
   ordinal: number;
   title: string; // learner-facing, e.g. "Why V pulls home"
@@ -106,7 +106,7 @@ export interface Unit {
   prerequisites: string[]; // unit ids
   steps: LessonStep[];
   minutes: number; // estimate shown on the node
-  kind: 'lesson' | 'review' | 'checkpoint';
+  kind: 'lesson' | 'checkpoint'; // review nodes are not authored; path.ts inserts them
 }
 
 export type LessonStep =
@@ -114,20 +114,34 @@ export type LessonStep =
   | { kind: 'guided'; id: string; exercise: ExerciseDef } // wait mode forced
   | { kind: 'ladder'; id: string; exercise: ExerciseDef; tempos: number[] } // e.g. [0.5,0.75,1]
   | { kind: 'graded'; id: string; exercise: ExerciseDef; passScore: number } // default 0.8
-  | { kind: 'create'; id: string; prompt: string; exercise: ExerciseDef }; // sandbox, unscored
+  | { kind: 'create'; id: string; prompt: string; exercise?: ExerciseDef }; // sandbox, unscored
 
 export type ExplainBlock =
-  | { kind: 'text'; md: string } // markdown, short
-  | { kind: 'keyboardDemo'; demo: DemoScript } // animated keyboard + audio
+  | { kind: 'text'; md: string } // markdown, short (≤700 chars)
+  | { kind: 'keyboardDemo'; demo: DemoScript; caption?: string } // animated keyboard + audio
   | { kind: 'progressionCard'; roman: string[]; key: KeyContext; songRefs?: string[] }
   | { kind: 'circleOfFifths'; highlight?: string[] }
-  | { kind: 'earCheck'; question: EarQuestion }; // 1-tap inline check
+  | {
+      kind: 'earCheck'; // 1-tap inline check
+      question: string;
+      demo: DemoScript;
+      options: string[]; // 2..4
+      correctIndex: number;
+    }
+  | {
+      // The teaching half of a unit with hands on the keys. Never gates Continue.
+      kind: 'playCheck';
+      ask: string;
+      notes: string[]; // note names without octave; any octave counts
+      count: number; // accepted notes to collect (default 1)
+      distinct: 'octave' | 'name'; // what makes a second hit count
+      hint?: string;
+    };
 
 export interface DemoScript {
   events: { midi: number; atBeat: number; durBeats: number }[];
   bpm: number;
   loop: boolean;
-  labels: WeaningRung;
 }
 
 export interface ExerciseDef {
@@ -141,6 +155,9 @@ export interface ExerciseDef {
   seedPolicy: 'fixed' | 'daily' | 'random'; // fixed = same every time (guided), random = fresh
 }
 ```
+
+`ExerciseDef` lives in `engine/types.ts`; the schema file re-validates it with zod
+so content and engine cannot drift apart.
 
 ## Songs (`src/curriculum/content/songs.ts`)
 
@@ -197,14 +214,14 @@ export interface TakeResult {
 
 ```ts
 export interface SkillAtom {
-  // registry entry (code-defined, not stored)
+  // registry entry, built from curriculum content at boot (not stored)
   id: string;
-  kind: 'scale' | 'chord' | 'prog' | 'keysig' | 'spell' | 'ear' | 'read' | 'song';
+  kind: string; // the id's first segment: note, scale, chord, prog, ear, voicing, comp…
   strand: Strand;
   label: string; // display, e.g. "E♭ major · 1st inversion"
-  params: Record<string, string>;
-  gradedBy: string[]; // generator ids that can test it
-  difficulty: number; // 1..100, used by ratings (07)
+  difficulty: number; // 1..100, by the rule in 07
+  introducedIn: string; // unit id
+  drill: ExerciseDef | null; // the review exercise; null = tracked but not drillable
 }
 
 export interface AtomProgress {
@@ -222,6 +239,7 @@ export interface UnitProgress {
   unitId: string;
   status: 'locked' | 'available' | 'in-progress' | 'passed';
   bestScore: number;
+  flagged?: boolean; // the "mark for extra review" pass (07 §Gates)
   completedAt?: number;
 }
 
@@ -236,13 +254,14 @@ export interface SessionPlan {
   id: string;
   date: string; // YYYY-MM-DD local
   blocks: SessionBlock[];
-  state: 'fresh' | 'partial' | 'done';
+  completedBlocks: number[]; // block indices already done; resume reads this
+  catchUp: boolean; // more than 20 atoms due
 }
 export type SessionBlock =
-  | { kind: 'warmup'; exercises: ExerciseDef[] }
-  | { kind: 'new'; unitId: string }
-  | { kind: 'review'; atomIds: string[] } // rendered as interleaved drill
-  | { kind: 'create'; prompt: string; exercise: ExerciseDef };
+  | { kind: 'warmup'; exercises: { atomId: string; def: ExerciseDef }[]; minutes: number }
+  | { kind: 'new'; unitId: string; title: string; minutes: number }
+  | { kind: 'review'; atomIds: string[]; minutes: number } // rendered as interleaved drill
+  | { kind: 'create'; prompt: string; minutes: number }; // the prompt cycles a curated list
 ```
 
 ## Database (`src/progress/db.ts`) — Dexie schema v1
@@ -263,8 +282,26 @@ Rules: schema changes ONLY via new `db.version(n)` with upgrade fn; `takes.event
 
 ## Settings (defaults)
 
+Settings live in `localStorage` under `ks.settings.v1`, not the Dexie `settings`
+table, so the theme is known before the first paint (see the decisions log).
+The `settings` table stays in the schema and in exports, and nothing writes it.
+
 ```ts
-{ theme: 'dark', deviceId: null, audioEnabled: true, masterVolume: 0.8,
-  metronomeVolume: 0.7, labelsDefault: 'auto',    // auto = rung-appropriate
-  dailyMinutes: 20, reducedMotion: 'system', latencyOffsetMs: 0 }  // latencyOffset: 03 §Calibration
+{ theme: 'dark', onboarded: false, deviceId: null, audioEnabled: true,
+  masterVolume: 0.8, metronomeVolume: 0.7, dailyMinutes: 20,
+  latencyOffsetMs: 0, sidebarExpanded: true,   // latencyOffset: 03 §Calibration
+  readStrandEnabled: false, reducedMotion: false }
 ```
+
+## Review changes (2026-09-06)
+
+Dexie remains schema version 1. New metadata uses the existing `meta` table.
+`lessonResume:*` stores step, scores, flags, ladder successes, and assessment outcomes.
+`retest:*` stores the original unit, graded step, and exercise definition.
+`study:*` stores a learner-confirmed self-check with its completion date.
+Atom rows can include `lastScore`, separate from `bestScore`.
+
+Take exercise definitions can include `assessment`, `passScore`, and a focused target range.
+Results can include first-answer accuracy, response times, and hints used.
+The backup envelope includes `preferences` from localStorage alongside the seven existing tables.
+Imports validate structures and references before replacement. Invalid imports preserve existing progress.

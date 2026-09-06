@@ -1,3 +1,4 @@
+import { readPreferences } from './preferences';
 import type { Unit } from '@/curriculum/schema';
 import { getUnitProgressMap, markUnitPassed, db, type AtomProgressRow } from './db';
 import { ATOMS, READ_STRAND_ATOMS } from './atoms';
@@ -8,6 +9,7 @@ import {
   localDateString,
   type AtomState,
   type SessionPlan,
+  type SessionInputs,
 } from './sessionBuilder';
 import { nextUnit } from '@/curriculum/path';
 import { STAGES, getUnit } from '@/curriculum/content';
@@ -73,6 +75,7 @@ export async function gradeAtom(atomId: string, score: number, now = new Date())
     fsrs: card,
     lastSeenAt: now.getTime(),
     bestScore,
+    lastScore: score,
     attempts: row.attempts + 1,
     fluent: isFluent(card, bestScore),
   });
@@ -80,12 +83,16 @@ export async function gradeAtom(atomId: string, score: number, now = new Date())
 
 export async function loadAtomStates(): Promise<AtomState[]> {
   const rows = await db.atomProgress.toArray();
-  return rows.map((r: AtomProgressRow) => ({
-    atomId: r.atomId,
-    fsrs: r.fsrs as StoredCard,
-    bestScore: r.bestScore,
-    fluent: r.fluent,
-  }));
+  const reading = readPreferences().readStrandEnabled === true;
+  return rows
+    .filter((r) => reading || !r.atomId.startsWith('read:staff:'))
+    .map((r: AtomProgressRow) => ({
+      atomId: r.atomId,
+      fsrs: r.fsrs as StoredCard,
+      bestScore: r.bestScore,
+      lastScore: r.lastScore ?? r.bestScore,
+      fluent: r.fluent,
+    }));
 }
 
 /** Read-only view of today's plan (safe inside Dexie liveQuery). */
@@ -103,24 +110,34 @@ export async function getTodaySession(now = new Date()): Promise<SessionPlan> {
   const progress = await getUnitProgressMap();
   const next = nextUnit(progress);
   const stageOrdinal = next ? (STAGES.find((s) => s.id === next.stageId)?.ordinal ?? 0) : STAGES.length;
-  const settingsRow = localStorage.getItem('ks.settings.v1');
-  const dailyMinutes = settingsRow
-    ? ((JSON.parse(settingsRow) as { dailyMinutes?: number }).dailyMinutes ?? 20)
-    : 20;
+  const settings = readPreferences();
+  const dailyMinutes = settings.dailyMinutes ?? 20;
+  const resume = next ? await db.meta.get(`lessonResume:${next.id}`) : undefined;
   const plan = buildSession({
     date,
     dailyMinutes,
     next,
+    learnedUnitIds: [...progress].filter(([, row]) => row.status === 'passed').map(([id]) => id),
     stageOrdinal,
+    retests: await loadRetests(),
     atomStates: await loadAtomStates(),
     now,
+    creativeFocus: settings.creativeFocus ?? 'melody',
+    nextStep: next
+      ? next.steps.findIndex((s) => s.id === (resume?.value as { stepId?: string } | undefined)?.stepId)
+      : 0,
   });
   await db.sessions.put({ id: plan.id, date, plan, state: 'fresh' });
   return plan;
 }
 
 export async function startWorkout(now = new Date()): Promise<SessionPlan> {
-  const plan = buildWorkout({ date: localDateString(now), atomStates: await loadAtomStates(), now });
+  const plan = buildWorkout({
+    date: localDateString(now),
+    retests: await loadRetests(),
+    atomStates: await loadAtomStates(),
+    now,
+  });
   await db.sessions.put({ id: plan.id, date: plan.date, plan, state: 'fresh' });
   return plan;
 }
@@ -131,22 +148,29 @@ export async function getSession(sessionId: string): Promise<SessionPlan | null>
 }
 
 export async function markBlockComplete(sessionId: string, blockIdx: number, minutes: number): Promise<void> {
-  const row = await db.sessions.get(sessionId);
-  if (!row) return;
-  const plan = row.plan as SessionPlan;
-  if (!plan.completedBlocks.includes(blockIdx)) plan.completedBlocks.push(blockIdx);
-  const state = plan.completedBlocks.length >= plan.blocks.length ? 'done' : 'partial';
-  await db.sessions.put({ ...row, plan, state });
-  await addPracticeMinutes(plan.date, minutes);
-  // Refresh the plan's unit pointer: a completed 'new' block may unlock the next unit
-  // tomorrow; today's plan stays as-is by design.
+  await db.transaction('rw', db.sessions, db.meta, async () => {
+    const row = await db.sessions.get(sessionId);
+    if (!row) return;
+    const plan = row.plan as SessionPlan;
+    if (!Number.isInteger(blockIdx) || !plan.blocks[blockIdx] || plan.completedBlocks.includes(blockIdx))
+      return;
+    plan.completedBlocks.push(blockIdx);
+    const state = plan.completedBlocks.length >= plan.blocks.length ? 'done' : 'partial';
+    await db.sessions.put({ ...row, plan, state });
+    await addPracticeMinutes(plan.date, minutes);
+    // Refresh the plan's unit pointer: a completed 'new' block may unlock the next unit
+    // tomorrow; today's plan stays as-is by design.
+  });
 }
 
 export async function addPracticeMinutes(date: string, minutes: number): Promise<void> {
-  const row = await db.meta.get('practiceDays');
-  const days = (row?.value as Record<string, number> | undefined) ?? {};
-  days[date] = (days[date] ?? 0) + minutes;
-  await db.meta.put({ key: 'practiceDays', value: days });
+  if (!Number.isFinite(minutes) || minutes <= 0) return;
+  await db.transaction('rw', db.meta, async () => {
+    const row = await db.meta.get('practiceDays');
+    const days = (row?.value as Record<string, number> | undefined) ?? {};
+    days[date] = (days[date] ?? 0) + minutes;
+    await db.meta.put({ key: 'practiceDays', value: days });
+  });
 }
 
 /** Dates with ≥5 practiced minutes (the streak threshold in 07). */
@@ -172,7 +196,6 @@ export function resolveUnit(unitId: string): Unit | undefined {
  */
 export async function syncReadStrand(enabled: boolean): Promise<void> {
   if (!enabled) {
-    await db.atomProgress.where('atomId').startsWith('read:staff:').delete();
     return;
   }
   const now = new Date();
@@ -204,10 +227,7 @@ async function badgeInputs(): Promise<BadgeInputs> {
     db.sessions.count(),
     db.meta.get(THEN_VS_NOW_KEY),
   ]);
-  const settingsRow = localStorage.getItem('ks.settings.v1');
-  const onboarded = settingsRow
-    ? ((JSON.parse(settingsRow) as { onboarded?: boolean }).onboarded ?? false)
-    : false;
+  const onboarded = readPreferences().onboarded ?? false;
   return { takes, units, atoms, sessionCount, onboarded, viewedThenVsNow: viewed?.value === true };
 }
 
@@ -273,4 +293,20 @@ export async function getRecap(now = new Date()): Promise<WeeklyRecap> {
 export async function dismissRecap(): Promise<void> {
   const stored = (await db.meta.get(RECAP_KEY))?.value as WeeklyRecap | undefined;
   if (stored) await db.meta.put({ key: RECAP_KEY, value: { ...stored, dismissed: true } });
+}
+
+async function loadRetests(): Promise<NonNullable<SessionInputs['retests']>> {
+  const rows = await db.meta.where('key').startsWith('retest:').toArray();
+  return rows.map((r) => ({ ...(r.value as NonNullable<SessionInputs['retests']>[number]), key: r.key }));
+}
+
+export async function resolveRetest(key: string): Promise<void> {
+  await db.transaction('rw', db.meta, db.unitProgress, async () => {
+    const row = await db.meta.get(key);
+    const unitId = (row?.value as { unitId?: string } | undefined)?.unitId;
+    await db.meta.delete(key);
+    if (unitId && (await db.meta.where('key').startsWith(`retest:${unitId}:`).count()) === 0) {
+      await db.unitProgress.update(unitId, { flagged: false });
+    }
+  });
 }

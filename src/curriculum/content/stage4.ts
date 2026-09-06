@@ -273,6 +273,24 @@ export const stage4Units: Unit[] = [
         ),
       },
       {
+        kind: 'ladder',
+        id: 's4.u2.l-smooth',
+        tempos: [0.6, 0.8, 1],
+        exercise: tempo(
+          'progression-play',
+          {
+            key: F,
+            roman: ['I', 'IV', 'V', 'I'],
+            beatsPerChord: 4,
+            loops: 2,
+            voiceLead: 'smooth',
+            style: 'rootchord',
+          },
+          66,
+          'both',
+        ),
+      },
+      {
         kind: 'graded',
         id: 's4.u2.q1',
         passScore: 0.8,
@@ -854,7 +872,7 @@ export const stage4Units: Unit[] = [
         exercise: tempo(
           'progression-play',
           { key: C, roman: ['I', 'V', 'vi', 'IV'], beatsPerChord: 4, loops: 2, voiceLead: 'smooth' },
-          80,
+          76,
         ),
       },
       {
@@ -871,7 +889,7 @@ export const stage4Units: Unit[] = [
             voiceLead: 'smooth',
             style: 'rootchord',
           },
-          80,
+          70,
           'both',
         ),
       },
@@ -923,7 +941,7 @@ export const stage4Units: Unit[] = [
             style: 'brokenLH',
             voiceLead: 'smooth',
           },
-          76,
+          72,
           'both',
         ),
       },

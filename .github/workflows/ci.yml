@@ -21,6 +21,8 @@ jobs:
       - name: Contrast (WCAG AA)
         run: npm run check:contrast
       - run: npm run test
+      - name: Fetch piano samples for offline checks
+        run: npm run samples
       - run: npm run build
       - name: Bundle budget
         run: npm run check:bundle

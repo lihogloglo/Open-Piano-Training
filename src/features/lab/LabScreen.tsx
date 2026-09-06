@@ -1,3 +1,4 @@
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useEffect, useRef, useState } from 'react';
 import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
@@ -9,7 +10,6 @@ import { useRunStore } from '@/store/runStore';
 import { Keyboard, type KeyLabels } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
-import { playNote, stopNote } from '@/audio/sampler';
 import styles from './LabScreen.module.css';
 
 const TONICS = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
@@ -438,8 +438,8 @@ export function LabScreen() {
         judgments={judgments}
         fingerMap={fingerMap}
         labels={labels}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
 
       {result && (

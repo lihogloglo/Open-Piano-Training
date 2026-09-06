@@ -1,3 +1,6 @@
+import { saveTake } from '@/progress/db';
+import { exerciseRange } from '@/ui/Keyboard/utils';
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getSong } from '@/curriculum/content/songs';
@@ -12,7 +15,6 @@ import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { TransportBar } from '@/ui/TransportBar';
 import { toast } from '@/ui/Toast';
-import { playNote, stopNote } from '@/audio/sampler';
 import styles from './SongPlayer.module.css';
 
 export function SongPlayer() {
@@ -44,6 +46,7 @@ export function SongPlayer() {
   useEffect(() => {
     return useRunStore.subscribe((s, prev) => {
       if (s.phase === 'done' && prev.phase !== 'done' && s.result) {
+        if (s.lastTake) void saveTake(s.lastTake);
         const pct = Math.round(s.result.score * 100);
         toast(s.result.passed ? `Nice, ${pct}%` : `${pct}%, loop it again`, s.result.passed ? 'ok' : 'info');
       }
@@ -54,6 +57,7 @@ export function SongPlayer() {
     if (!song) return;
     const def: ExerciseDef = {
       generator: 'chart-play',
+      assessment: !practiceMode,
       params: { songId: song.id, ...(tonic !== song.key.tonic ? { transposeTo: tonic } : {}) },
       mode: practiceMode ? 'wait' : 'tempo',
       bpm: Math.round(song.bpm * tempoPct),
@@ -136,13 +140,13 @@ export function SongPlayer() {
       </div>
 
       <Keyboard
-        range={[40, 88]}
+        range={exerciseRange(instance)}
         pressed={activeNotes}
         targets={targets}
         judgments={judgments}
         height={170}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
       <TransportBar
         phase={phase}

@@ -114,6 +114,25 @@
   font-size: var(--fs-s);
 }
 
+.songCredit {
+  color: var(--text-3);
+  font-size: var(--fs-xs);
+  margin-top: calc(var(--space-2) * -1);
+}
+
+.melody {
+  max-width: 100%;
+  padding: var(--space-3) var(--space-4);
+  border: 1px solid var(--border-strong);
+  border-radius: var(--radius-m);
+  background: var(--surface-2);
+  font-family: var(--font-mono);
+  font-size: var(--fs-m);
+  font-weight: 600;
+  line-height: 1.7;
+  word-spacing: var(--space-2);
+}
+
 .exercisePrompt {
   display: grid;
   gap: var(--space-3);
@@ -143,6 +162,8 @@
 }
 
 .footer {
+  gap: var(--space-4);
+  align-items: center;
   display: flex;
   justify-content: center;
   padding: var(--space-4);

@@ -31,21 +31,22 @@ Typography: Geist and Geist Mono (self-hosted via `@fontsource-variable/geist` a
 
 Left sidebar (68px collapsed / 208px expanded, persisted): logo, then **Today** (`/practice`), **Path** (`/path`), **Songs** (`/songs`), **Sandbox** (`/sandbox`), **Progress** (`/progress`), bottom: **Settings** (`/settings`) + MIDI status dot (green connected / amber no-device / red unsupported; click → `/setup`).
 
-| Route                      | Screen                                                      |
-| -------------------------- | ----------------------------------------------------------- |
-| `/`                        | redirect: first run → `/welcome`, else `/practice`          |
-| `/welcome`                 | Onboarding wizard                                           |
-| `/setup`                   | MIDI & sound setup (also reachable any time)                |
-| `/practice`                | Today's session hub                                         |
-| `/path`                    | The journey map                                             |
-| `/path/:unitId`            | Unit intro card (modal-over-path) → launches player         |
-| `/lesson/:unitId`          | Lesson player (full-screen focus mode)                      |
-| `/drill/:sessionBlockId`   | Player for review/warmup blocks (same player component)     |
-| `/rating/:strand`          | Rating challenge (same player, challenge chrome)            |
-| `/songs`, `/songs/:songId` | Song library / song player                                  |
-| `/sandbox`                 | Free play: chord explorer, drone improv, progression looper |
-| `/progress`                | Ratings, stats, replays, badges                             |
-| `/settings`                | Preferences, calibration, data export/import                |
+| Route                         | Screen                                                      |
+| ----------------------------- | ----------------------------------------------------------- |
+| `/`                           | redirect: first run to `/welcome`, else `/practice`         |
+| `/welcome`                    | Onboarding wizard                                           |
+| `/setup`                      | MIDI and sound setup (also reachable any time)              |
+| `/practice`                   | Today's session hub                                         |
+| `/path`                       | The journey map (the unit intro card opens on this screen)  |
+| `/lesson/:unitId`             | Lesson player (full-screen focus mode)                      |
+| `/drill/:sessionId/:blockIdx` | Player for review/warmup blocks (same player component)     |
+| `/rating/:strand`             | Rating challenge (same player, challenge chrome)            |
+| `/songs`, `/songs/:songId`    | Song library / song player                                  |
+| `/sandbox`                    | Free play: chord explorer, drone improv, progression looper |
+| `/progress`                   | Ratings, stats, replays, badges                             |
+| `/settings`, `/licenses`      | Preferences, calibration, data export/import; licence list  |
+| `/epilogue`                   | The end-of-path screen (reached from `s7.cp`)               |
+| `/lab`                        | Generator harness, kept for debugging (02 §Phase 2)         |
 
 **Focus mode:** `/lesson`, `/drill`, `/rating`, `/songs/:id` hide the sidebar; top-left ✕ (Esc) exits with confirm-if-mid-take (toast-style confirm, not modal, 3s undo pattern).
 
@@ -127,7 +128,7 @@ Three tabs:
 
 ### Settings
 
-Sections: Profile (name, daily minutes goal 10/15/20/30) · Sound (volumes, mute app piano) · MIDI (device picker, live monitor strip, calibrate timing) · Appearance (theme, label defaults, reduced motion) · Data (export JSON, import, wipe w/ double confirm) · About (licenses page — required by attribution terms of samples/fonts).
+Sections: Practice (daily minutes goal 10/15/20/30, read strand toggle) · Sound (app piano on/off, volumes) · MIDI (device picker, live monitor strip, calibrate timing) · Appearance (theme, reduce motion) · Data (export JSON, import, wipe w/ double confirm) · About (licenses page — required by attribution terms of samples/fonts). No profile name is collected.
 
 ## Component inventory (`src/ui/`) — key contracts
 
@@ -135,12 +136,12 @@ Sections: Profile (name, daily minutes goal 10/15/20/30) · Sound (volumes, mute
 
 ```ts
 interface KeyboardProps {
-  range: [MidiNumber, MidiNumber];         // default [48, 84] (C3–C6); Settings can widen
+  range?: [MidiNumber, MidiNumber];        // default [48, 84] (C3–C6)
   pressed: ReadonlySet<MidiNumber>;         // live from midiStore
   targets?: ReadonlyMap<MidiNumber, 'target'|'hint'>;
   judgments?: ReadonlyMap<MidiNumber, JudgeVerdict>;  // flash-fade handled internally
-  degreeTint?: { key: KeyContext; degrees?: Degree[] } | null;
-  labels: 'none'|'names'|'degrees'|'fingers';
+  degreeTint?: { tonic: string; degrees?: readonly number[] } | null;
+  labels?: 'none'|'names'|'degrees'|'fingers';
   fingerMap?: ReadonlyMap<MidiNumber, number>;
   ghost?: ReadonlySet<MidiNumber>;          // demo/replay presses
   onKeyDown?/onKeyUp?: (midi) => void;      // mouse/touch play (also triggers sampler echo)
@@ -152,7 +153,14 @@ SVG; white key = rounded-bottom rect; black keys at true offsets (pattern per oc
 
 **`TransportBar`**: play/restart, bpm display (tap to edit, ±5 stepper), metronome mute, count-in indicator (beat dots), hand chips, tempo-ladder pips, mute-app-sound toggle. Keyboard shortcuts: Space = play/restart, M = metronome, Esc = exit.
 
-**`ChordSymbol`**: renders `Ebm7` as root + quality with proper glyphs; optional roman chip underneath in degree color. **`DegreeBadge`**: numeral in its degree color (circle). **`ProgressRing`, `StarRating`, `ScoreDial`**: pure SVG. **`Toast`**: bottom-center, 3s, max 1 visible.
+**`PlayerNotices`**: the stacked player banners (no device, sampler loading,
+unsupported browser) plus the `useSamplerLoading` hook the TransportBar reads.
+**`StaffSnippet`**: VexFlow wrapper for read steps. **`Icon`**: the single
+Phosphor entry point. **`ProgressRing`, `StarRating`, `ScoreDial`, `RatingDial`,
+`Sparkline`**: pure SVG. **`Toast`**: bottom-center, 3s, max 1 visible.
+
+Chord symbols and degree badges are rendered by the screens that need them, from
+`theory/` helpers and the degree tokens. They never became shared components.
 
 ## Empty/edge states (each needs a designed state, not a blank div)
 
@@ -161,3 +169,21 @@ No MIDI device (every player: banner + computer-keys hint) · sampler still load
 ## Copy tone
 
 Second person, short, concrete, zero shame. Errors: "Not yet — listen for the leap" not "Wrong!". Praise names the thing: "Smooth voice leading — nice." Never block with modals for encouragement; celebrate inline (Results overlay, badge toast).
+
+## Review changes (2026-09-06)
+
+The practical studio is available from Path, Today, and Songs.
+During a run, the studio shows the current prompt and keeps the keyboard and transport visible.
+Instructions and self-checks scroll separately. A larger display setting supports use at piano distance.
+Interactive piano keys support pointer capture, keyboard focus, Enter, and Space.
+Every input source reaches the same normalized event path.
+The keyboard range expands to include exercise notes and recorded replay notes. C labels include octave numbers.
+
+Explanation steps reveal through the current play-check. An explicit browsing option lets the learner read ahead.
+Graded results offer specific feedback, a short trouble-spot retry, and slower practice when appropriate.
+A practice-only result cannot expose Continue for the original graded step.
+Reload restores the step, ladder successes, and latest assessment outcome.
+
+The computer-keyboard notice states the active mapping and octave without a failure treatment.
+Progress names completed, independent, and retained performances separately. It displays the attempted conditions.
+Accessibility checks include the studio and lesson player.

@@ -8,6 +8,8 @@ import { seedOnboarded, seedPassedUnits, seedTrackedAtoms } from './drive';
  * hold up, not just the markup.
  */
 const SCREENS: [path: string, ready: string][] = [
+  ['/studio', 'At the piano'],
+  ['/studio/morning-steps', 'Morning Steps'],
   ['/practice', 'heading'],
   ['/path', 'The Path'],
   ['/songs', 'Songs'],

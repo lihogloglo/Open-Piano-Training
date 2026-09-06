@@ -97,10 +97,17 @@ Phases are strictly ordered; each ends with its acceptance criteria demonstrably
 
 1. Author Stage 6 (voicings/comp patterns — comp patterns are beat-grid exercise variants of progression-play w/ pattern rhythm targets) + generated unseen-chart generator + Stage 7 (improv units, blues, swing metronome mode, find-key/transcription exercises, epilogue).
 2. `read-snippet` generator + `ui/StaffSnippet` (VexFlow 5) + optional Read strand toggles in Settings; read rating strand.
-3. Backing loops for improv (Tone.js Transport introduced here; comp pattern playback).
+3. Backing loops for improv (`audio/backing.ts` on the existing metronome clock; Tone.js was considered and not adopted, see the decisions log).
 4. Final polish: animation audit, reduced-motion audit, copy pass over all learner-facing text, a11y pass (keyboard nav through every screen, focus traps in overlays).
 
 **Accept:** unseen-chart generator produces valid, playable charts across 50 seeds (validation test); full-path Playwright marathon (scripted fake-MIDI "perfect student" completes s0→s7.cp; asserts epilogue + all gates); axe-core scan no serious violations; bundle < 450KB gz before samples/vexflow chunks (both lazy).
+
+## After Phase 8
+
+Two passes ran after the build order closed, both logged in `docs/decisions.md`:
+the content rebuild driven by `docs/content-audit.md`, which rewrote all eight
+stages against a curriculum lint, and the desktop build, which wraps the same
+web app in Electron and ships a Windows executable.
 
 ## Ongoing rules
 

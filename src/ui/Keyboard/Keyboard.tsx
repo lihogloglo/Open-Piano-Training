@@ -57,13 +57,32 @@ const Key = memo(function Key(p: KeyProps) {
   if (p.pressed || p.ghost) fill = 'var(--key-active)';
   if (p.judgment) fill = JUDGE_FILL[p.judgment];
 
-  const showLabel = p.label !== null && geo.white;
+  const showLabel = (p.label !== null || geo.midi % 12 === 0) && geo.white;
 
   return (
     <g
       className={styles['key']}
+      data-midi={geo.midi}
+      role={p.onKeyDown ? 'button' : undefined}
+      aria-label={p.onKeyDown ? displayName(geo.midi) : undefined}
+      tabIndex={p.onKeyDown ? 0 : undefined}
+      onKeyDown={(e) => {
+        if ((e.key === 'Enter' || e.key === ' ') && !e.repeat) {
+          e.preventDefault();
+          p.onKeyDown?.(geo.midi);
+        }
+      }}
+      onKeyUp={(e) => {
+        if (e.key === 'Enter' || e.key === ' ') {
+          e.preventDefault();
+          p.onKeyUp?.(geo.midi);
+        }
+      }}
+      onBlur={() => p.onKeyUp?.(geo.midi)}
+      onPointerCancel={() => p.onKeyUp?.(geo.midi)}
       onPointerDown={(e) => {
         e.preventDefault();
+        e.currentTarget.setPointerCapture(e.pointerId);
         p.onKeyDown?.(geo.midi);
       }}
       onPointerUp={() => p.onKeyUp?.(geo.midi)}
@@ -95,7 +114,9 @@ const Key = memo(function Key(p: KeyProps) {
       )}
       {showLabel && (
         <text x={geo.x + geo.width / 2} y={VIEW_H - 8} textAnchor="middle" className={styles['label']}>
-          {p.label}
+          {geo.midi % 12 === 0 && p.label && p.label !== displayName(geo.midi)
+            ? `${displayName(geo.midi)} · ${p.label}`
+            : (p.label ?? displayName(geo.midi))}
         </text>
       )}
     </g>
@@ -147,7 +168,7 @@ export function Keyboard({
       viewBox={`0 0 ${layout.totalWidth} ${VIEW_H}`}
       preserveAspectRatio="none"
       style={{ height, width: '100%', display: 'block' }}
-      role="img"
+      role={onKeyDown ? 'group' : 'img'}
       aria-label={`Piano keyboard, ${displayName(layout.lo)} to ${displayName(layout.hi)}`}
     >
       {ordered.map((geo) => (

@@ -31,6 +31,9 @@ describe('atoms registry', () => {
   it('drillable atoms carry working drills', () => {
     const noteFind = ATOMS.get('note:find:c');
     expect(noteFind?.drill?.generator).toBe('note-find');
+    const blackKeys = ATOMS.get('note:find:sharps');
+    expect(blackKeys?.label).toBe('Find black keys');
+    expect(blackKeys?.drill?.generator).toBe('key-group-find');
     const ff = ATOMS.get('fivefinger:g:maj:lh');
     expect(ff?.drill?.generator).toBe('five-finger');
     expect(ff?.drill?.hand).toBe('lh');

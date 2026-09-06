@@ -18,6 +18,7 @@ let piano: PianoInstrument | null = null;
 let masterGain: GainNode | null = null;
 let muted = false;
 let status: SamplerStatus = { state: 'idle', progress: 0 };
+let loadPromise: Promise<void> | null = null;
 const listeners = new Set<() => void>();
 
 function setStatus(next: SamplerStatus): void {
@@ -40,6 +41,10 @@ export function setMasterVolume(v: number): void {
 
 export function setMuted(m: boolean): void {
   muted = m;
+  if (m) {
+    piano?.setCC(64, 0);
+    piano?.stop();
+  }
 }
 
 /**
@@ -52,19 +57,19 @@ const LOCAL_SAMPLES = '/samples/splendid-grand-piano';
 
 async function localSampleBaseUrl(): Promise<string | undefined> {
   try {
-    const res = await fetch(`${LOCAL_SAMPLES}/FF%20A0.ogg`, { method: 'HEAD' });
+    // GET also works through the offline sample cache. A HEAD probe would miss it.
+    const res = await fetch(`${LOCAL_SAMPLES}/FF%20A0.ogg`);
     return res.ok ? new URL(LOCAL_SAMPLES, location.href).href : undefined;
   } catch {
     return undefined;
   }
 }
 
-/** Idempotent; safe to call from anywhere that needs sound. */
-export async function ensureSamplerLoaded(): Promise<void> {
-  if (status.state === 'loading' || status.state === 'ready') return;
+async function loadSampler(): Promise<void> {
   setStatus({ state: 'loading', progress: 0 });
   try {
     const ctx = getAudioContext();
+    masterGain?.disconnect();
     masterGain = ctx.createGain();
     masterGain.gain.value = 0.8;
     masterGain.connect(ctx.destination);
@@ -84,6 +89,16 @@ export async function ensureSamplerLoaded(): Promise<void> {
     console.error('Sampler load failed:', err);
     setStatus({ state: 'error', progress: 0 });
   }
+}
+
+/** Idempotent; every caller waits for the same active sample load. */
+export function ensureSamplerLoaded(): Promise<void> {
+  if (status.state === 'ready') return Promise.resolve();
+  if (loadPromise) return loadPromise;
+  loadPromise = loadSampler().finally(() => {
+    loadPromise = null;
+  });
+  return loadPromise;
 }
 
 /**

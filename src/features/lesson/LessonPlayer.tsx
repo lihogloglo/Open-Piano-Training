@@ -1,3 +1,13 @@
+import { useLiveQuery } from 'dexie-react-hooks';
+import {
+  resumeKey,
+  saveResume,
+  queueRetest,
+  type LessonResume,
+  type SavedAssessment,
+} from '@/progress/lessonResume';
+import { exerciseRange } from '@/ui/Keyboard/utils';
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
 import { getUnit } from '@/curriculum/content';
@@ -8,9 +18,8 @@ import { resolveSeed } from '@/engine/rng';
 import { subscribeMidiEvents, useMidiStore } from '@/store/midiStore';
 import { TakeRecorder } from '@/engine/replay';
 import { useRunStore } from '@/store/runStore';
-import { markUnitInProgress, saveTake } from '@/progress/db';
-import { addPracticeMinutes, completeUnit, markBlockComplete } from '@/progress/service';
-import { localDateString } from '@/progress/sessionBuilder';
+import { db, markUnitInProgress, saveTake } from '@/progress/db';
+import { getSession, completeUnit, markBlockComplete } from '@/progress/service';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
@@ -21,8 +30,7 @@ import { startBacking, type BackingHandle } from '@/audio/backing';
 import type { KeyContext } from '@/theory/keys';
 import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
-import { playNote, stopNote } from '@/audio/sampler';
-import { ExplainBlockView } from './blocks';
+import { ExplainBlockView, renderMd } from './blocks';
 import { ResultsOverlay } from './ResultsOverlay';
 import styles from './LessonPlayer.module.css';
 
@@ -38,13 +46,18 @@ export function LessonPlayer() {
   const { unitId } = useParams();
   const navigate = useNavigate();
   const unit = unitId ? getUnit(unitId) : undefined;
+  const resume = useLiveQuery(
+    async () =>
+      unitId ? (((await db.meta.get(resumeKey(unitId)))?.value as LessonResume | undefined) ?? null) : null,
+    [unitId],
+  );
 
   useEffect(() => {
     if (!unit) void navigate('/path', { replace: true });
   }, [unit, navigate]);
 
-  if (!unit) return null;
-  return <LessonPlayerInner unit={unit} />;
+  if (!unit || resume === undefined) return null;
+  return <LessonPlayerInner key={unit.id} unit={unit} resume={resume} />;
 }
 
 /** Onboarding placement: checkpoints taken back-to-back until one fails (05 §Welcome). */
@@ -75,15 +88,26 @@ function improvTint(
   return degrees ? { tonic: params.key.tonic, degrees } : { tonic: params.key.tonic };
 }
 
-function LessonPlayerInner({ unit }: { unit: Unit }) {
+function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume | null }) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session');
   const sessionBlock = searchParams.get('block');
   const placement = searchParams.get('placement') !== null && unit.kind === 'checkpoint';
-  const [stepIdx, setStepIdx] = useState(0);
-  const gradedScores = useRef<number[]>([]);
-  const flaggedRef = useRef(false);
+  const [stepIdx, setStepIdx] = useState(() =>
+    Math.max(
+      0,
+      unit.steps.findIndex((s) => s.id === resume?.stepId),
+    ),
+  );
+  const advancing = useRef(false);
+  useEffect(() => {
+    advancing.current = false;
+  }, [stepIdx]);
+  const gradedScores = useRef<number[]>(resume?.scores ?? []);
+  const assessments = useRef(resume?.assessments ?? {});
+  const ladders = useRef<Record<string, boolean[]>>(resume?.ladders ?? {});
+  const flaggedRef = useRef(resume?.flagged ?? false);
   const [exitArmed, setExitArmed] = useState(false);
   const abortRun = useRunStore((s) => s.abortRun);
   const phase = useRunStore((s) => s.phase);
@@ -94,12 +118,16 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
   }, [unit.id, abortRun]);
 
   const step = unit.steps[stepIdx];
+  const songTitle =
+    step?.kind === 'create' && typeof step.exercise?.params['songTitle'] === 'string'
+      ? step.exercise.params['songTitle']
+      : null;
 
   const finishUnit = useCallback(async () => {
     const scores = gradedScores.current;
     const score = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
     await completeUnit(unit, score, flaggedRef.current);
-    await addPracticeMinutes(localDateString(new Date()), unit.minutes);
+    await db.meta.delete(resumeKey(unit.id));
     if (placement) {
       const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
       if (next) {
@@ -127,12 +155,33 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
   }, [unit, placement, sessionId, sessionBlock, navigate]);
 
   const advance = useCallback(() => {
+    if (advancing.current) return;
+    advancing.current = true;
     if (stepIdx + 1 >= unit.steps.length) {
       void finishUnit();
     } else {
-      setStepIdx((i) => i + 1);
+      void (async () => {
+        await saveResume(unit.id, {
+          stepId: unit.steps[stepIdx + 1]!.id,
+          scores: gradedScores.current,
+          flagged: flaggedRef.current,
+          ladders: ladders.current,
+          assessments: assessments.current,
+        });
+        if (sessionId && sessionBlock !== null) {
+          const plan = await getSession(sessionId);
+          const block = plan?.blocks[Number(sessionBlock)];
+          if (block?.kind === 'new' && block.endStep && stepIdx + 1 >= block.endStep) {
+            await markBlockComplete(sessionId, Number(sessionBlock), 0);
+            toast('Section saved. Continue this lesson next time.', 'ok');
+            void navigate('/practice');
+            return;
+          }
+        }
+        setStepIdx(stepIdx + 1);
+      })();
     }
-  }, [stepIdx, unit.steps.length, finishUnit]);
+  }, [stepIdx, unit, finishUnit, sessionId, sessionBlock, navigate]);
 
   const requestExit = useCallback(() => {
     const running = useRunStore.getState().phase !== 'idle' && useRunStore.getState().phase !== 'done';
@@ -169,7 +218,7 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
           </span>
         </span>
         <span className={styles['chip']} data-kind={step.kind}>
-          {STEP_CHIP[step.kind]}
+          {songTitle ? 'Play a song' : STEP_CHIP[step.kind]}
         </span>
       </header>
       {/* The step counter says where you are; the rail shows how far that is. */}
@@ -190,9 +239,39 @@ function LessonPlayerInner({ unit }: { unit: Unit }) {
           unitId={unit.id}
           allowSkip={unit.kind !== 'checkpoint'}
           placement={placement}
-          onDone={(score, flagged) => {
+          savedLadder={resume?.ladders[step.id]}
+          savedAssessment={resume?.assessments?.[step.id]}
+          onAssessment={(outcome) => {
+            assessments.current[step.id] = outcome;
+            void saveResume(unit.id, {
+              stepId: step.id,
+              scores: gradedScores.current,
+              flagged: flaggedRef.current,
+              ladders: ladders.current,
+              assessments: assessments.current,
+            });
+          }}
+          onLadder={(lit) => {
+            ladders.current[step.id] = lit;
+            void saveResume(unit.id, {
+              stepId: step.id,
+              scores: gradedScores.current,
+              flagged: flaggedRef.current,
+              ladders: ladders.current,
+              assessments: assessments.current,
+            });
+          }}
+          onDone={async (score, flagged) => {
+            if (advancing.current) return;
             if (step.kind === 'graded') gradedScores.current.push(score);
-            if (flagged) flaggedRef.current = true;
+            if (flagged) {
+              flaggedRef.current = true;
+              await queueRetest(unit.id, step.id, {
+                ...step.exercise,
+                assessment: true,
+                passScore: step.kind === 'graded' ? step.passScore : 0.8,
+              });
+            }
             advance();
           }}
         />
@@ -212,6 +291,7 @@ function ExplainStep({
   const activeNotes = useMidiStore((s) => s.activeNotes);
   // Play-checks on one step take turns: a note answers the earliest unsatisfied
   // one, so "play a C" and "now play three Cs" cannot both be solved at once.
+  const [browse, setBrowse] = useState(false);
   const [satisfied, setSatisfied] = useState<ReadonlySet<number>>(new Set());
   const markSatisfied = useCallback((i: number) => {
     setSatisfied((prev) => (prev.has(i) ? prev : new Set([...prev, i])));
@@ -229,7 +309,7 @@ function ExplainStep({
     <>
       <div className={styles['promptZone']}>
         <div className={styles['blocks']}>
-          {step.blocks.map((b, i) => (
+          {step.blocks.slice(0, browse || pendingCheck === -1 ? undefined : pendingCheck + 1).map((b, i) => (
             <ExplainBlockView
               key={i}
               block={b}
@@ -245,13 +325,16 @@ function ExplainStep({
         pressed={activeNotes}
         height={150}
         onKeyDown={(m) => {
-          playNote(m);
-          offerRef.current?.(m);
+          inputNoteOn(m);
         }}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyUp={inputNoteOff}
       />
       <div className={styles['footer']}>
-        <Button variant="primary" size="l" onClick={onDone}>
+        <label>
+          <input type="checkbox" checked={browse} onChange={(e) => setBrowse(e.target.checked)} /> Browse the
+          explanation
+        </label>
+        <Button variant="primary" size="l" onClick={onDone} disabled={!browse && pendingCheck !== -1}>
           Continue
         </Button>
       </div>
@@ -281,6 +364,7 @@ function CreateStep({
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const recorder = useRef<TakeRecorder | null>(null);
   const backing = useRef<BackingHandle | null>(null);
+  const backingGeneration = useRef(0);
   const [backingOn, setBackingOn] = useState(false);
   const [barIdx, setBarIdx] = useState(-1);
 
@@ -296,10 +380,20 @@ function CreateStep({
   // A create step carrying an improv exercise gets a looping backing track.
   const improv = step.exercise?.generator === 'improv' ? step.exercise : null;
   const improvParams = improv?.params as
-    | { key?: KeyContext; roman?: string[]; beatsPerChord?: number; palette?: string; tintDegrees?: number[] }
+    | {
+        key?: KeyContext;
+        roman?: string[];
+        beatsPerChord?: number;
+        palette?: string;
+        tintDegrees?: number[];
+        songTitle?: string;
+        songCredit?: string;
+        melody?: string[];
+      }
     | undefined;
 
   const stopBacking = useCallback(() => {
+    backingGeneration.current += 1;
     backing.current?.stop();
     backing.current = null;
     setBackingOn(false);
@@ -315,6 +409,7 @@ function CreateStep({
     }
     if (!improvParams?.key) return;
     setBackingOn(true);
+    const generation = ++backingGeneration.current;
     void startBacking({
       key: improvParams.key,
       romans: improvParams.roman?.length ? improvParams.roman : ['I'],
@@ -323,6 +418,10 @@ function CreateStep({
       pattern: 'block',
       onBar: setBarIdx,
     }).then((handle) => {
+      if (generation !== backingGeneration.current) {
+        handle.stop();
+        return;
+      }
       backing.current = handle;
     });
   };
@@ -349,9 +448,19 @@ function CreateStep({
     <>
       <div className={styles['promptZone']}>
         <div className={styles['createPrompt']}>
-          <h2>Make something</h2>
-          <p>{step.prompt}</p>
-          <p className={styles['hintText']}>There's no score here. Just play. Your take lands in Replays.</p>
+          <h2>{improvParams?.songTitle ?? 'Make something'}</h2>
+          {improvParams?.songCredit && <p className={styles['songCredit']}>{improvParams.songCredit}</p>}
+          <p>{renderMd(step.prompt)}</p>
+          {improvParams?.melody && improvParams.melody.length > 0 && (
+            <p className={styles['melody']} aria-label="Melody notes">
+              {improvParams.melody.join('  ')}
+            </p>
+          )}
+          <p className={styles['hintText']}>
+            {improvParams?.songTitle
+              ? 'Learn one phrase at a time. Your take lands in Replays.'
+              : "There's no score here. Just play. Your take lands in Replays."}
+          </p>
           {improvParams?.key && (
             <>
               <Button variant={backingOn ? 'primary' : 'secondary'} onClick={toggleBacking}>
@@ -372,8 +481,8 @@ function CreateStep({
         pressed={activeNotes}
         height={190}
         degreeTint={improvTint(improvParams)}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
       <div className={styles['footer']}>
         <Button variant="primary" size="l" onClick={finish}>
@@ -389,10 +498,24 @@ interface ExerciseStepProps {
   unitId: string;
   allowSkip: boolean;
   placement?: boolean;
+  savedLadder?: boolean[] | undefined;
+  savedAssessment?: SavedAssessment | undefined;
+  onAssessment: (outcome: SavedAssessment) => void;
+  onLadder: (lit: boolean[]) => void;
   onDone: (score: number, flagged?: boolean) => void;
 }
 
-function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseStepProps) {
+function ExerciseStep({
+  step,
+  unitId,
+  allowSkip,
+  placement,
+  savedLadder,
+  savedAssessment,
+  onAssessment,
+  onLadder,
+  onDone,
+}: ExerciseStepProps) {
   const navigate = useNavigate();
   const activeNotes = useMidiStore((s) => s.activeNotes);
   const phase = useRunStore((s) => s.phase);
@@ -402,38 +525,58 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
   const targetIndex = useRunStore((s) => s.targetIndex);
   const beatIndex = useRunStore((s) => s.beatIndex);
   const bpmLive = useRunStore((s) => s.bpm);
-  const result = useRunStore((s) => s.result);
+  const liveResult = useRunStore((s) => s.result);
+  const [restoredResult, setRestoredResult] = useState(savedAssessment?.result ?? null);
+  const result = liveResult ?? restoredResult;
   const listening = useRunStore((s) => s.listening);
   const startRun = useRunStore((s) => s.startRun);
   const abortRun = useRunStore((s) => s.abortRun);
 
   const isLadder = step.kind === 'ladder';
   const tempos = useMemo(() => (step.kind === 'ladder' ? step.tempos : [1]), [step]);
-  const [pip, setPip] = useState(0);
-  const [lit, setLit] = useState<boolean[]>(() => tempos.map(() => false));
-  const [failCount, setFailCount] = useState(0);
-  const [showResults, setShowResults] = useState(false);
-  const [instance, setInstance] = useState<ExerciseInstance | null>(null);
+  const [pip, setPip] = useState(() =>
+    savedLadder
+      ? Math.max(
+          0,
+          savedLadder.findIndex((lit) => !lit),
+        )
+      : 0,
+  );
+  const [lit, setLit] = useState<boolean[]>(() =>
+    savedLadder?.length === tempos.length ? savedLadder : tempos.map(() => false),
+  );
+  const [failCount, setFailCount] = useState(savedAssessment?.failCount ?? 0);
+  const [slowerPractice, setSlowerPractice] = useState(savedAssessment?.practiceOnly ?? false);
+  const [showResults, setShowResults] = useState(!!savedAssessment);
+  const [instance, setInstance] = useState<ExerciseInstance | null>(() =>
+    savedAssessment ? generate(savedAssessment.exercise, savedAssessment.seed) : null,
+  );
   const handledDone = useRef(false);
   const autoAdvance = useRef<ReturnType<typeof setTimeout>>(undefined);
 
   const defFor = useCallback(
     (pipIdx: number, slow = false): ExerciseDef => {
-      const base = step.exercise;
+      const base = {
+        ...step.exercise,
+        assessment: step.kind === 'graded' && !slow,
+        passScore: step.kind === 'graded' ? step.passScore : 0.8,
+      };
       const factor = (tempos[pipIdx] ?? 1) * (slow ? 0.75 : 1);
       if (base.mode === 'tempo') {
         return { ...base, bpm: Math.round((base.bpm ?? 80) * factor) };
       }
       return base;
     },
-    [step.exercise, tempos],
+    [step, tempos],
   );
 
   const start = useCallback(
     (pipIdx = pip, slow = false) => {
       clearTimeout(autoAdvance.current);
       handledDone.current = false;
+      setSlowerPractice(slow);
       setShowResults(false);
+      setRestoredResult(null);
       const def = defFor(pipIdx, slow);
       const inst = generate(def, resolveSeed(def.seedPolicy));
       setInstance(inst);
@@ -469,11 +612,10 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
       }
       if (step.kind === 'ladder') {
         if (runResult.score >= 0.8) {
-          setLit((prevLit) => {
-            const next = [...prevLit];
-            next[pip] = true;
-            return next;
-          });
+          const nextLit = [...lit];
+          nextLit[pip] = true;
+          setLit(nextLit);
+          onLadder(nextLit);
           if (pip + 1 < tempos.length) {
             setPip(pip + 1);
             toast(`Clean at ${Math.round((tempos[pip] ?? 1) * 100)}%, next tempo!`, 'ok');
@@ -486,10 +628,19 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
         return;
       }
       // graded
-      if (!runResult.passed) setFailCount((f) => f + 1);
+      const nextFails = failCount + (!runResult.passed && !slowerPractice ? 1 : 0);
+      setFailCount(nextFails);
+      if (s.instance)
+        onAssessment({
+          result: runResult,
+          exercise: s.instance.def,
+          seed: s.instance.seed,
+          failCount: nextFails,
+          practiceOnly: slowerPractice,
+        });
       setShowResults(true);
     });
-  }, [step.kind, unitId, pip, tempos, onDone]);
+  }, [step.kind, unitId, pip, tempos, onDone, lit, onLadder, failCount, slowerPractice, onAssessment]);
 
   const allLit = lit.every(Boolean);
   const prompt = instance?.prompt;
@@ -501,7 +652,10 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
     <>
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
-          <p className={styles['promptDetail']}>{prompt?.title ?? '…'}</p>
+          <p className={styles['promptDetail']}>
+            {prompt?.title ??
+              (isLadder ? 'Choose a tempo, then press Start' : 'Press Start when you are ready')}
+          </p>
           {instance?.def.generator === 'read-snippet' && prompt?.key ? (
             // Notation reading: the staff IS the prompt.
             <StaffSnippet
@@ -512,7 +666,11 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
             />
           ) : (
             <h2 className={styles['promptMain']}>
-              {listening ? 'Listen…' : (perTarget?.label ?? prompt?.detail ?? '')}
+              {listening
+                ? 'Listen…'
+                : (perTarget?.label ??
+                  prompt?.detail ??
+                  (isLadder ? `Selected tempo: ${currentBpm ?? 0} BPM` : 'The count-in starts after Start'))}
             </h2>
           )}
           {instance && (
@@ -526,11 +684,37 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
         {showResults && result && instance && (
           <ResultsOverlay
             result={result}
+            instance={instance}
+            practiceOnly={slowerPractice}
             targetCount={instance.targets.length}
             isTempo={isTempo}
             failCount={failCount}
             allowSkip={allowSkip}
             onRetry={() => start()}
+            onFocus={() => {
+              const errors = result.judgments.filter(
+                (j) => ['wrong', 'missed', 'extra'].includes(j.verdict) && j.targetIndex >= 0,
+              );
+              const counts = new Map<number, number>();
+              for (const error of errors)
+                counts.set(error.targetIndex, (counts.get(error.targetIndex) ?? 0) + 1);
+              const worst = [...counts].sort((a, b) => b[1] - a[1])[0]?.[0] ?? 0;
+              const focused = generate(
+                {
+                  ...instance.def,
+                  assessment: false,
+                  rung: 'keys-lit',
+                  focus: { start: Math.max(0, worst - 1), end: Math.min(instance.targets.length, worst + 2) },
+                },
+                instance.seed,
+              );
+              handledDone.current = false;
+              setRestoredResult(null);
+              setSlowerPractice(true);
+              setShowResults(false);
+              setInstance(focused);
+              void startRun(focused);
+            }}
             onRetrySlower={isTempo ? () => start(pip, true) : undefined}
             onContinue={() => onDone(result.score)}
             onSkip={() => onDone(result.score, true)}
@@ -547,17 +731,18 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
         )}
       </div>
       <Keyboard
-        range={[48, 84]}
+        range={exerciseRange(instance)}
         pressed={activeNotes}
         targets={targets}
         judgments={judgments}
         fingerMap={fingerMap}
         labels={fingerMap.size > 0 ? 'fingers' : 'none'}
         height={190}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
       <TransportBar
+        hideStart={showResults}
         phase={phase}
         bpm={currentBpm}
         beatIndex={beatIndex}
@@ -565,6 +750,9 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
         // would race the pending step change.
         canStart={step.kind !== 'guided'}
         onStart={() => start()}
+        {...(isTempo && phase === 'idle'
+          ? { startLabel: `Start at ${currentBpm ?? step.exercise.bpm ?? 80} BPM` }
+          : {})}
         {...(isLadder
           ? {
               pips: {
@@ -573,7 +761,7 @@ function ExerciseStep({ step, unitId, allowSkip, placement, onDone }: ExerciseSt
                 current: pip,
                 onSelect: (i: number) => {
                   setPip(i);
-                  start(i);
+                  abortRun();
                 },
               },
             }

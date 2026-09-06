@@ -3,7 +3,9 @@ import type { Take } from '@/engine/replay';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { StarRating } from '@/ui/StarRating';
-import { playNote, stopNote } from '@/audio/sampler';
+import { unlockAudio } from '@/audio/clock';
+import { toast } from '@/ui/Toast';
+import { ensureSamplerLoaded, getSamplerStatus, playNote, stopNote } from '@/audio/sampler';
 import styles from './ProgressScreen.module.css';
 
 /** Wall-clock length of a take, from its last recorded event. */
@@ -26,10 +28,12 @@ export function ReplayPlayer({
 }) {
   const [ghost, setGhost] = useState<ReadonlySet<number>>(new Set());
   const [playing, setPlaying] = useState(false);
+  const generation = useRef(0);
   const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
   const sounding = useRef<Set<number>>(new Set());
 
   const stop = useCallback(() => {
+    generation.current += 1;
     for (const t of timers.current) clearTimeout(t);
     timers.current = [];
     for (const midi of sounding.current) stopNote(midi);
@@ -38,18 +42,27 @@ export function ReplayPlayer({
     setPlaying(false);
   }, []);
 
-  const play = useCallback(() => {
+  const play = useCallback(async () => {
     stop();
     if (take.events.length === 0) return;
     setPlaying(true);
+    const token = generation.current;
+    await unlockAudio();
+    await ensureSamplerLoaded();
+    if (token !== generation.current) return;
+    if (getSamplerStatus().state !== 'ready') {
+      stop();
+      toast('The piano sounds are not ready. Retry audio first.', 'info');
+      return;
+    }
     const live = new Set<number>();
-    for (const [dt, midi, on] of take.events) {
+    for (const [dt, midi, on, velocity] of take.events) {
       timers.current.push(
         setTimeout(() => {
           if (on === 1) {
             live.add(midi);
             sounding.current.add(midi);
-            playNote(midi);
+            playNote(midi, velocity / 127);
           } else {
             live.delete(midi);
             sounding.current.delete(midi);
@@ -79,7 +92,12 @@ export function ReplayPlayer({
         </div>
         <StarRating stars={take.result.stars} size={18} />
       </div>
-      <Keyboard range={[48, 84]} pressed={new Set()} ghost={ghost} height={compact ? 96 : 130} />
+      <Keyboard
+        range={[Math.min(48, ...take.events.map((e) => e[1])), Math.max(84, ...take.events.map((e) => e[1]))]}
+        pressed={new Set()}
+        ghost={ghost}
+        height={compact ? 96 : 130}
+      />
       <div className={styles['replayActions']}>
         <Button variant={playing ? 'ghost' : 'secondary'} onClick={playing ? stop : play}>
           {playing ? 'Stop' : 'Play'}

@@ -255,77 +255,50 @@ describe('curriculum content', () => {
     const defOf = (step: Unit['steps'][number]): ExerciseDef | null =>
       step.kind === 'explain' ? null : (step.exercise ?? null);
 
-    /** Every roman numeral played anywhere on the path, by stage ordinal. */
-    const romansBefore = new Map<string, number>();
-    for (const stage of CURRICULUM.stages) {
-      for (const unitId of stage.unitIds) {
-        for (const step of getUnit(unitId)?.steps ?? []) {
-          const def = defOf(step);
-          if (!def || step.kind === 'graded') continue;
-          for (const r of romans(def)) {
-            if (!romansBefore.has(r)) romansBefore.set(r, stage.ordinal);
-          }
-        }
-      }
-    }
-
-    // Rehearsals accumulate along the path, so a rep in an earlier unit still
-    // covers a later take.
-    const seen = new Map<string, { pool: Set<string>; maxTempoBpm: number }>();
-
-    for (const stage of CURRICULUM.stages) {
-      const lessons = stage.unitIds.map((id) => getUnit(id)).filter((u): u is Unit => u?.kind === 'lesson');
-
-      for (const unit of lessons) {
-        for (const step of unit.steps) {
-          if (step.kind !== 'guided' && step.kind !== 'ladder') continue;
-          const sig = signature(step.exercise);
-          if (!sig) continue;
-          const row = seen.get(sig) ?? { pool: new Set<string>(), maxTempoBpm: 0 };
-          for (const item of pool(step.exercise)) row.pool.add(item);
-          if (step.exercise.mode === 'tempo') {
-            row.maxTempoBpm = Math.max(row.maxTempoBpm, step.exercise.bpm ?? 0);
-          }
-          seen.set(sig, row);
-        }
-
-        const graded = unit.steps.filter((s) => s.kind === 'graded');
-        if (graded.length === 0) continue;
-
-        it(`${unit.id}`, () => {
-          for (const step of graded) {
-            if (step.kind !== 'graded') continue;
-            const def = step.exercise;
+    it('rehearses each pattern before its assessment, including checkpoints', () => {
+      const seen = new Map<string, { pool: Set<string>; maxTempoBpm: number }>();
+      const knownRomans = new Set<string>();
+      const problems: string[] = [];
+      for (const stage of CURRICULUM.stages) {
+        for (const id of stage.unitIds) {
+          const unit = getUnit(id)!;
+          for (const step of unit.steps) {
+            if (step.kind === 'explain') {
+              for (const block of step.blocks)
+                if (block.kind === 'progressionCard') for (const roman of block.roman) knownRomans.add(roman);
+              continue;
+            }
+            const def = defOf(step);
+            if (!def) continue;
             const sig = signature(def);
-            const where = `${unit.id}/${step.id} (${def.generator})`;
-
-            if (sig) {
-              const row = seen.get(sig);
-              expect(row, `${where}: nothing on the path rehearses "${sig}"`).toBeDefined();
-              if (row) {
-                for (const item of pool(def)) {
-                  expect(row.pool, `${where}: "${item}" is graded but never rehearsed`).toContain(item);
-                }
-                if (def.mode === 'tempo') {
-                  expect(
-                    row.maxTempoBpm,
-                    `${where}: graded at ${def.bpm ?? 0} BPM, but "${sig}" was only ever taken to ${row.maxTempoBpm} BPM`,
-                  ).toBeGreaterThanOrEqual(def.bpm ?? 0);
-                }
+            if (step.kind === 'guided' || step.kind === 'ladder') {
+              for (const roman of romans(def)) knownRomans.add(roman);
+              if (sig) {
+                const row = seen.get(sig) ?? { pool: new Set<string>(), maxTempoBpm: 0 };
+                for (const item of pool(def)) row.pool.add(item);
+                if (def.mode === 'tempo') row.maxTempoBpm = Math.max(row.maxTempoBpm, def.bpm ?? 0);
+                seen.set(sig, row);
               }
             }
-
-            for (const r of romans(def)) {
-              const first = romansBefore.get(r);
-              expect(
-                first !== undefined && first <= stage.ordinal,
-                `${where}: chord "${r}" is graded but the path never teaches it first`,
-              ).toBe(true);
+            if (step.kind !== 'graded') continue;
+            const where = `${unit.id}/${step.id}`;
+            if (sig) {
+              const row = seen.get(sig);
+              if (!row) problems.push(`${where}: no earlier rehearsal of ${sig}`);
+              else {
+                for (const item of pool(def))
+                  if (!row.pool.has(item)) problems.push(`${where}: ${item} is new`);
+                if (def.mode === 'tempo' && row.maxTempoBpm < (def.bpm ?? 0))
+                  problems.push(`${where}: tempo ${def.bpm} exceeds rehearsed ${row.maxTempoBpm}`);
+              }
             }
+            for (const roman of romans(def))
+              if (!knownRomans.has(roman)) problems.push(`${where}: ${roman} is new`);
           }
-        });
+        }
       }
-    }
+      expect(problems).toEqual([]);
+    });
   });
 
   it('rejects broken content', () => {

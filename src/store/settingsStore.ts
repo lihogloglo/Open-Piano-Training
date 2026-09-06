@@ -1,3 +1,4 @@
+import { readPreferences } from '@/progress/preferences';
 import { create } from 'zustand';
 
 export type ThemeSetting = 'dark' | 'light' | 'system';
@@ -16,6 +17,8 @@ interface SettingsState {
   readStrandEnabled: boolean;
   /** Honour the OS reduced-motion preference, or force it on. */
   reducedMotion: boolean;
+  largePractice: boolean;
+  creativeFocus: 'melody' | 'rhythm' | 'harmony';
   setTheme(theme: ThemeSetting): void;
   setOnboarded(v: boolean): void;
   setDeviceId(id: string | null): void;
@@ -42,6 +45,8 @@ interface PersistedSettings {
   readStrandEnabled: boolean;
   /** Honour the OS reduced-motion preference, or force it on. */
   reducedMotion: boolean;
+  largePractice: boolean;
+  creativeFocus: 'melody' | 'rhythm' | 'harmony';
 }
 
 const defaults: PersistedSettings = {
@@ -56,16 +61,12 @@ const defaults: PersistedSettings = {
   sidebarExpanded: true,
   readStrandEnabled: false,
   reducedMotion: false,
+  largePractice: false,
+  creativeFocus: 'melody',
 };
 
 function load(): PersistedSettings {
-  try {
-    const raw = localStorage.getItem(LS_KEY);
-    if (!raw) return defaults;
-    return { ...defaults, ...(JSON.parse(raw) as Partial<PersistedSettings>) };
-  } catch {
-    return defaults;
-  }
+  return Object.assign({}, defaults, readPreferences());
 }
 
 function persist(state: SettingsState): void {
@@ -84,6 +85,8 @@ function persist(state: SettingsState): void {
     sidebarExpanded,
     readStrandEnabled,
     reducedMotion,
+    largePractice: state.largePractice,
+    creativeFocus: state.creativeFocus,
   };
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
@@ -126,7 +129,8 @@ export function initTheme(): void {
  */
 export function initMotionPreference(): void {
   const apply = (): void => {
-    const { reducedMotion } = useSettingsStore.getState();
+    const { reducedMotion, largePractice } = useSettingsStore.getState();
+    document.documentElement.dataset['largePractice'] = String(largePractice);
     if (reducedMotion) document.documentElement.dataset['reducedMotion'] = 'true';
     else delete document.documentElement.dataset['reducedMotion'];
   };

@@ -10,7 +10,7 @@ export interface TimingWindows {
 }
 
 export const TIER_WINDOWS: Record<TimingTier, TimingWindows> = {
-  relaxed: { perfect: 120, good: 240, outer: 350, roll: 120 },
+  relaxed: { perfect: 150, good: 300, outer: 450, roll: 160 },
   standard: { perfect: 70, good: 140, outer: 220, roll: 90 },
   strict: { perfect: 45, good: 90, outer: 140, roll: 60 },
 };

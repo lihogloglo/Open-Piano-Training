@@ -101,3 +101,30 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - **2026-09-06** — `sampler.ts` picks its `baseUrl` at load time. It sends one HEAD request for a local sample. If that answers, it plays from `public/samples/`; if not, it falls back to smplr's own host. So a bare checkout still makes noise, and no build flag is needed to tell the two cases apart.
 - **2026-09-06** — **The desktop build skips the service worker.** A worker cannot register on a custom URL scheme, and it has no work to do: the app already carries every asset. `registerSW.ts` returns early when the preload's `keysenseDesktop` marker is present.
 - **2026-09-06** — Android is **not** built yet. The same web build should wrap with Capacitor, but MIDI over USB inside an Android WebView needs its own proving pass, and the toolchain (Android Studio, a JDK) is not installed here.
+
+## Playtest repairs
+
+- **2026-09-06** — Black keys now sit at the exact boundary between their adjacent white keys. The old layout used five independent offsets that visibly shifted several keys.
+- **2026-09-06** — `note:find:sharps` now builds an explicit black-key group drill. Any black key in any octave passes. The old review path parsed `sharps` as one note name.
+- **2026-09-06** — Backing playback now loads and waits for the shared sampler even when live key echo is off. The audio setting controls incoming-key echo only. Settings changes also update that live state immediately.
+- **2026-09-06** — Timed steps replace the empty ellipsis with a start instruction. Tempo ladders select a speed first and show it in the Start button. The relaxed timing window increased to 150/300/450 ms with a 160 ms chord roll.
+- **2026-09-06** — Wait-mode grip checks ignore held notes that cannot belong to the current target. This permits quick chord changes without old notes blocking the new grip.
+- **2026-09-06** — Stage 0 create steps from `s0.u2` through `s0.u6` now teach named public-domain or traditional songs. Daily create blocks also teach real songs selected by stage.
+
+## Review implementation (2026-09-06)
+
+- The full review and its closure evidence are in `docs/improvement-tracker.md`. Teacher, hardware, and beginner trials remain open.
+- Every wrong or extra press now affects the score. Smooth-chord scoring preserves the same penalty and the authored pass threshold.
+- Guided practice still advances after a corrected response. Assessments remove automatic hints. Slower and focused takes cannot pass the full task.
+- Focused retries retain the original seed and a saved target slice. Replays retain the attempted conditions.
+- Lesson progress now includes the current step, successful ladder rungs, scores, and assessment outcomes. Flagged lessons queue their exact graded tasks.
+- Completion, independent performance, and later-day retention have separate meanings. The recall map no longer claims physical fluency.
+- The practical studio adds 14 lessons and three original eight-bar pieces. A schema stores note times, durations, hands, fingers, dynamics, variants, and self-checks.
+- MIDI grades note starts. Human self-checks cover movement, releases, expression, and pedal clarity. A teacher still needs to review the content.
+- Chronological rehearsal checks include checkpoints. They found ten hidden violations. Three missing rehearsal steps were added, late ladders moved earlier, and unsupported tempos reduced.
+- Daily creative tasks now come from completed lessons, with preference and recent-score filters. This replaces the fixed stage-based song rotation.
+- Daily plans divide long lessons into resumable sections. Engaged time replaces automatic credit for authored minutes.
+- Reading history stays stored when disabled. Imports validate saved structures and restore local preferences with database content.
+- Desktop navigation accepts the exact application origin. Asset resolution checks directory containment and handles lesson IDs containing dots.
+- The browser sample cache now holds all 226 piano files. The local sample probe uses GET so it works through the offline cache.
+- No whole-path marathon ran during this work. Local instructions reserve that run for an explicit request.

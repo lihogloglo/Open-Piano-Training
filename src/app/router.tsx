@@ -1,3 +1,4 @@
+import { StudioScreen } from '@/features/studio/StudioScreen';
 import { createBrowserRouter, Navigate, useLocation } from 'react-router';
 import { AppShell } from './AppShell';
 import { useSettingsStore } from '@/store/settingsStore';
@@ -26,6 +27,8 @@ function RootRedirect() {
 
 export const router = createBrowserRouter([
   { path: '/', element: <RootRedirect /> },
+  { path: '/studio', element: <StudioScreen /> },
+  { path: '/studio/:studyId', element: <StudioScreen /> },
   { path: '/welcome', element: <WelcomeScreen /> },
   // Focus-mode routes render without the sidebar shell.
   {

@@ -9,9 +9,9 @@ import styles from './AppShell.module.css';
 
 const DOT_STATUS: Partial<Record<MidiStatus, { dot: string; label: string }>> = {
   connected: { dot: 'connected', label: 'Keyboard connected' },
-  'no-device': { dot: 'none', label: 'No keyboard' },
+  'no-device': { dot: 'none', label: 'Computer keys' },
   unsupported: { dot: 'unsupported', label: 'MIDI unsupported' },
-  denied: { dot: 'unsupported', label: 'MIDI blocked' },
+  denied: { dot: 'unsupported', label: 'Computer keys' },
 };
 
 const NAV: { to: string; label: string; icon: IconName }[] = [
@@ -27,7 +27,7 @@ export function AppShell() {
   const setExpanded = useSettingsStore((s) => s.setSidebarExpanded);
   const midiStatus = useMidiStore((s) => s.status);
 
-  const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: 'No keyboard' };
+  const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: 'Computer keys' };
 
   return (
     <div className={styles['shell']}>

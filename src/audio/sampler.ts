@@ -42,6 +42,23 @@ export function setMuted(m: boolean): void {
   muted = m;
 }
 
+/**
+ * Where the piano samples come from. `scripts/fetch-samples.mjs` writes them
+ * under `public/samples/`, which the desktop build ships so the app has sound
+ * with no network. If that copy is absent we fall back to smplr's own host, so
+ * a bare checkout still makes noise.
+ */
+const LOCAL_SAMPLES = '/samples/splendid-grand-piano';
+
+async function localSampleBaseUrl(): Promise<string | undefined> {
+  try {
+    const res = await fetch(`${LOCAL_SAMPLES}/FF%20A0.ogg`, { method: 'HEAD' });
+    return res.ok ? new URL(LOCAL_SAMPLES, location.href).href : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
 /** Idempotent; safe to call from anywhere that needs sound. */
 export async function ensureSamplerLoaded(): Promise<void> {
   if (status.state === 'loading' || status.state === 'ready') return;
@@ -52,7 +69,9 @@ export async function ensureSamplerLoaded(): Promise<void> {
     masterGain.gain.value = 0.8;
     masterGain.connect(ctx.destination);
     const { SplendidGrandPiano } = await import('smplr');
+    const baseUrl = await localSampleBaseUrl();
     const instrument = SplendidGrandPiano(ctx, {
+      ...(baseUrl ? { baseUrl } : {}),
       destination: masterGain,
       onLoadProgress: (p: { loaded: number; total: number }) => {
         setStatus({ state: 'loading', progress: p.total > 0 ? p.loaded / p.total : 0 });

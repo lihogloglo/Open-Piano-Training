@@ -38,7 +38,9 @@ export default defineConfig({
         // so a second visit has sound with no network at all.
         runtimeCaching: [
           {
-            urlPattern: /^https:\/\/.*\/(samples|soundfonts)\/.*\.(mp3|ogg|wav|m4a)$/i,
+            // Matches the vendored copy under /samples/ and smplr's own host
+            // alike, so either source survives an offline reload.
+            urlPattern: /\/(samples|soundfonts)\/.*\.(mp3|ogg|wav|m4a)$/i,
             handler: 'CacheFirst',
             options: {
               cacheName: 'keysense-samples',

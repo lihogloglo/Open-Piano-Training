@@ -6,3 +6,8 @@ test-results
 screenshots
 *.local
 .DS_Store
+
+# Piano samples are fetched by scripts/fetch-samples.mjs, not committed
+public/samples
+
+release

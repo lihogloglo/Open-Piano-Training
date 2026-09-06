@@ -1,0 +1,35 @@
+appId: dev.keysense.app
+productName: Keysense
+copyright: Keysense
+
+directories:
+  output: release
+  buildResources: build
+
+# The shell plus the web build, nothing else. `dist` already holds the piano
+# samples, so the installed app needs no network.
+files:
+  - electron/**/*
+  - dist/**/*
+  - package.json
+
+asar: true
+
+win:
+  icon: public/pwa-512.png
+  target:
+    - target: nsis
+      arch: [x64]
+    - target: portable
+      arch: [x64]
+
+nsis:
+  oneClick: false
+  perMachine: false
+  allowToChangeInstallationDirectory: true
+  createDesktopShortcut: true
+  createStartMenuShortcut: true
+  shortcutName: Keysense
+
+portable:
+  artifactName: Keysense-${version}-portable.exe

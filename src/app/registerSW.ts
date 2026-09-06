@@ -6,9 +6,13 @@ import { toast } from '@/ui/Toast';
  *
  * Only in production builds: a service worker in dev would cache module
  * responses and fight Vite's HMR, and it would intercept the e2e runs.
+ *
+ * The desktop shell is skipped too. It ships every asset inside the app, and
+ * a service worker cannot register on its custom URL scheme.
  */
 export function registerServiceWorker(): void {
   if (!import.meta.env.PROD) return;
+  if ('keysenseDesktop' in window) return;
   void import('virtual:pwa-register')
     .then(({ registerSW }) => {
       registerSW({

@@ -13,6 +13,27 @@ npm run dev            # http://localhost:5173
 
 No MIDI keyboard to hand? The computer keyboard works, and `?midi=fake` selects the scripted test adapter.
 
+## Install it on Windows
+
+Keysense also builds as a desktop app, so there is no dev server to start.
+
+```bash
+npm run desktop:build   # downloads the samples, builds, then packages
+```
+
+Two files land in `release/`:
+
+- **Keysense Setup 0.1.0.exe** — the installer. It makes a Start menu entry and a desktop shortcut.
+- **Keysense-0.1.0-portable.exe** — one file, no install. Run it from anywhere.
+
+The desktop app works with no network. It carries the piano samples inside it, which is most of its 139 MB.
+
+To run the shell without packaging it:
+
+```bash
+npm run desktop         # builds the web app, then opens it in Electron
+```
+
 ## Verify it
 
 ```bash

@@ -11,6 +11,9 @@ export function targetMidis(target: Target): number[] {
     const first = target.accept[0];
     return first ? buildChord({ root: first.root, quality: first.quality, inversion: 0 }, 48) : [];
   }
+  if (target.kind === 'pitch-class-group') {
+    return target.pitchClasses.map((pc) => 60 + ((pc - 0 + 12) % 12));
+  }
   // any-of-degree: representative note near middle C (any octave is accepted).
   return [degreeToMidi(target.degree, target.key, 60)];
 }
@@ -61,5 +64,6 @@ export function noteBelongsToTarget(midi: number, target: Target): boolean {
     const pc = pcOf(midi);
     return target.accept.some((c) => chordPcs(c.root, c.quality).includes(pc));
   }
+  if (target.kind === 'pitch-class-group') return target.pitchClasses.includes(pcOf(midi));
   return pcOf(midi) === pcOf(degreeToMidi(target.degree, target.key, 60));
 }

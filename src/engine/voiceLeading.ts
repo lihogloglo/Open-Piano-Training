@@ -124,7 +124,12 @@ export function applyVoiceLeading(
   const idealAligned = ideal.map((v, i) => (played[i] ? v : null));
   const idealSeq = sequenceCost(idealAligned);
   const vl = playedSeq.transitions === 0 ? 0 : vlScore(playedSeq.cost, idealSeq.cost);
-  const score = Math.max(0, Math.min(1, 0.5 * result.pitchAccuracy + 0.3 * result.timingAccuracy + 0.2 * vl));
+  const errors = result.judgments.filter((j) => j.verdict === 'wrong' || j.verdict === 'extra').length;
+  const precision = played.length / Math.max(1, played.length + errors);
+  const score = Math.max(
+    0,
+    Math.min(1, (0.5 * result.pitchAccuracy + 0.3 * result.timingAccuracy + 0.2 * vl) * precision),
+  );
   const stars: TakeResult['stars'] = score >= 0.97 ? 3 : score >= 0.9 ? 2 : score >= 0.8 ? 1 : 0;
   return { ...result, score, stars, passed: score >= passScore, vlScore: vl };
 }

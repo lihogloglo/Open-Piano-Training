@@ -18,7 +18,9 @@ export interface ExerciseInstance {
   targets: Target[]; // ordered
   prompt: PromptModel; // what the UI shows (per weaning rung)
   beatsPerTarget?: number; // tempo mode: grid spacing (default 1)
-  audioPreview?: DemoScript; // for "Hear it" / ear exercises
+  audioPreview?: { notes: DemoNote[]; bpm: number }; // played once before the run
+  perTargetPreview?: ({ notes: DemoNote[]; bpm: number } | undefined)[]; // ear items
+  voiceLeading?: { ideal: MidiNumber[][] }; // reference voicings for smooth scoring
 }
 export type Target =
   | { kind: 'note'; midi: MidiNumber; atBeat?: number; finger?: number }
@@ -28,32 +30,41 @@ export type Target =
       atBeat?: number;
       label: string; // chord: exact voicing
       octaveFlexible: boolean;
-      inversionOf?: { root: string; quality: ChordQuality };
+      inversionOf?: { root: string; quality: ChordQuality; inversion: Inversion };
     } // if set, ANY voicing of that chord+inversion passes
-  | { kind: 'any-of-degree'; degree: Degree; key: KeyContext }; // ear answers: any octave of that pitch class
+  | { kind: 'any-of-degree'; degree: Degree; key: KeyContext; atBeat?: number } // any octave of that pitch class
+  | {
+      // Several valid chord answers (harmonization, ear-progression). Wait mode only.
+      kind: 'chord-any';
+      accept: { root: string; quality: ChordQuality }[];
+      bassRootOk?: boolean; // a lone root of accept[0] also passes
+      label: string;
+      atBeat?: number;
+    };
 ```
 
 ## Generators (`src/engine/generators/`)
 
 Each generator: `(params, seed) => ExerciseInstance`, deterministic per seed (use a small xorshift PRNG in `engine/rng.ts`). Param types below are the contract; validate with zod.
 
-| Generator                | Params                                                                                                                                                                               | Produces                                                                                                         |
-| ------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ | ---------------------------------------------------------------------------------------------------------------- |
-| `scale-run`              | `{tonic, scaleType:'major'\|'natural-minor'\|'harmonic-minor'\|'major-pentatonic'\|'minor-pentatonic'\|'blues', hand, octaves:1\|2, direction:'up'\|'down'\|'updown', startOctave?}` | Note targets with standard fingering annotations from `theory/scales.ts` fingering table                         |
-| `five-finger`            | `{tonic, quality:'maj'\|'min', hand, pattern:'asc'\|'desc'\|'updown'\|'melodyId'}`                                                                                                   | 5-note patterns; melodyId picks from a small built-in melody set                                                 |
-| `chord-grip`             | `{root, quality, inversion, hand, voicing:'closed'\|'shell17'\|'shell13'\|'rootOnly'}`                                                                                               | One set target (octaveFlexible true unless params say otherwise)                                                 |
-| `grip-interleave`        | `{pool: GripPoolFilter, count, hand}` — pool filters by roots/qualities/inversions learned                                                                                           | `count` set targets drawn without immediate repeats (true interleaving)                                          |
-| `spell-drill`            | `{pool, count, answerVia:'midi'}`                                                                                                                                                    | "Spell F♯m7" → targets as sets; prompt shows symbol only (rung `chord-symbols`)                                  |
-| `progression-play`       | `{key, roman: string[], voiceLead:'free'\|'smooth', hand, loops, style:'block'\|'brokenLH'}`                                                                                         | Set targets per bar; `smooth` enables voice-leading scoring                                                      |
-| `chart-play`             | `{songId, sectionIdx?, transposeTo?}`                                                                                                                                                | Set targets from the song's bars on its grid                                                                     |
-| `ear-degree`             | `{key, degreePool: Degree[], count}`                                                                                                                                                 | Cadence preview (I-IV-V-I demo script) then single-note probes; targets `any-of-degree`                          |
-| `ear-quality`            | `{qualityPool: ChordQuality[], count}`                                                                                                                                               | Plays a chord (audioPreview per item); answer = play any voicing of that quality on a fixed root shown on screen |
-| `ear-progression`        | `{key, pool: string[][], count}`                                                                                                                                                     | Plays 4-bar progression; answer = play the roman sequence (bass roots acceptable per params)                     |
-| `flashcard`              | `{atomKind:'keysig'\|'spell'\|'interval', pool, count, answerVia:'choice'\|'midi'}`                                                                                                  | Theory Q&A; `choice` renders 4 options, `midi` expects played answer                                             |
-| `read-snippet` (Phase 8) | `{key, rhythmLevel, range, bars}`                                                                                                                                                    | Generated 1–2 bar melodies rendered by StaffSnippet                                                              |
-| `improv-sandbox`         | `{key, palette: Degree[], backing:'drone'\|'progressionId', bpm?}`                                                                                                                   | No targets (unscored); provides backing loop + highlighted palette                                               |
+| Generator          | Params                                                                                                                                                                | Produces                                                                           |
+| ------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------------------- |
+| `scale-run`        | `{tonic, scaleType:'major'\|'natural-minor'\|'harmonic-minor'\|'major-pentatonic'\|'minor-pentatonic'\|'blues'\|'chromatic', hand, octaves, direction, startOctave?}` | Note targets with fingering annotations from `theory/scales.ts`                    |
+| `five-finger`      | `{tonic, quality:'maj'\|'min', hand, pattern:'asc'\|'desc'\|'updown'\|'melodyId'}`                                                                                    | 5-note patterns; melodyId picks from a small built-in melody set                   |
+| `note-find`        | `{pool: string[], count, octaves?}`                                                                                                                                   | "Find every F": single note targets, any octave                                    |
+| `chord-grip`       | `{root, quality, inversion, hand, voicing:'closed'\|'shell17'\|'shell13'\|'rootOnly'}`                                                                                | One set target (octaveFlexible unless params say otherwise)                        |
+| `grip-interleave`  | `{pool: GripPoolFilter, count, hand}`                                                                                                                                 | `count` set targets drawn without immediate repeats                                |
+| `progression-play` | `{key, roman: string[], voiceLead:'free'\|'smooth', hand, loops, style:'block'\|'brokenLH'\|'rootchord'\| comp patterns, voicing?, swing?}`                           | Set targets per bar; `smooth` scores voice leading; comp styles add pattern rhythm |
+| `chart-play`       | `{songId, sectionIdx?, transposeTo?, style?}`                                                                                                                         | Set targets from the song's bars on its grid                                       |
+| `unseen-chart`     | `{stage, bars, key?, style?}`                                                                                                                                         | A chart the learner has never seen, generated per seed and validated               |
+| `ear-degree`       | `{key, degreePool: Degree[], count}`                                                                                                                                  | Cadence preview, then single-note probes; targets `any-of-degree`                  |
+| `ear-quality`      | `{qualityPool: ChordQuality[], count}`                                                                                                                                | Plays a chord (per-target preview); answer = any voicing of that quality           |
+| `ear-progression`  | `{key, pool: string[][], count}`                                                                                                                                      | Plays a progression; answer = the roman sequence (`chord-any` targets)             |
+| `flashcard`        | `{kind:'keysig'\|'spell'\|'interval'\|'roman', pool, count}`                                                                                                          | Theory question and answer; the answer is played on the keyboard                   |
+| `read-snippet`     | `{key, clef, rhythmLevel, range, bars}`                                                                                                                               | Generated 1-2 bar melodies rendered by `StaffSnippet`                              |
+| `improv`           | `{key, palette: Degree[], backing:'drone'\| progression, bpm?, tintDegrees?}`                                                                                         | No targets (unscored): a backing loop and a highlighted palette                    |
 
-Every generator caps range to the learner's keyboard if known (Settings stores detected min/max from seen events; default 61-key C2–C7 assumption).
+Generators write inside a 61-key C2–C7 assumption. Detecting the real range from seen events was specified and not built; nothing stores a device range.
 
 ## Matchers
 
@@ -84,19 +95,20 @@ Consumes the metronome's beat grid. Each target has an expected time `tExpect` (
 noteScore: perfect=1.0, good=0.8, ok=0.5, wrong/missed=0
 pitchAccuracy = (#targets judged perfect|good|ok) / #targets
 timingAccuracy = mean(noteScore over targets that were pitch-correct)   // wait mode: 1.0
-extraPenalty = 0.02 * #extra   (cap 0.10)
-score = clamp01( (wait mode: pitchAccuracy) | (tempo: 0.6*pitchAccuracy + 0.4*timingAccuracy) − extraPenalty )
+precision = #targets / max(1, #targets + #wrong + #extra)
+score = clamp01((wait: pitchAccuracy | tempo: 0.6*pitchAccuracy + 0.4*timingAccuracy) * precision)
 stars: ≥0.80 ★, ≥0.90 ★★, ≥0.97 ★★★     pass = score ≥ passScore (default 0.80)
 ```
 
 ### Voice-leading metric (`voiceLeading.ts`) — only when `voiceLead:'smooth'`
 
-For consecutive played chords, movement cost = sum over voices of semitone distance (greedy min-cost pairing of the two voicings). Ideal cost from the reference smooth voicing sequence (generator computes it: keep common tones, move others minimally). `vlScore = clamp01(1 − (playedCost − idealCost) / (2*idealCost + 4))`. Final score for these exercises: `0.5*pitch + 0.3*timing + 0.2*vl`.
+For consecutive played chords, movement cost = sum over voices of semitone distance (greedy min-cost pairing of the two voicings). Ideal cost from the reference smooth voicing sequence (generator computes it: keep common tones, move others minimally). `vlScore = clamp01(1 − (playedCost − idealCost) / (2*idealCost + 4))`. Final score for these exercises: `(0.5*pitch + 0.3*timing + 0.2*vl) * precision`.
 
 ## Match events (UI contract)
 
-Matcher emits (runStore forwards to UI):
-`runStarted`, `countIn(beat)`, `beat(bar,beat)`, `targetFocused(index)`, `noteJudged(NoteJudgment)`, `hintEligible(index)`, `completed(TakeResult)`, `aborted`.
+Matcher emits (runStore forwards to UI): `targetFocused(index)`,
+`noteJudged(NoteJudgment)`, `hintEligible(index, auto)`, `completed(TakeResult)`.
+Run lifecycle (start, count-in, beat, abort) is `runStore` state, not matcher events.
 
 ## Replay (`replay.ts`)
 
@@ -104,4 +116,15 @@ Record every MidiEvent during a run as `CompactEvent` (dt from run start). `fina
 
 ## Testing (minimum fixtures)
 
-Scripted streams in `src/test/streams/`: perfect scale; scale with 1 wrong + recovery; rolled chord inside/outside window; early/late notes at each band edge (±1ms of boundary); extra-note spam; missed target; set with sustain pedal held (pedal ignored); interleave no-repeat property test (100 seeds). Scoring: golden exact-value tests for each formula branch.
+Scripted streams live inline in `src/engine/engine.test.ts`: perfect scale; scale with 1 wrong + recovery; rolled chord inside/outside window; early/late notes at each band edge (±1ms of boundary); extra-note spam; missed target; set with sustain pedal held (pedal ignored); interleave no-repeat property test (100 seeds). Scoring: golden exact-value tests for each formula branch.
+
+## Assessment and phrase extensions (2026-09-06)
+
+Exercise definitions now accept `assessment`, `passScore`, and an optional `focus` target slice.
+Focused practice preserves its source seed and removes assessment credit.
+Wait results record first-answer accuracy, response times, and hint use.
+Tempo results retain signed timing errors. `diagnosis.ts` turns these observations into retry advice.
+
+The `phrase` generator accepts explicit starts, durations, and meter from the practical studio.
+Runtime target timers follow fractional beat positions. The metronome uses the authored meter.
+Durations guide demonstrations and self-checks. The matcher grades note starts only.

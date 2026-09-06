@@ -238,17 +238,6 @@ export const stage6Units: Unit[] = [
         ),
       },
       {
-        kind: 'graded',
-        id: 's6.u2.q1',
-        passScore: 0.8,
-        exercise: tempo(
-          'progression-play',
-          { key: F, roman: II_V_I, beatsPerChord: 4, loops: 2, voicing: 'shell17' },
-          66,
-          'lh',
-        ),
-      },
-      {
         // The 1-3 shell is a different two-note grip from the 1-7, so it gets
         // its own ramp rather than riding on the 1-7 ladder above.
         kind: 'ladder',
@@ -258,6 +247,17 @@ export const stage6Units: Unit[] = [
           'progression-play',
           { key: C, roman: ['I', 'vi', 'IV', 'V'], beatsPerChord: 4, loops: 2, voicing: 'shell13' },
           72,
+          'lh',
+        ),
+      },
+      {
+        kind: 'graded',
+        id: 's6.u2.q1',
+        passScore: 0.8,
+        exercise: tempo(
+          'progression-play',
+          { key: F, roman: II_V_I, beatsPerChord: 4, loops: 2, voicing: 'shell17' },
+          66,
           'lh',
         ),
       },
@@ -882,24 +882,24 @@ export const stage6Units: Unit[] = [
         ),
       },
       {
-        kind: 'graded',
-        id: 's6.u8.q1',
-        passScore: 0.8,
-        exercise: tempo(
-          'unseen-chart',
-          { form: 'aaba', sevenths: true, style: 'straight8', voicing: 'shell17' },
-          66,
-          'both',
-          'lead-sheet',
-        ),
-      },
-      {
         kind: 'ladder',
         id: 's6.u8.l1',
         tempos: [0.6, 0.8, 1],
         exercise: tempo(
           'unseen-chart',
           { form: 'verse-chorus', sevenths: true, voicing: 'shell17' },
+          66,
+          'both',
+          'lead-sheet',
+        ),
+      },
+      {
+        kind: 'graded',
+        id: 's6.u8.q1',
+        passScore: 0.8,
+        exercise: tempo(
+          'unseen-chart',
+          { form: 'aaba', sevenths: true, style: 'straight8', voicing: 'shell17' },
           66,
           'both',
           'lead-sheet',

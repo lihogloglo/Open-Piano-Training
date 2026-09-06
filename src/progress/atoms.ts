@@ -91,6 +91,16 @@ function drillFor(id: string): ExerciseDef | null {
   const parts = id.split(':');
   const kind = parts[0];
   if (kind === 'note' && parts[1] === 'find' && parts[2]) {
+    if (parts[2] === 'sharps') {
+      return {
+        generator: 'key-group-find',
+        params: { group: 'black-keys', count: 5 },
+        mode: 'wait',
+        rung: 'keys-lit',
+        hand: 'rh',
+        seedPolicy: 'random',
+      };
+    }
     return {
       generator: 'note-find',
       params: { notes: [cap(parts[2])], count: 5 },
@@ -455,7 +465,7 @@ function scaleTypeOf(seg: string): string {
 function labelFor(id: string): string {
   const parts = id.split(':');
   const kind = parts[0];
-  if (kind === 'note') return `Find ${pretty(parts[2] ?? '?')}`;
+  if (kind === 'note') return parts[2] === 'sharps' ? 'Find black keys' : `Find ${pretty(parts[2] ?? '?')}`;
   if (kind === 'fivefinger') {
     return `${pretty(parts[1] ?? '?')} ${parts[2] === 'min' ? 'minor' : 'major'} five-finger · ${(parts[3] ?? '').toUpperCase()}`;
   }

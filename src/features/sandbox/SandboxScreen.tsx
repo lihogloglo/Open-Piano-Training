@@ -1,3 +1,4 @@
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { detectChord, buildChord, type DetectedChord } from '@/theory/chords';
 import { diatonicTriads, type KeyContext } from '@/theory/keys';
@@ -150,8 +151,8 @@ function ChordExplorer() {
         range={[36, 96]}
         pressed={activeNotes}
         labels="names"
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
     </>
   );
@@ -238,8 +239,8 @@ function DroneImprov() {
         pressed={activeNotes}
         degreeTint={{ tonic, degrees }}
         labels="degrees"
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
     </>
   );
@@ -421,8 +422,8 @@ function ProgressionLooper() {
         pressed={activeNotes}
         degreeTint={tintDegrees ? { tonic, degrees: tintDegrees } : { tonic }}
         labels="degrees"
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
     </>
   );

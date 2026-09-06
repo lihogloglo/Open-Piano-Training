@@ -18,6 +18,7 @@
 | PWA                 | `vite-plugin-pwa`                                     | latest                                                           |
 | Unit tests          | `vitest`                                              | latest                                                           |
 | E2E                 | `@playwright/test`                                    | latest (browser at `/opt/pw-browsers/chromium` in CI containers) |
+| Desktop shell       | `electron`, `electron-builder`                        | 44.x / 26.x (Windows build, see decisions log)                   |
 | Lint/format         | `eslint` (flat config, typescript-eslint), `prettier` | latest                                                           |
 
 No CSS framework. Styling = CSS Modules (`*.module.css`) + design tokens as CSS custom properties (see 05). No Tailwind, no styled-components (keeps the styling system fully specified by 05-ui-ux.md).
@@ -31,7 +32,9 @@ src/
     router.tsx         # all routes (see 05 §Navigation)
     AppShell.tsx       # sidebar + outlet + global overlays
     brand.ts           # app name, version
-    providers.tsx      # error boundary, theme, toasts
+    providers.tsx      # error boundary, toasts
+    registerSW.ts      # PWA registration (skipped in the desktop shell)
+    ConnectionBanner.tsx  ViewportNotice.tsx
   styles/
     tokens.css         # ALL design tokens (05 §Tokens) — single source of truth
     global.css         # reset, base typography
@@ -40,60 +43,55 @@ src/
     webmidiAdapter.ts  # real implementation (lazy-imports 'webmidi')
     fakeAdapter.ts     # scripted/test implementation
     computerKeyboardAdapter.ts  # QWERTY fallback (a..k = C4..C5 etc.)
-    index.ts           # adapter selection
+    index.ts           # adapter selection (composites QWERTY over the primary)
   audio/               # NO React imports allowed
     sampler.ts         # smplr wrapper: load, noteOn/Off, sustain, mute
     metronome.ts       # WebAudio click scheduler (lookahead pattern)
     clock.ts           # perf-clock <-> audio-clock conversion helpers
+    backing.ts         # looping chord backing on the metronome clock
   theory/              # pure; wraps tonal — UI/engine never import 'tonal' directly
-    notes.ts           # midi<->name, spelling in key context
-    scales.ts          # scale notes, standard fingerings table
-    chords.ts          # build, detect (inversion-aware), symbols
-    keys.ts            # key signatures, circle of fifths, diatonic chords
-    progressions.ts    # roman numeral <-> chords, common progression catalog
-    degrees.ts         # degree math, degree-color mapping
+    notes.ts scales.ts chords.ts keys.ts progressions.ts degrees.ts
   engine/              # pure; the exercise engine (04)
-    types.ts
-    generators/        # one file per generator id
-    matcher/
-      waitMatcher.ts
-      tempoMatcher.ts
-      setMatch.ts      # chord/set comparison
-      timing.ts        # windows, judgments
-    scoring.ts
-    voiceLeading.ts
-    replay.ts          # take serialization
+    types.ts rng.ts scoring.ts voiceLeading.ts comp.ts replay.ts
+    generators/        # one file per generator (04 lists them)
+    matcher/           # waitMatcher.ts tempoMatcher.ts setMatch.ts timing.ts
   curriculum/          # schema + content-as-data (06)
     schema.ts          # types + zod validators
     content/
       stage0.ts ... stage7.ts
       songs.ts         # chord-chart song catalog
       index.ts         # assembled, validated path
-    path.ts            # unlock logic, next-unit selection
+    path.ts            # unlock logic, auto review nodes, next-unit selection
   progress/            # pure logic + Dexie persistence (07)
     db.ts              # Dexie schema (02 §Database)
     atoms.ts           # skill atom registry & id helpers
     fsrs.ts            # ts-fsrs wrapper, grade mapping
     ratings.ts         # per-strand rating ladder
     sessionBuilder.ts  # builds today's session
-    gates.ts           # unit/checkpoint mastery logic
-    stats.ts           # streaks, recap aggregation
+    service.ts         # the only writer: unit passes, atom grading, sessions, badges
+    stats.ts heatmap.ts badges.ts
   store/               # zustand stores (thin; logic lives in the pure modules)
     midiStore.ts       # device, active notes (Set<number>), last events
     runStore.ts        # current exercise run state (matcher output)
-    sessionStore.ts    # today's session plan + position
-    settingsStore.ts   # persisted prefs (mirrors Dexie settings)
+    settingsStore.ts   # persisted prefs (localStorage, see decisions log)
+    runTestBridge.ts   # window hook the e2e driver uses to inspect a live run
   ui/                  # reusable presentational components (05 §Components)
-    Keyboard/          # the SVG keyboard (own folder: component, hooks, utils)
-    ChordSymbol.tsx  DegreeBadge.tsx  TransportBar.tsx  Metronome.tsx
-    ProgressRing.tsx StarRating.tsx  Card.tsx  Button.tsx  Modal.tsx  Toast.tsx
-    StaffSnippet.tsx  # VexFlow wrapper (Phase 8)
+    Keyboard/          # the SVG keyboard (component, utils)
+    TransportBar.tsx PlayerNotices.tsx StaffSnippet.tsx Icon.tsx
+    Button.tsx Card.tsx Modal.tsx Toast.tsx
+    ProgressRing.tsx StarRating.tsx ScoreDial.tsx RatingDial.tsx Sparkline.tsx
   features/            # route-level screens composing ui/ + stores
-    setup/  path/  lesson/  practice/  sandbox/  songs/  progress/  settings/
-  test/                # test utilities (fake MIDI scripts, fixtures)
+    welcome/ setup/ practice/ path/ lesson/ drill/ rating/ songs/
+    sandbox/ progress/ epilogue/ settings/ lab/
+electron/              # desktop shell: main.cjs (keysense:// scheme, MIDI grant), preload.cjs
+scripts/               # fetch-samples, make-icons, check-bundle, check-contrast
+e2e/                   # Playwright specs + drive.ts (the fake-MIDI driver)
 ```
 
-**Dependency rule (enforce with eslint-plugin-import or a lint rule):**
+Unit tests sit beside the code they cover (`src/engine/engine.test.ts`,
+`src/curriculum/curriculum.test.ts`, …), not in a separate test tree.
+
+**Dependency rule** (enforced by `no-restricted-imports` groups in `eslint.config.js`):
 `app → features → {ui, store, curriculum, progress, engine} → {theory, midi, audio} → (npm)`.
 Never upward. `theory/`, `engine/`, `progress/`(except db.ts), `curriculum/schema+content` import **no browser APIs** — they must run in Vitest under Node.
 
@@ -129,7 +127,7 @@ React must never sit between the device and sound. Subscriptions from `ui/Keyboa
 | Layer         | Tool       | What                                                                                                                                                                               |
 | ------------- | ---------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `theory/`     | Vitest     | Table-driven: every scale/chord/key helper vs known-good values (incl. enharmonics: F♯ vs G♭ handling per key context)                                                             |
-| `engine/`     | Vitest     | Matcher FSMs fed scripted `NoteEvent[]` streams (fixtures in `src/test/streams/`) — correct/wrong/extra/rolled/early/late cases; scoring formulas exact-value tests                |
+| `engine/`     | Vitest     | Matcher FSMs fed scripted `NoteEvent[]` streams (scripted inline in `engine.test.ts`) — correct/wrong/extra/rolled/early/late cases; scoring formulas exact-value tests            |
 | `progress/`   | Vitest     | Session builder scenarios; gate logic; rating ladder promote/demote; FSRS grade mapping (mock ts-fsrs clock)                                                                       |
 | `curriculum/` | Vitest     | Zod validation of ALL content; referential integrity (every prerequisite/atom/generator id exists); path is a DAG; every unit reachable                                            |
 | UI            | Playwright | Smoke: boot with `?midi=fake`, run through Unit 0.1 end-to-end using scripted fake-MIDI input, assert pass screen + Dexie rows. One test per screen renders without console errors |

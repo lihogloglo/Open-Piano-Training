@@ -33,7 +33,7 @@ function blockLabel(block: SessionBlock): string {
   if (block.kind === 'new') return `Continue: ${block.title}`;
   if (block.kind === 'review')
     return `Review: ${block.atomIds.length} skill${block.atomIds.length > 1 ? 's' : ''} due`;
-  return 'Make something';
+  return `Play: ${block.title}`;
 }
 
 function blockRoute(plan: SessionPlan, idx: number): string {
@@ -170,7 +170,7 @@ export function TodayScreen() {
         {allDone ? (
           <p className={styles['doneLine']}>
             Session complete: {plan.blocks.length} blocks, {plan.blocks.reduce((m, b) => m + b.minutes, 0)}{' '}
-            minutes of real practice. See you tomorrow.
+            estimated minutes planned. Active practice time appears in your weekly recap.
           </p>
         ) : (
           plan.blocks.length > 0 && (
@@ -245,6 +245,11 @@ export function TodayScreen() {
       )}
 
       <div className={styles['secondary']}>
+        <Card className={styles['smallCard'] ?? ''}>
+          <h3>At the piano</h3>
+          <p className={styles['sub']}>Rhythm, technique, listening, and complete beginner pieces.</p>
+          <Button onClick={() => void navigate('/studio')}>Practice music</Button>
+        </Card>
         <Card className={styles['smallCard'] ?? ''}>
           <h3>5-minute workout</h3>
           <p className={styles['sub']}>Just the reviews that are due.</p>

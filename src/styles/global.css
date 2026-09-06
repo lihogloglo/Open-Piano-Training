@@ -141,3 +141,16 @@ a[class*='card'] {
     transition-duration: 0.01ms !important;
   }
 }
+
+html[data-large-practice='true'] {
+  --fs-display: clamp(3rem, 6vw, 5rem);
+  --fs-m: 1.25rem;
+  --fs-s: 1.05rem;
+}
+html[data-large-practice='true'] button {
+  min-height: 48px;
+}
+svg [role='button']:focus-visible {
+  outline: 3px solid var(--accent);
+  outline-offset: -3px;
+}

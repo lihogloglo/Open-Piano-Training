@@ -132,6 +132,8 @@ export async function driveLesson(
     if (!page.url().includes('/lesson/')) return;
     if (until?.(page.url())) return;
 
+    const browse = page.getByLabel('Browse the explanation');
+    if (await browse.isVisible().catch(() => false)) await browse.check();
     // Structural buttons first: explain-Continue, create-Done, results-Continue, ladder-Continue.
     const structural = page.getByRole('button', { name: /^(Continue|Done)$/ }).first();
     if (await structural.isVisible().catch(() => false)) {
@@ -161,7 +163,9 @@ export async function driveLesson(
       continue;
     }
     if (s.phase === 'idle' || s.phase === 'done') {
-      const startBtn = page.getByRole('button', { name: /^(Start|Try again|Restart)$/ }).first();
+      const startBtn = page
+        .getByRole('button', { name: /^(Start(?: at \d+ BPM)?|Try again|Restart)$/ })
+        .first();
       if (await startBtn.isVisible().catch(() => false)) {
         if (await startBtn.isEnabled()) {
           await startBtn.click({ timeout: 2000 }).catch(() => {});

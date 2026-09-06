@@ -1,0 +1,147 @@
+.catalog {
+  max-width: 1100px;
+  margin: auto;
+  padding: 32px;
+}
+.cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 16px;
+  margin-top: 24px;
+}
+.card {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 16px;
+  padding: 24px;
+  color: var(--text);
+  text-decoration: none;
+}
+.card h2 {
+  font-size: 1.25rem;
+  margin: 12px 0;
+}
+.player {
+  height: 100dvh;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+}
+.header {
+  display: flex;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 20px;
+  border-bottom: 1px solid var(--border);
+}
+.content {
+  width: 100%;
+  max-width: 1100px;
+  margin: auto;
+  padding: 16px 24px;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+.content p {
+  max-width: 780px;
+  line-height: 1.7;
+  margin-bottom: 20px;
+}
+.controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin-bottom: 24px;
+}
+.controls input {
+  width: 80px;
+}
+.controls input,
+.controls select {
+  padding: 10px;
+  border-radius: 8px;
+  color: var(--text);
+  background: var(--surface);
+  border: 1px solid var(--border);
+}
+.phrase {
+  display: flex;
+  overflow-x: auto;
+  gap: 8px;
+  padding-bottom: 12px;
+  margin-bottom: 16px;
+}
+.phrase span {
+  display: grid;
+  gap: 8px;
+  min-width: 130px;
+  padding: 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+}
+.phrase small {
+  color: var(--text-2);
+}
+.checks {
+  display: grid;
+  gap: 14px;
+  margin: 24px 0;
+}
+.checks summary {
+  font-size: 1.15rem;
+}
+.prompt {
+  font-size: 2rem;
+}
+.performance {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  padding: 16px;
+  flex-wrap: wrap;
+}
+.performance span {
+  color: var(--text-2);
+  font-size: 0.9rem;
+}
+
+.player > :not(.content) {
+  flex-shrink: 0;
+}
+.checks label {
+  display: block;
+  margin: 12px 0;
+}
+.checks summary {
+  cursor: pointer;
+}
+.checks[hidden] {
+  display: none;
+}
+@media (max-height: 700px) {
+  .header {
+    padding: 12px;
+  }
+  .performance {
+    padding: 8px;
+  }
+}
+
+.live {
+  display: grid;
+  justify-items: center;
+  gap: 24px;
+  padding: 24px;
+}
+.prompt {
+  text-align: center;
+  margin: 24px auto;
+}
+
+.header h1 {
+  font-size: 1.1rem;
+  margin: 0;
+}

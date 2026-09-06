@@ -12,6 +12,7 @@
 const { app, BrowserWindow, Menu, net, protocol, session, shell } = require('electron');
 const path = require('node:path');
 const { pathToFileURL } = require('node:url');
+const { isAppUrl, resolveAsset } = require('./security.cjs');
 
 const DIST = path.join(__dirname, '..', 'dist');
 const SCHEME = 'keysense';
@@ -28,18 +29,13 @@ protocol.registerSchemesAsPrivileged([
 
 /** Maps one request to a file in `dist`, with the usual single-page fallback. */
 function resolve(requestUrl) {
-  const { pathname } = new URL(requestUrl);
-  const rel = path.normalize(decodeURIComponent(pathname)).replace(/^[\\/]+/, '');
-  const file = path.join(DIST, rel);
-  // Refuse anything that climbs out of dist.
-  if (!file.startsWith(DIST)) return path.join(DIST, 'index.html');
-  // A path with no file extension is a route, not an asset.
-  return path.extname(file) === '' ? path.join(DIST, 'index.html') : file;
+  return resolveAsset(DIST, requestUrl);
 }
 
 function serve() {
   protocol.handle(SCHEME, async (request) => {
     const file = resolve(request.url);
+    if (!file) return new Response('Forbidden', { status: 403 });
     const response = await net.fetch(pathToFileURL(file).toString());
     if (response.status === 404 && path.extname(file) !== '') {
       // A missing asset is a real 404. Only routes fall back to the shell.
@@ -74,7 +70,7 @@ function createWindow() {
     return { action: 'deny' };
   });
   win.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith(ORIGIN)) {
+    if (!isAppUrl(url)) {
       event.preventDefault();
       if (url.startsWith('http:') || url.startsWith('https:')) void shell.openExternal(url);
     }
@@ -95,10 +91,12 @@ function createWindow() {
 const ALLOWED_PERMISSIONS = new Set(['midi', 'midiSysex']);
 
 function setPermissions(target) {
-  target.setPermissionRequestHandler((_wc, permission, callback) => {
-    callback(ALLOWED_PERMISSIONS.has(permission));
+  target.setPermissionRequestHandler((wc, permission, callback) => {
+    callback(ALLOWED_PERMISSIONS.has(permission) && isAppUrl(wc.getURL()));
   });
-  target.setPermissionCheckHandler((_wc, permission) => ALLOWED_PERMISSIONS.has(permission));
+  target.setPermissionCheckHandler(
+    (wc, permission, origin) => ALLOWED_PERMISSIONS.has(permission) && isAppUrl(wc?.getURL() || origin),
+  );
 }
 
 // One window only. A second launch focuses the window that is already open.

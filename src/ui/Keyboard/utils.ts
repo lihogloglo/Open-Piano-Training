@@ -1,10 +1,15 @@
+import type { ExerciseInstance } from '@/engine/types';
+import { targetMidis } from '@/engine/matcher/setMatch';
 export const WHITE_W = 24;
 export const BLACK_W = 14;
 export const BLACK_H_RATIO = 0.62;
 
 const WHITE_PCS = new Set([0, 2, 4, 5, 7, 9, 11]);
-/** Black-key left edge, in white-key widths from the octave's C (see 05-ui-ux). */
-const BLACK_OFFSETS: Record<number, number> = { 1: 0.62, 3: 1.38, 6: 3.58, 8: 4.42, 10: 5.26 };
+/**
+ * White-key boundary after the key to the left, measured from the octave's C.
+ * Each black key is centred on that boundary below in `layoutKeys`.
+ */
+const BLACK_BOUNDARIES: Record<number, number> = { 1: 1, 3: 2, 6: 4, 8: 5, 10: 6 };
 /** White keys among pitch classes 0..pc-1. */
 const WHITES_BELOW_PC = [0, 1, 1, 2, 2, 3, 3, 4, 4, 5, 5, 6] as const;
 
@@ -45,10 +50,11 @@ export function layoutKeys(rangeLo: number, rangeHi: number): KeyboardLayout {
       const pc = ((midi % 12) + 12) % 12;
       const octaveC = midi - pc;
       const octaveStartX = (whitesBelow(octaveC) - base) * WHITE_W;
+      const boundary = BLACK_BOUNDARIES[pc] ?? 0;
       keys.push({
         midi,
         white: false,
-        x: octaveStartX + (BLACK_OFFSETS[pc] ?? 0) * WHITE_W,
+        x: octaveStartX + boundary * WHITE_W - BLACK_W / 2,
         width: BLACK_W,
       });
     }
@@ -83,4 +89,9 @@ export function majorDegreeOf(midi: number, tonic: string): number | null {
   const rel = (((midi - tonicPc(tonic)) % 12) + 12) % 12;
   const idx = MAJOR_STEPS.indexOf(rel as (typeof MAJOR_STEPS)[number]);
   return idx === -1 ? null : idx + 1;
+}
+
+export function exerciseRange(instance: ExerciseInstance | null): [number, number] {
+  const notes = instance?.targets.flatMap(targetMidis) ?? [];
+  return [Math.max(21, Math.min(48, ...notes)), Math.min(108, Math.max(84, ...notes))];
 }

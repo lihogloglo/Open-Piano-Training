@@ -1,3 +1,5 @@
+import { getUnit } from '@/curriculum/content';
+import { performanceMilestones } from '@/progress/performance';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -38,7 +40,9 @@ export function ProgressScreen() {
   const navigate = useNavigate();
   const atomRows = useLiveQuery(() => db.atomProgress.toArray(), [], null);
   const ratingRows = useLiveQuery(() => db.ratings.toArray(), [], null);
-  const takes = useLiveQuery(() => db.takes.orderBy('startedAt').reverse().limit(120).toArray(), [], null);
+  const takes = useLiveQuery(() => db.takes.orderBy('startedAt').reverse().toArray(), [], null);
+  const studies = useLiveQuery(() => db.meta.where('key').startsWith('study:').toArray(), [], []);
+  const units = useLiveQuery(() => db.unitProgress.where('status').equals('passed').toArray(), [], []);
   const badges = useLiveQuery(() => loadBadges(), [], null);
   const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
   const [openPair, setOpenPair] = useState<ReplayPair | null>(null);
@@ -51,14 +55,14 @@ export function ProgressScreen() {
   const pairs = findThenVsNowPairs(takes);
   const starred = takes.filter((t) => t.result.stars === 3).slice(0, 6);
 
-  if (atomRows.length === 0 && takes.length === 0) {
+  if (atomRows.length === 0 && takes.length === 0 && studies.length === 0 && units.length === 0) {
     return (
       <div className={styles['wrap']}>
         <h1>Progress</h1>
         <div className={styles['empty']}>
           <p>Nothing to show yet. This page fills in as you play.</p>
           <p className={styles['muted']}>
-            Ratings, a fluency map of all 12 keys, your best takes, and badges all live here.
+            Ratings, a recall map of all 12 keys, your best takes, and badges all live here.
           </p>
           <Button variant="primary" onClick={() => void navigate('/practice')}>
             Start today&apos;s session
@@ -84,6 +88,35 @@ export function ProgressScreen() {
     <div className={styles['wrap']}>
       <h1>Progress</h1>
 
+      <section className={styles['section']}>
+        <h2>Musical achievements</h2>
+        <p>
+          Completed means explored. Independent means passed without hints. Retained means repeated under the
+          same conditions on another day.
+        </p>
+        <details>
+          <summary>Completed lessons and self-checks ({units.length + studies.length})</summary>
+          {units.map((u) => (
+            <p key={u.unitId}>
+              {getUnit(u.unitId)?.title ?? u.unitId} - Completed{u.flagged ? ' (extra review due)' : ''}
+            </p>
+          ))}
+          {studies.map((s) => (
+            <p key={s.key}>
+              {String((s.value as { title?: string }).title ?? s.key)} - Completed (self-check)
+            </p>
+          ))}
+        </details>
+        {performanceMilestones(takes)
+          .slice(0, 12)
+          .map((m, i) => (
+            <p key={i}>
+              {getUnit(m.title)?.title ?? m.title} - {m.level} -{' '}
+              {m.hand === 'both' ? 'Both hands' : m.hand === 'lh' ? 'Left hand' : 'Right hand'}
+              {m.bpm ? ` - ${m.bpm} BPM` : ' - Untimed'} - {m.conditions}
+            </p>
+          ))}
+      </section>
       <section className={styles['section']}>
         <div className={styles['sectionHead']}>
           <h2>Ratings</h2>
@@ -116,18 +149,19 @@ export function ProgressScreen() {
 
       <section className={styles['section']}>
         <div className={styles['sectionHead']}>
-          <h2>The map</h2>
+          <h2>Recall map</h2>
+          <p>Review memory strength. Use performances above to track playing without hints.</p>
           <div className={styles['legend']}>
             <span>Not started</span>
             <span className={styles['legendSwatch']} style={{ background: heatColor(0) }} />
             <span className={styles['legendSwatch']} style={{ background: heatColor(0.4) }} />
             <span className={styles['legendSwatch']} style={{ background: heatColor(1) }} />
-            <span>Fluent</span>
+            <span>Strong recall</span>
           </div>
         </div>
         <div className={styles['heatScroll']}>
           <table className={styles['heatGrid']}>
-            <caption className="sr-only">Fluency by key and skill family</caption>
+            <caption className="sr-only">Recall by key and skill family</caption>
             <thead>
               <tr>
                 <th />
@@ -145,7 +179,9 @@ export function ProgressScreen() {
                   {HEATMAP_KEYS.map((key) => {
                     const cell = cells.find((c) => c.key === key && c.family === family.id)!;
                     const state =
-                      cell.tracked === 0 ? 'not started' : `${cell.fluent} of ${cell.tracked} fluent`;
+                      cell.tracked === 0
+                        ? 'not started'
+                        : `${cell.fluent} of ${cell.tracked} with strong recall`;
                     return (
                       <td key={key}>
                         <button

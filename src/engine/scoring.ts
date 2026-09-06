@@ -23,12 +23,14 @@ export function scoreTake(
 ): TakeResult {
   const perTarget = new Map<number, number>(); // targetIndex -> worst note score among its judgments
   let extras = 0;
+  const incorrectTargets = new Set<number>();
   for (const j of judgments) {
-    if (j.verdict === 'extra') {
+    if (j.verdict === 'extra' || j.verdict === 'wrong') {
+      if (j.targetIndex >= 0) incorrectTargets.add(j.targetIndex);
       extras += 1;
       continue;
     }
-    if (j.verdict === 'wrong' || j.verdict === 'missed') {
+    if (j.verdict === 'missed') {
       // A wrong/missed mark does not erase an earlier successful hit of the
       // same target (wrong notes near a hit target are informational).
       if (!perTarget.has(j.targetIndex) && j.verdict === 'missed') perTarget.set(j.targetIndex, 0);
@@ -47,11 +49,17 @@ export function scoreTake(
         ? 1
         : 0
       : hitScores.reduce((a, b) => a + b, 0) / hitScores.length;
-  const extraPenalty = Math.min(0.1, 0.02 * extras);
+  // Every incorrect press matters. Searching cannot become a high-scoring take.
+  const precision = targetCount / Math.max(1, targetCount + extras);
   const base = mode === 'wait' ? pitchAccuracy : 0.6 * pitchAccuracy + 0.4 * timingAccuracy;
-  const score = clamp01(base - extraPenalty);
+  const score = clamp01(base * precision);
   const stars: TakeResult['stars'] = score >= 0.97 ? 3 : score >= 0.9 ? 2 : score >= 0.8 ? 1 : 0;
   return {
+    firstAnswerAccuracy:
+      targetCount === 0
+        ? 1
+        : [...perTarget].filter(([index, score]) => score > 0 && !incorrectTargets.has(index)).length /
+          targetCount,
     pitchAccuracy,
     timingAccuracy: mode === 'wait' ? 1 : timingAccuracy,
     score,

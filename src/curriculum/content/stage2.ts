@@ -798,17 +798,6 @@ export const stage2Units: Unit[] = [
         ),
       },
       {
-        kind: 'graded',
-        id: 's2.u7.q1',
-        passScore: 0.9,
-        exercise: wait(
-          'ear-quality',
-          { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 8 },
-          'rh',
-          'by-ear',
-        ),
-      },
-      {
         kind: 'ladder',
         id: 's2.u7.l1',
         tempos: [0.6, 0.8, 1],
@@ -818,6 +807,17 @@ export const stage2Units: Unit[] = [
           72,
           'both',
           'chord-symbols',
+        ),
+      },
+      {
+        kind: 'graded',
+        id: 's2.u7.q1',
+        passScore: 0.9,
+        exercise: wait(
+          'ear-quality',
+          { qualityPool: ['maj', 'min'], roots: ['C', 'F', 'G'], count: 8 },
+          'rh',
+          'by-ear',
         ),
       },
       {

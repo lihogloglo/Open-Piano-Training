@@ -105,7 +105,7 @@ test('workout reviews due atoms, grades them, and counts practice', async ({ pag
   await expect(page.getByLabel('1 day streak')).toBeVisible();
 });
 
-test("today's session lists new unit + review + create for a fresh-ish profile", async ({ page }) => {
+test("today's session lists new unit + review + a real song for a fresh-ish profile", async ({ page }) => {
   await seedOnboarded(page);
   await page.goto('/practice?midi=fake');
   await seedDueAtoms(page);
@@ -119,6 +119,6 @@ test("today's session lists new unit + review + create for a fresh-ish profile",
   await page.reload();
   await expect(page.getByText('Continue: Meet the keyboard')).toBeVisible();
   await expect(page.getByText(/Review: 2 skills due/)).toBeVisible();
-  await expect(page.getByText('Make something')).toBeVisible();
+  await expect(page.getByText('Play: Hot Cross Buns')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Start session' })).toBeVisible();
 });

@@ -1,3 +1,5 @@
+import { MUSIC_LESSONS } from '@/curriculum/content/musicianship';
+import { Link } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -48,6 +50,9 @@ export function PathScreen() {
   return (
     <div className={styles['wrap']}>
       <h1 className={styles['title']}>The Path</h1>
+      <p>
+        <Link to="/studio">At the piano: rhythm, technique, ear practice, and complete pieces</Link>
+      </p>
       {sections.map(({ stage, nodes }) => {
         const real = nodes.filter((n) => n.unit);
         const passed = real.filter((n) => statuses.get(n.id) === 'passed').length;
@@ -61,6 +66,13 @@ export function PathScreen() {
                 </h2>
                 <p className={styles['tagline']}>{stage.tagline}</p>
                 <p className={styles['summary']}>{stage.summary}</p>
+                <ul>
+                  {MUSIC_LESSONS.filter((s) => s.stage === stage.ordinal).map((s) => (
+                    <li key={s.id}>
+                      <Link to={`/studio/${s.id}`}>{s.title}</Link>
+                    </li>
+                  ))}
+                </ul>
               </div>
               <div className={styles['stageRing']}>
                 <ProgressRing fraction={real.length ? passed / real.length : 0} />

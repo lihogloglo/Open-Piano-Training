@@ -1,8 +1,10 @@
+import { PracticeTime } from './PracticeTime';
 import { Component, useEffect, type ErrorInfo, type ReactNode } from 'react';
 import { ToastViewport } from '@/ui/Toast';
 import { Button } from '@/ui/Button';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useMidiStore } from '@/store/midiStore';
+import { ensureSamplerLoaded, getSamplerStatus, setMuted } from '@/audio/sampler';
 
 /**
  * MIDI must exist on every route (lesson/drill screens render without the
@@ -14,6 +16,16 @@ function MidiBoot() {
   useEffect(() => {
     if (onboarded) void init();
   }, [onboarded, init]);
+  return null;
+}
+
+/** Keep the incoming-key echo setting in sync after setup and after reload. */
+function AudioSettingsSync() {
+  const audioEnabled = useSettingsStore((s) => s.audioEnabled);
+  useEffect(() => {
+    setMuted(!audioEnabled);
+    if (audioEnabled && getSamplerStatus().state === 'idle') void ensureSamplerLoaded();
+  }, [audioEnabled]);
   return null;
 }
 
@@ -70,7 +82,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryStat
 export function Providers({ children }: { children: ReactNode }) {
   return (
     <ErrorBoundary>
+      <PracticeTime />
       <MidiBoot />
+      <AudioSettingsSync />
       {children}
       <ToastViewport />
     </ErrorBoundary>

@@ -23,6 +23,8 @@ export function SettingsScreen() {
   const theme = useSettingsStore((s) => s.theme);
   const setTheme = useSettingsStore((s) => s.setTheme);
   const dailyMinutes = useSettingsStore((s) => s.dailyMinutes);
+  const largePractice = useSettingsStore((s) => s.largePractice);
+  const creativeFocus = useSettingsStore((s) => s.creativeFocus);
   const audioEnabled = useSettingsStore((s) => s.audioEnabled);
   const setAudioEnabled = useSettingsStore((s) => s.setAudioEnabled);
   const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
@@ -49,7 +51,9 @@ export function SettingsScreen() {
   const doImport = async (file: File) => {
     try {
       await importAll(await file.text());
-      toast('Progress imported. Welcome back', 'ok');
+      const preferences = JSON.parse(localStorage.getItem('ks.settings.v1') ?? '{}');
+      useSettingsStore.setState(preferences);
+      toast('Progress and preferences imported. Welcome back', 'ok');
     } catch (err) {
       toast(err instanceof Error ? err.message : 'Import failed', 'err');
     }
@@ -72,6 +76,27 @@ export function SettingsScreen() {
 
       <Card>
         <h3>Practice</h3>
+        <label>
+          <input
+            type="checkbox"
+            checked={largePractice}
+            onChange={(e) => useSettingsStore.setState({ largePractice: e.target.checked })}
+          />{' '}
+          Larger practice display
+        </label>
+        <label>
+          Creative focus{' '}
+          <select
+            value={creativeFocus}
+            onChange={(e) =>
+              useSettingsStore.setState({ creativeFocus: e.target.value as 'melody' | 'rhythm' | 'harmony' })
+            }
+          >
+            <option value="melody">Melody</option>
+            <option value="rhythm">Rhythm</option>
+            <option value="harmony">Harmony</option>
+          </select>
+        </label>
         <div className={styles['row']}>
           <span>Daily goal</span>
           <div className={styles['segmented']} role="radiogroup" aria-label="Daily goal">

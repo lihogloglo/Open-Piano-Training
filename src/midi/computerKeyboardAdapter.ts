@@ -22,7 +22,12 @@ const MAX_MIDI = 108;
 
 function isTypingTarget(target: EventTarget | null): boolean {
   if (!(target instanceof HTMLElement)) return false;
-  return target.isContentEditable || target.tagName === 'INPUT' || target.tagName === 'TEXTAREA';
+  return (
+    target.isContentEditable ||
+    target.tagName === 'INPUT' ||
+    target.tagName === 'TEXTAREA' ||
+    target.tagName === 'SELECT'
+  );
 }
 
 /** QWERTY fallback so the app is usable (and demoable) without a MIDI device. */
@@ -33,7 +38,15 @@ export class ComputerKeyboardAdapter implements MidiAdapter {
   private keydown = (e: KeyboardEvent) => this.onKeydown(e);
   private keyup = (e: KeyboardEvent) => this.onKeyup(e);
 
+  private release = () => {
+    for (const midi of this.held.values())
+      this.emit({ kind: 'noteoff', midi, velocity: 0, tPerf: performance.now(), channel: 1 });
+    this.held.clear();
+  };
+
   init(): Promise<MidiInitResult> {
+    window.addEventListener('blur', this.release);
+    window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
     window.addEventListener('keydown', this.keydown);
     window.addEventListener('keyup', this.keyup);
     return Promise.resolve('ok');
@@ -57,6 +70,8 @@ export class ComputerKeyboardAdapter implements MidiAdapter {
   }
 
   dispose(): void {
+    this.release();
+    window.removeEventListener('blur', this.release);
     window.removeEventListener('keydown', this.keydown);
     window.removeEventListener('keyup', this.keyup);
     this.eventCbs.clear();
@@ -71,10 +86,12 @@ export class ComputerKeyboardAdapter implements MidiAdapter {
     const key = e.key.toLowerCase();
     if (key === 'z') {
       this.baseC = Math.max(MIN_MIDI + 3, this.baseC - 12);
+      window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
       return;
     }
     if (key === 'x') {
       this.baseC = Math.min(MAX_MIDI - 12, this.baseC + 12);
+      window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
       return;
     }
     const offset = KEY_TO_OFFSET[key];

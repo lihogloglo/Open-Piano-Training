@@ -1,3 +1,5 @@
+import { readPreferences } from './preferences';
+import { validateBackup } from './backupSchema';
 import Dexie, { type EntityTable } from 'dexie';
 import type { Take } from '@/engine/replay';
 import type { NodeStatus } from '@/curriculum/path';
@@ -11,6 +13,7 @@ export interface UnitProgressRow {
 }
 
 export interface AtomProgressRow {
+  lastScore?: number;
   atomId: string;
   fsrs: unknown; // ts-fsrs Card, serialized (Phase 4)
   introducedAt: number;
@@ -94,7 +97,7 @@ export async function markUnitPassed(unitId: string, score: number, flagged = fa
     unitId,
     status: 'passed',
     bestScore: Math.max(existing?.bestScore ?? 0, score),
-    ...(flagged || existing?.flagged ? { flagged: true } : {}),
+    flagged,
     completedAt: existing?.completedAt ?? Date.now(),
   });
 }
@@ -124,25 +127,33 @@ export async function exportAll(): Promise<string> {
     app: 'keysense',
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
+    preferences: readPreferences(),
     tables: { takes, unitProgress, atomProgress, ratings, sessions, settings, meta },
   });
 }
 
 export async function importAll(json: string): Promise<void> {
-  const data = JSON.parse(json) as {
-    app?: string;
-    schemaVersion?: number;
-    tables?: Record<string, unknown[]>;
-  };
-  if (data.app !== 'keysense' || !data.tables) throw new Error('Not a Keysense export file');
-  if ((data.schemaVersion ?? 0) > 1) throw new Error('Export is from a newer app version');
-  await db.transaction('rw', db.tables, async () => {
-    for (const table of db.tables) {
-      const rows = data.tables?.[table.name];
-      if (rows) {
-        await table.clear();
-        await table.bulkPut(rows as never[]);
+  const data = validateBackup(json);
+  const oldPreferences = typeof localStorage === 'undefined' ? null : localStorage.getItem('ks.settings.v1');
+  if (data.preferences && typeof localStorage !== 'undefined') {
+    const current = readPreferences();
+    localStorage.setItem('ks.settings.v1', JSON.stringify({ ...current, ...data.preferences }));
+  }
+  try {
+    await db.transaction('rw', db.tables, async () => {
+      for (const table of db.tables) {
+        const rows = data.tables[table.name as keyof typeof data.tables];
+        if (rows) {
+          await table.clear();
+          await table.bulkPut(rows as never[]);
+        }
       }
+    });
+  } catch (error) {
+    if (typeof localStorage !== 'undefined' && data.preferences) {
+      if (oldPreferences === null) localStorage.removeItem('ks.settings.v1');
+      else localStorage.setItem('ks.settings.v1', oldPreferences);
     }
-  });
+    throw error;
+  }
 }

@@ -9,6 +9,7 @@ export type MidiStatus =
   'uninitialized' | 'initializing' | 'unsupported' | 'denied' | 'no-device' | 'connected';
 
 interface MidiState {
+  computerBase: number;
   status: MidiStatus;
   kind: PrimaryKind;
   devices: MidiDeviceInfo[];
@@ -53,6 +54,7 @@ function queueFlush(set: (partial: Partial<MidiState>) => void): void {
 }
 
 export const useMidiStore = create<MidiState>((set, get) => ({
+  computerBase: 60,
   status: 'uninitialized',
   kind: 'none',
   devices: [],
@@ -65,13 +67,18 @@ export const useMidiStore = create<MidiState>((set, get) => ({
   async init() {
     if (get().status !== 'uninitialized') return;
     set({ status: 'initializing' });
+    window.addEventListener('keysense:octave', (event) =>
+      set({ computerBase: (event as CustomEvent<number>).detail }),
+    );
     adapter = createMidiAdapter();
     set({ kind: adapter.kind });
 
     adapter.onEvent((e) => ingest(e, set));
     adapter.onDevicesChanged((devices) => {
       const { selectedId, status } = get();
+      if (get().devices.some((old) => !devices.some((device) => device.id === old.id))) releaseAllInput();
       if (selectedId && !devices.some((d) => d.id === selectedId)) {
+        releaseAllInput();
         set({ selectedId: null });
         useSettingsStore.getState().setDeviceId(null);
         toast('Keyboard disconnected. Listening to all devices', 'warn');
@@ -111,6 +118,7 @@ function ingest(e: MidiEvent, set: (partial: Partial<MidiState>) => void): void 
   const prev = lastSeen.get(key);
   if (prev !== undefined && e.tPerf - prev < 3) return;
   lastSeen.set(key, e.tPerf);
+  if (e.kind !== 'pedal') lastSeen.delete(`${e.kind === 'noteon' ? 'noteoff' : 'noteon'}:${e.midi}`);
 
   if (useSettingsStore.getState().audioEnabled) echo(e);
 
@@ -123,4 +131,20 @@ function ingest(e: MidiEvent, set: (partial: Partial<MidiState>) => void): void 
   }
 
   for (const cb of rawListeners) cb(e);
+}
+
+/** Pointer input uses the same timestamped path as physical and computer keys. */
+export function inputNoteOn(midi: number): void {
+  ingest(
+    { kind: 'noteon', midi, velocity: 0.7, tPerf: performance.now(), channel: 1 },
+    useMidiStore.setState,
+  );
+}
+export function inputNoteOff(midi: number): void {
+  ingest({ kind: 'noteoff', midi, velocity: 0, tPerf: performance.now(), channel: 1 }, useMidiStore.setState);
+}
+export function releaseAllInput(): void {
+  for (const midi of [...held]) inputNoteOff(midi);
+  ingest({ kind: 'pedal', down: false, value: 0, tPerf: performance.now() }, useMidiStore.setState);
+  lastSeen.clear();
 }

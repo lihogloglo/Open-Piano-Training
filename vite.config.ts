@@ -44,7 +44,7 @@ export default defineConfig({
             handler: 'CacheFirst',
             options: {
               cacheName: 'keysense-samples',
-              expiration: { maxEntries: 200, maxAgeSeconds: 60 * 60 * 24 * 365 },
+              expiration: { maxEntries: 512, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },
           },
@@ -72,7 +72,7 @@ export default defineConfig({
       output: {
         // Keep the music-theory layer out of the boot path's critical chunk:
         // tonal is only needed once an exercise is generated.
-        advancedChunks: {
+        codeSplitting: {
           groups: [
             { name: 'theory', test: /node_modules[\\/]@?tonal/ },
             { name: 'react', test: /node_modules[\\/](react|react-dom|react-router|scheduler)[\\/]/ },

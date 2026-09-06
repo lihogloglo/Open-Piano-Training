@@ -182,17 +182,11 @@ describe('scales', () => {
   });
 
   it('chromatic walk (s0.u3)', () => {
-    expect(scaleMidis('C', 'chromatic', 1, 4)).toEqual([
-      60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72,
-    ]);
+    expect(scaleMidis('C', 'chromatic', 1, 4)).toEqual([60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72]);
     // The standard rule: 3 on black, 1 on white, 2 on the second of E-F / B-C.
-    expect(scaleFingering('C', 'chromatic', 'rh')).toEqual([
-      1, 3, 1, 3, 1, 2, 3, 1, 3, 1, 3, 1, 2,
-    ]);
+    expect(scaleFingering('C', 'chromatic', 'rh')).toEqual([1, 3, 1, 3, 1, 2, 3, 1, 3, 1, 3, 1, 2]);
     // Derived, not a C-shaped table: from E the whole-step-free pair lands first.
-    expect(scaleFingering('E', 'chromatic', 'rh')).toEqual([
-      1, 2, 3, 1, 3, 1, 3, 1, 2, 3, 1, 3, 1,
-    ]);
+    expect(scaleFingering('E', 'chromatic', 'rh')).toEqual([1, 2, 3, 1, 3, 1, 3, 1, 2, 3, 1, 3, 1]);
     expect(scaleFingering('C', 'chromatic', 'lh')).toBeNull();
   });
 });

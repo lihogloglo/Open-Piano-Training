@@ -7,6 +7,7 @@ The complete unit map for Stages 0–7. Author as data in `src/curriculum/conten
 - Timing tier defaults: Stage 0–1 `relaxed`, 2–4 `standard`, 5+ `strict` (per-exercise override allowed).
 - **Minimum unit grammar, enforced by `curriculum.test.ts`** for every stage listed in its `REBUILT` array: each lesson unit has ≥1 `guided`, ≥1 `ladder`, ≥1 `graded` and a `create` step **with an exercise attached**; and no `explain` step exists without at least one block the learner has to play (`playCheck` or `earCheck`). Ladders may be skipped only for units with no motor pattern to ramp (recognition units), which are listed by id in the test. Checkpoints carry ≥5 graded takes. Add a stage to `REBUILT` when its content clears the bar.
 - Every unit's `create` step exists (the Make strand is never skipped) — even Stage 0 ("play any rhythm on these two notes with the drone") — and carries a real exercise, normally an `improv` backing loop, not just a prompt.
+- Stage 0 units 2–6 use real public-domain or traditional melodies in the create step. Daily create blocks also select a real song by stage.
 - **Review nodes**: auto-inserted by `path.ts` after every 3rd lesson unit (kind `review`, 5 min, drills the stage's due/weakest atoms). Do not author them by hand.
 - **Checkpoints** (`s{n}.cp`): 12–16 mixed items sampling every concept of the stage at `graded` standard, pass ≥0.8; passing any checkpoint unlocks that stage's successor (placement uses these).
 - Ear items use the same key context the keyboard work is currently in.
@@ -84,7 +85,7 @@ The complete unit map for Stages 0–7. Author as data in `src/curriculum/conten
 | Unit  | Title                      | Concepts / notes                                                                                                                                                                                                    |
 | ----- | -------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | s5.u1 | Four notes: maj7 & 7       | Stack another third, by hand (Cmaj7, then the one note that makes it C7); dominant 7's tritone pull. Ladder on the spelling cards at 30→50 BPM. Atoms `spell:maj7`, `spell:7`, `ear:quality:maj7`, `ear:quality:7`. |
-| s5.u2 | m7 (and the ii-V-I cell)   | m7 spelling; the cell's roots played as a bass line; ii-V-I in C/G/F, guided two-handed (`rootchord` + smooth) before the ladder. Atoms `spell:m7`, `prog:ii-v-i:{c,g,f}`, `ear:quality:m7`.                        |
+| s5.u2 | m7 and the ii-V-I cell     | m7 spelling; the cell's roots played as a bass line; ii-V-I in C/G/F, guided two-handed (`rootchord` + smooth) before the ladder. Atoms `spell:m7`, `prog:ii-v-i:{c,g,f}`, `ear:quality:m7`.                        |
 | s5.u3 | The dark ones: m7♭5 & dim7 | Both built by hand (Bm7♭5, then the note that makes it Bdim7); **m7♭5 is dominant-function on vii of a major key and the iiø7 of a minor one**. Ladder at 28→46 BPM. Atoms `spell:m7b5`, `spell:dim7`.              |
 | s5.u4 | Relative minor             | Am from C (three half steps down, played); natural vs harmonic — the raised 7th played on its own. Guided runs of both. Atoms `scale:a:natminor:*`, `scale:a:harmminor:rh`, `theory:relative`.                      |
 | s5.u5 | Minor progressions         | VI and VII built by hand, then i-VI-III-VII guided two-handed; i-iv-V; chart `song:ember` (Am). Atoms `prog:i-vi-iii-vii:am`, `prog:i-iv-v:am`, `song:ember`.                                                       |
@@ -101,7 +102,7 @@ The complete unit map for Stages 0–7. Author as data in `src/curriculum/conten
 | s6.u1 | Reading the language               | Full symbol survey (m, 7s, sus, add9, 6, slash), with sus4 and add9 built by hand; ladder on the spelling cards. Atom `read:symbols:full`.                                                  |
 | s6.u2 | Shells                             | LH 1-7 / 1-3 shells, each played before it is drilled; guided rep, ladder, then two keys graded. Atoms `voicing:shell17`, `voicing:shell13`.                                                |
 | s6.u3 | Guide tones                        | 3rds & 7ths steering ii-V-I — the pair played by hand, including the half step that turns Dm7's into G7's. Atom `voicing:guidetones`.                                                       |
-| s6.u4 | Groove school: straight 8ths       | The offbeat placed by hand ("play a C on the and of 2"), then the pattern guided, laddered and graded. Atom `comp:straight8`.                                                               |
+| s6.u4 | Groove school: straight eighths    | The offbeat placed by hand ("play a C on the and of 2"), then the pattern guided, laddered and graded. Atom `comp:straight8`.                                                               |
 | s6.u5 | Groove school: ballad & boom-chuck | Broken-chord ballad; boom-chuck, with its alternating bass played and demoed. Atoms `comp:ballad`, `comp:boomchuck`. Create: the same loop under all three grooves.                         |
 | s6.u6 | Melody on top                      | LH shells under a free RH line on `song:northline`, lead-sheet rung. Atom `texture:melody-lh`. The lesson **says plainly** that the RH melody is unscored — the songs carry no melody data. |
 | s6.u7 | Transpose anything                 | Roman-first transposition; the I-vi-ii-V roots played in A-flat before any drill. Guided, then graded in B-flat and E-flat. Atom `skill:transpose`.                                         |
@@ -118,8 +119,8 @@ The complete unit map for Stages 0–7. Author as data in `src/curriculum/conten
 | s7.u4 | The blues form              | 12-bar form; dominant everywhere; the blue note and the three roots played, then the blues scale guided and laddered. Atoms `theory:blues12`, `scale:c:blues:rh`, `improv:blues`.                                                               |
 | s7.u5 | Swing & feel                | Straight vs swung 8ths, the swung offbeat placed by hand; guided shells, then the swing comping pattern. Atom `comp:swing`. Create: swing against a straight backing.                                                                           |
 | s7.u6 | Find the key, find the song | By-ear workflow: tonic hunt → bass motion → qualities; ear-progression hard pool incl. inversions in bass. Atoms `ear:findkey`, `ear:prog:advanced`.                                                                                            |
-| s7.u7 | Transcribe a song           | Full by-ear pickup of a generated "radio song" (app plays full arrangement; learner recovers chart). Atom `skill:transcribe`.                                                                                                                   |
-| s7.u8 | Colors: add9, sus, 6        | Extensions as spice; rootless preview (onramp text pointing outward: Levine, PWJ). Atoms `voicing:colors`, `voicing:rootless-preview`.                                                                                                          |
+| s7.u7 | Recover a chord progression | Full by-ear pickup of a generated "radio song" (app plays full arrangement; learner recovers chart). Atom `skill:transcribe`.                                                                                                                   |
+| s7.u8 | Colours: add9, sus, 6       | Extensions as spice; rootless preview (onramp text pointing outward: Levine, PWJ). Atoms `voicing:colors`, `voicing:rootless-preview`.                                                                                                          |
 | s7.cp | Final: Your own voice       | Blues chorus (recorded, self-assessed rubric + auto rhythm score), unseen chart any key, by-ear pickup of a generated song. Completing it → "The path is yours" epilogue screen + endless mode explained (ratings, weekly reviews, song packs). |
 
 ---
@@ -131,3 +132,24 @@ At minimum: `first-light` (C, I-V-vi-IV pop, 72), `northline` (G, I-iii-IV-V bal
 ## Ear-training thread (summary of what appears where)
 
 S1: degrees 1/3/5 → S2: all degrees + maj/min quality → S3: chord function, 4-chord progressions → S4: cadences, inversion hearing → S5: 7th qualities, ii-V-I → S6: (consolidation via ratings) → S7: find-key, advanced progressions, transcription.
+
+## Practical studio extension (2026-09-06)
+
+`src/curriculum/content/musicianship.ts` adds 14 practical lessons and three original eight-bar pieces.
+`/studio` lists them. Path stage headers and Songs link to this material.
+
+The lessons cover seat and touch, subdivision, silence and ties, alternating hands, articulation, thumb movement, held bass, meter, offbeats, imitation, balance, pedal, and transcription.
+The pieces are Morning Steps, Little Lantern, and Homeward.
+Each piece supports melody, melody with bass, and melody with chords.
+
+The shared schema stores MIDI pitch, start beat, duration, hand, optional finger, velocity, meter, example variants, movement guidance, and self-checks.
+The `phrase` generator groups simultaneous starts. It supports different meters and fractional beats.
+The player offers separate hands, two-bar repeats, whole-piece practice, demonstrations, adjustable tempo, and performance without answer highlights.
+Ear examples remain hidden until the learner requests practice help. Revealing an answer disables the independent ear attempt.
+
+These tasks score note starts. The app does not infer physical technique, finger choice, pedal clarity, or musical expression from that score.
+A completed self-check remains distinct from an independent or retained performance.
+Teacher and beginner reviews remain open in `docs/improvement-tracker.md`.
+
+The chronological rehearsal lint now uses only earlier teaching steps. It checks graded checkpoint material too.
+Ten previously hidden violations were repaired. The core path now has 421 steps, 348 exercises, and 64 ladders across 68 units.

@@ -265,7 +265,7 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u2.c1',
         prompt:
-          'Spell something. Start the backing, then play the letters of your name that are also note names — A B C D E F G. "BEA" and "ADE" and "CAGE" all work; most names give you two or three. Play them low, then high, and say each letter as it sounds.',
+          'Learn the opening of **Hot Cross Buns**. Find E, D and C first. Then read the notes from left to right and repeat the first two phrases.',
         exercise: {
           generator: 'improv',
           params: {
@@ -274,6 +274,9 @@ export const stage0Units: Unit[] = [
             roman: ['I'],
             beatsPerChord: 4,
             loops: 6,
+            songTitle: 'Hot Cross Buns',
+            songCredit: 'Traditional English nursery song',
+            melody: ['E D C', 'E D C', 'C C C C', 'D D D D', 'E D C'],
           },
           mode: 'wait',
           bpm: 72,
@@ -368,7 +371,7 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u3.c1',
         prompt:
-          'The five black keys sound good together no matter what you do — that is a real property of them, not encouragement. Start the backing and play **only black keys**, one finger, no plan. Slide up, slide down, leave gaps.',
+          'Learn the opening phrase of **Amazing Grace** on black keys. Start with the short D♭ pickup. Follow each group from left to right, then join the groups over the backing.',
         // F♯ major pentatonic is exactly the five black keys, so the palette
         // tint lights the black keys and nothing else.
         exercise: {
@@ -379,6 +382,9 @@ export const stage0Units: Unit[] = [
             roman: ['I'],
             beatsPerChord: 4,
             loops: 6,
+            songTitle: 'Amazing Grace',
+            songCredit: 'NEW BRITAIN, traditional American melody',
+            melody: ['D♭', 'G♭ B♭ G♭', 'B♭ A♭', 'G♭ E♭', 'D♭'],
           },
           mode: 'wait',
           bpm: 76,
@@ -462,7 +468,7 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u4.c1',
         prompt:
-          'Keep the shape, lose the order. Over the backing, make a tiny melody from those five keys only — start and end on C and hear how it lands like home. Sing or say the finger number as you play each note; that is the honour system, and it is worth doing.',
+          'Learn the opening phrase of **Ode to Joy**. Keep one finger on each key from C to G. Read one group at a time, then play the whole phrase.',
         exercise: {
           generator: 'improv',
           params: {
@@ -472,6 +478,9 @@ export const stage0Units: Unit[] = [
             beatsPerChord: 4,
             loops: 6,
             tintDegrees: [1, 2, 3, 4, 5],
+            songTitle: 'Ode to Joy',
+            songCredit: 'Ludwig van Beethoven, 1824',
+            melody: ['E E F G', 'G F E D', 'C C D E', 'E D D'],
           },
           mode: 'wait',
           bpm: 76,
@@ -591,7 +600,7 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u5.c1',
         prompt:
-          'Both hands, one shape. Put the left hand on the low C five-finger home and the right hand on the middle C one, then play the same little melody in both at once — an octave apart, moving together. It will feel clumsy for about a minute. That is the minute that matters.',
+          'Learn the opening of **Frère Jacques**. Play it with the right hand first. Then place both hands on C homes and play the phrase one octave apart.',
         exercise: {
           generator: 'improv',
           params: {
@@ -601,6 +610,9 @@ export const stage0Units: Unit[] = [
             beatsPerChord: 4,
             loops: 6,
             tintDegrees: [1, 2, 3, 4, 5],
+            songTitle: 'Frère Jacques',
+            songCredit: 'Traditional French round',
+            melody: ['C D E C', 'C D E C', 'E F G', 'E F G'],
           },
           mode: 'wait',
           bpm: 72,
@@ -692,7 +704,7 @@ export const stage0Units: Unit[] = [
         kind: 'create',
         id: 's0.u6.c1',
         prompt:
-          'Two notes, any rhythm. Over the backing play only **C** and **G** — but make something rhythmic out of them: long-long-short, or four quick ones then a gap. Leave silence in it. Silence is rhythm too, and it is the part beginners skip.',
+          'Play the opening of **Jingle Bells** with a steady pulse. The repeated E notes must keep equal spaces. Count four beats before each phrase.',
         exercise: {
           generator: 'improv',
           params: {
@@ -701,7 +713,10 @@ export const stage0Units: Unit[] = [
             roman: ['I'],
             beatsPerChord: 4,
             loops: 8,
-            tintDegrees: [1, 5],
+            tintDegrees: [1, 2, 3, 5],
+            songTitle: 'Jingle Bells',
+            songCredit: 'James Lord Pierpont, 1857',
+            melody: ['E E E', 'E E E', 'E G C D', 'E'],
           },
           mode: 'wait',
           bpm: 80,
@@ -763,7 +778,7 @@ export const stage0Units: Unit[] = [
         kind: 'graded',
         id: 's0.cp.q5',
         passScore: 0.8,
-        exercise: tempo('five-finger', { tonic: 'C', hand: 'lh', pattern: 'asc' }, 80, 'lh'),
+        exercise: tempo('five-finger', { tonic: 'C', hand: 'lh', pattern: 'asc' }, 76, 'lh'),
       },
     ],
   },

@@ -9,6 +9,9 @@ export type MatchMode = 'wait' | 'tempo';
 export type WeaningRung = 'keys-lit' | 'note-names' | 'chord-symbols' | 'lead-sheet' | 'by-ear';
 
 export interface ExerciseDef {
+  focus?: { start: number; end: number } | undefined;
+  assessment?: boolean | undefined;
+  passScore?: number | undefined;
   generator: string;
   params: Record<string, unknown>;
   mode: MatchMode;
@@ -31,6 +34,7 @@ export type Target =
       inversionOf?: { root: string; quality: ChordQuality; inversion: Inversion };
     }
   | { kind: 'any-of-degree'; degree: Degree; key: KeyContext; atBeat?: number }
+  | { kind: 'pitch-class-group'; pitchClasses: number[]; label: string; atBeat?: number }
   | {
       /** Multiple valid chord answers (harmonization, ear-progression). Wait mode only. */
       kind: 'chord-any';
@@ -63,6 +67,7 @@ export interface DemoNote {
 }
 
 export interface ExerciseInstance {
+  beatsPerBar?: number;
   def: ExerciseDef;
   seed: number;
   targets: Target[];
@@ -89,6 +94,9 @@ export interface NoteJudgment {
 }
 
 export interface TakeResult {
+  firstAnswerAccuracy?: number;
+  responseTimesMs?: number[];
+  hintsUsed?: number;
   pitchAccuracy: number;
   timingAccuracy: number;
   score: number;

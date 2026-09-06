@@ -74,6 +74,22 @@ describe('voice-leading metric', () => {
     expect(perfect.vlScore).toBe(1);
     expect(perfect.score).toBe(1);
 
+    const searched = applyVoiceLeading(
+      {
+        ...base,
+        judgments: Array.from({ length: 10 }, () => ({
+          targetIndex: 0,
+          midi: 61,
+          verdict: 'wrong' as const,
+          deltaMs: null,
+        })),
+      },
+      ideal,
+      ideal,
+    );
+    expect(searched.passed).toBe(false);
+    expect(searched.score).toBeCloseTo(2 / 12);
+
     const clunky = applyVoiceLeading(
       base,
       [

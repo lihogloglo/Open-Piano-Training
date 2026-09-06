@@ -113,6 +113,28 @@ describe('WaitMatcher', () => {
     m.feed(off(60));
     expect(m.targetIndex).toBe(1);
   });
+  it('accepts every black key for a pitch-class group target', () => {
+    const target: Target = {
+      kind: 'pitch-class-group',
+      pitchClasses: [1, 3, 6, 8, 10],
+      label: 'any black key',
+    };
+    const m = new WaitMatcher(instanceOf([target, target]));
+    expect(m.feed(on(61)).some((event) => event.type === 'targetFocused')).toBe(true);
+    expect(completion(m.feed(on(70)))?.passed).toBe(true);
+  });
+
+  it('does not let held notes from one grip block the next grip', () => {
+    const cMajor: Target = { kind: 'set', midis: [60, 64, 67], label: 'C', octaveFlexible: false };
+    const dMinor: Target = { kind: 'set', midis: [62, 65, 69], label: 'Dm', octaveFlexible: false };
+    const m = new WaitMatcher(instanceOf([cMajor, dMinor]));
+    m.feed(on(60));
+    m.feed(on(64));
+    m.feed(on(67));
+
+    const events = [...m.feed(on(62)), ...m.feed(on(65)), ...m.feed(on(69))];
+    expect(completion(events)?.passed).toBe(true);
+  });
 });
 
 describe('TempoMatcher', () => {
@@ -242,16 +264,16 @@ describe('scoring', () => {
     expect(result.timingAccuracy).toBe(1);
   });
 
-  it('extras subtract 0.02 each, capped at 0.10', () => {
+  it('incorrect presses reduce precision without a cap', () => {
     const perfect = [j(0, 'perfect'), j(1, 'perfect')];
     const twoExtras = scoreTake([...perfect, j(-1, 'extra', null), j(-1, 'extra', null)], 2, 'tempo');
-    expect(twoExtras.score).toBeCloseTo(0.96, 5);
+    expect(twoExtras.score).toBeCloseTo(0.5, 5);
     const manyExtras = scoreTake(
       [...perfect, ...Array.from({ length: 9 }, () => j(-1, 'extra', null))],
       2,
       'tempo',
     );
-    expect(manyExtras.score).toBeCloseTo(0.9, 5);
+    expect(manyExtras.score).toBeCloseTo(2 / 11, 5);
   });
 
   it('star thresholds', () => {

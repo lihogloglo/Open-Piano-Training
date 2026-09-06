@@ -35,16 +35,26 @@ jobs:
 
       - run: npm ci
 
+      - name: Check release version
+        env:
+          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: node -e "const v = require('./package.json').version; if (process.env.RELEASE_TAG !== 'v' + v) throw new Error('Tag and package version must match');"
+
+      - run: npm run check
+      - run: npm run format:check
+      - run: node --test electron/security.test.cjs
+
       # Pulls the piano samples into public/samples, so the installed app needs
       # no network.
       - name: Fetch piano samples
         run: npm run samples
 
       - run: npm run build
+      - run: npm run check:bundle
 
       # Only the portable target. The NSIS installer would double the build time.
       - name: Package portable .exe
-        run: npx electron-builder --win portable
+        run: npx electron-builder --win portable --publish never
 
       - name: Publish to the release
         env:

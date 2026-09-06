@@ -28,6 +28,9 @@ Two files land in `release/`:
 
 The desktop app works with no network. It carries the piano samples inside it, which is most of its 139 MB.
 
+Pushing a version tag (`git tag v0.1.1 && git push origin v0.1.1`) builds the
+portable .exe on GitHub Actions and attaches it to a release.
+
 To run the shell without packaging it:
 
 ```bash

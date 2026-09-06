@@ -71,3 +71,7 @@
   animation: none;
   border-top-color: var(--border);
 }
+
+.inputMode {
+  box-shadow: none;
+}

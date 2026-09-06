@@ -1,10 +1,13 @@
+import { useSettingsStore } from '@/store/settingsStore';
+import { exerciseRange } from '@/ui/Keyboard/utils';
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
 import type { ExerciseDef } from '@/engine/types';
 import { ATOMS } from '@/progress/atoms';
-import { getSession, gradeAtom, markBlockComplete } from '@/progress/service';
+import { getSession, gradeAtom, markBlockComplete, resolveRetest } from '@/progress/service';
 import type { SessionBlock, SessionPlan } from '@/progress/sessionBuilder';
 import { saveTake } from '@/progress/db';
 import { useMidiStore } from '@/store/midiStore';
@@ -17,7 +20,6 @@ import { StaffSnippet } from '@/ui/StaffSnippet';
 import { PlayerNotices } from '@/ui/PlayerNotices';
 import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
-import { playNote, stopNote } from '@/audio/sampler';
 import styles from './DrillPlayer.module.css';
 
 interface DrillItem {
@@ -28,10 +30,18 @@ interface DrillItem {
 
 function itemsForBlock(block: SessionBlock): DrillItem[] {
   if (block.kind === 'review') {
-    return block.atomIds.flatMap((atomId) => {
-      const atom = ATOMS.get(atomId);
-      return atom?.drill ? [{ atomId, label: atom.label, def: atom.drill }] : [];
-    });
+    return [
+      ...(block.retests ?? []).map((r) => ({
+        atomId: r.key,
+        label: 'Return to ' + r.stepId,
+        def: { ...r.exercise, assessment: true },
+      })),
+      ...block.atomIds.flatMap((atomId) => {
+        if (!useSettingsStore.getState().readStrandEnabled && atomId.startsWith('read:staff:')) return [];
+        const atom = ATOMS.get(atomId);
+        return atom?.drill ? [{ atomId, label: atom.label, def: atom.drill }] : [];
+      }),
+    ];
   }
   if (block.kind === 'warmup') {
     return block.exercises.map((e) => ({
@@ -67,7 +77,7 @@ export function DrillPlayer() {
   const idx = Number(blockIdx ?? 0);
   const block = plan.blocks[idx];
   if (!block) return null;
-  return <DrillBlock plan={plan} block={block} blockIdx={idx} />;
+  return <DrillBlock key={`${plan.id}:${idx}`} plan={plan} block={block} blockIdx={idx} />;
 }
 
 function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: SessionBlock; blockIdx: number }) {
@@ -87,11 +97,12 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
   const items = itemsForBlock(block);
   const [itemIdx, setItemIdx] = useState(0);
   const busy = useRef(false);
+  const advanceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
   const item = items[itemIdx];
 
   const finishBlock = useCallback(() => {
     abortRun();
-    void markBlockComplete(plan.id, blockIdx, block.minutes).then(() => {
+    void markBlockComplete(plan.id, blockIdx, 0).then(() => {
       const nextIdx = plan.blocks.findIndex(
         (_, i) => i !== blockIdx && !plan.completedBlocks.includes(i) && i > blockIdx,
       );
@@ -114,10 +125,13 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
       const it = items[i];
       if (!it) return;
       busy.current = false;
-      const inst = generate(it.def, resolveSeed(it.def.seedPolicy));
+      const inst = generate(
+        { ...it.def, assessment: block.kind === 'review' },
+        resolveSeed(it.def.seedPolicy),
+      );
       void startRun(inst);
     },
-    [items, startRun],
+    [items, startRun, block.kind],
   );
 
   // Auto-start wait-mode items; tempo items wait for Start.
@@ -128,7 +142,18 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [itemIdx]);
 
-  useEffect(() => () => abortRun(), [abortRun]);
+  useEffect(
+    () => () => {
+      clearTimeout(advanceTimer.current);
+      abortRun();
+    },
+    [abortRun],
+  );
+  useEffect(() => {
+    if (block.kind === 'create' || item) return;
+    const timer = setTimeout(finishBlock, 0);
+    return () => clearTimeout(timer);
+  }, [block.kind, item, finishBlock]);
 
   // Completion: grade the atom, brief pause, next item.
   useEffect(() => {
@@ -137,9 +162,16 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
       busy.current = true;
       const it = items[itemIdx];
       if (!it) return;
-      if (s.lastTake) void saveTake({ ...s.lastTake, sessionId: plan.id });
-      void gradeAtom(it.atomId, s.result.score);
-      setTimeout(() => {
+      if (s.lastTake)
+        void saveTake({
+          ...s.lastTake,
+          atomIds: ATOMS.has(it.atomId) ? [it.atomId] : [],
+          sessionId: plan.id,
+        });
+      if (it.atomId.startsWith('retest:')) {
+        if (s.result.passed) void resolveRetest(it.atomId);
+      } else void gradeAtom(it.atomId, s.result.score);
+      advanceTimer.current = setTimeout(() => {
         if (itemIdx + 1 < items.length) setItemIdx(itemIdx + 1);
         else finishBlock();
       }, 800);
@@ -149,20 +181,20 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
   if (block.kind === 'create') {
     return (
       <div className={styles['player']}>
-        <Header title="Make something" onExit={() => void navigate('/practice')} />
+        <Header title={`Play: ${block.title}`} onExit={() => void navigate('/practice')} />
         <div className={styles['promptZone']}>
           <div className={styles['createPrompt']}>
-            <h2>Make something</h2>
+            <h2>{block.title}</h2>
             <p>{block.prompt}</p>
-            <p className={styles['sub']}>No score, no clock. Just play.</p>
+            <p className={styles['sub']}>Learn one phrase at a time. There is no score or clock.</p>
           </div>
         </div>
         <Keyboard
           range={[48, 84]}
           pressed={activeNotes}
           height={190}
-          onKeyDown={(m) => playNote(m)}
-          onKeyUp={(m) => stopNote(m)}
+          onKeyDown={inputNoteOn}
+          onKeyUp={inputNoteOff}
         />
         <div className={styles['footer']}>
           <Button variant="primary" size="l" onClick={finishBlock}>
@@ -175,7 +207,6 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
 
   if (!item) {
     // Nothing drillable (shouldn't happen): complete and move on.
-    finishBlock();
     return null;
   }
 
@@ -206,15 +237,15 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
         </div>
       </div>
       <Keyboard
-        range={[48, 84]}
+        range={exerciseRange(instance)}
         pressed={activeNotes}
         targets={targets}
         judgments={judgments}
         fingerMap={fingerMap}
         labels={fingerMap.size > 0 ? 'fingers' : 'none'}
         height={190}
-        onKeyDown={(m) => playNote(m)}
-        onKeyUp={(m) => stopNote(m)}
+        onKeyDown={inputNoteOn}
+        onKeyUp={inputNoteOff}
       />
       <TransportBar
         phase={phase}

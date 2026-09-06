@@ -9,6 +9,12 @@ const rungEnum = z.enum(['keys-lit', 'note-names', 'chord-symbols', 'lead-sheet'
 const tierEnum = z.enum(['relaxed', 'standard', 'strict']);
 
 export const exerciseDefSchema = z.object({
+  focus: z
+    .object({ start: z.number().int().nonnegative(), end: z.number().int().positive() })
+    .refine((f) => f.end > f.start)
+    .optional(),
+  assessment: z.boolean().optional(),
+  passScore: z.number().min(0.5).max(1).optional(),
   generator: z.string(),
   params: z.record(z.string(), z.unknown()),
   mode: z.enum(['wait', 'tempo']),

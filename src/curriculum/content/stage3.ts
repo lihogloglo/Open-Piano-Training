@@ -834,18 +834,18 @@ export const stage3Units: Unit[] = [
         exercise: tempo('chart-play', { songId: 'northline', style: 'rootchord' }, 66, 'both', 'lead-sheet'),
       },
       {
-        kind: 'graded',
-        id: 's3.u8.q1',
-        passScore: 0.8,
-        exercise: tempo('chart-play', { songId: 'northline', style: 'rootchord' }, 66, 'both', 'lead-sheet'),
-      },
-      {
         // Paper Sun is a second song, not a transposition of the first, and it
         // is the fastest chart in the stage. It gets its own ramp.
         kind: 'ladder',
         id: 's3.u8.l2',
         tempos: [0.6, 0.8, 1],
         exercise: tempo('chart-play', { songId: 'paper-sun', style: 'rootchord' }, 84, 'both', 'lead-sheet'),
+      },
+      {
+        kind: 'graded',
+        id: 's3.u8.q1',
+        passScore: 0.8,
+        exercise: tempo('chart-play', { songId: 'northline', style: 'rootchord' }, 66, 'both', 'lead-sheet'),
       },
       {
         kind: 'graded',

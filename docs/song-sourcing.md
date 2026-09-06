@@ -21,7 +21,7 @@ just made this problem dramatically easier than it was even a year ago. Newly fr
 
 Two clocks matter and only one applies to us: **compositions** are 95 years (→ 1930), **sound
 recordings** are 100 years (→ 1925, per the Music Modernization Act). Since the app generates its
-own audio, only the composition clock is relevant. But note the corollary: the famous *recording* of
+own audio, only the composition clock is relevant. But note the corollary: the famous _recording_ of
 a PD tune is not PD, and neither is any specific published arrangement or engraving of it.
 
 **Non-US caveat.** The EU/UK use life-of-author + 70, not a fixed date. Since we need chords and not
@@ -46,12 +46,12 @@ They are reachable by **user import**, which is why that feature matters more th
 The doctrine favours us; the industry's behaviour does not.
 
 **In our favour:** courts repeatedly treat chord progressions as unprotectable building blocks
-(*Intersong-USA v. CBS*; *Jarvis v. A&M Records* — "easily arrived at phrases and chord progressions
+(_Intersong-USA v. CBS_; _Jarvis v. A&M Records_ — "easily arrived at phrases and chord progressions
 are usually non-copyrightable"). Song titles are categorically not copyrightable subject matter.
 Key, tempo and form are facts.
 
 **Against:** the **selection-and-arrangement** doctrine — a collection of individually unprotectable
-elements can be protected when the specific selection is original. Post-*Skidmore v. Led Zeppelin*
+elements can be protected when the specific selection is original. Post-_Skidmore v. Led Zeppelin_
 (9th Cir. en banc, 2020) this is the live theory in music litigation, and a full 32-bar chart with
 its exact bar-by-bar placement and substitutions is a far stronger candidate than "ii–V–I."
 
@@ -64,7 +64,7 @@ its exact bar-by-bar placement and substitutions is a far stronger candidate tha
   Taborama — not to a legal theory. It then converted to paying.
 - **iReal Pro distributes no charts at all.** It sells software; the chart library is user-generated
   and traded on their forums via a documented URL protocol. That is a deliberate §512 posture.
-- **Hooktheory** takes rights *from its users* by ToS, then prohibits third-party scraping, bulk
+- **Hooktheory** takes rights _from its users_ by ToS, then prohibits third-party scraping, bulk
   download, redistribution and TDM — explicitly including for model training.
 
 **Read:** we would probably win a suit over bar-level chord symbols. The relevant risk for a hobby
@@ -80,19 +80,19 @@ from day one.** That keeps the chord tier defensible independently.
 
 ## 4. Research corpora — do not ship any of them
 
-| Corpus | License | Bar positions? | Ship it? |
-| --- | --- | --- | --- |
-| McGill Billboard | **CC0** | yes | Annotations yes; the 1958–91 songs are all in copyright |
-| Isophonics | ⚠ **none stated** | yes | No — unverifiable, and the most-litigated repertoire alive |
-| Weimar Jazz DB | **ODbL 1.0** | yes | Transcribed solos over protected standards; ODbL doesn't fix that |
-| iRb corpus (Zenodo) | **CC BY 4.0** | yes | ⚠ 1,186 charts scraped from an iReal Pro forum by a depositor who never held the rights |
-| **ChoCo** | CC BY 4.0 (some NC-SA) | **yes**, `measure:beat` | Best-engineered, exactly our format — but aggregates Real Book / iReal Pro / Wikifonia |
-| Chordonomicon | CC BY-**NC** | **no** | No on both counts |
-| Impro-Visor leadsheets | ⚠ unlicensed | yes | The project deliberately excludes them from its OSS distribution — that's a tell |
-| mikeoliphant/JazzStandards | ⚠ no license | yes | No — but **the best schema design found**; read it as a format reference |
-| Mutopia | PD / CC BY / CC BY-SA, per piece | notation | **Yes** — genuinely clean, classical/PD |
-| The Session | ODbL + custom ⚠ **forbids LLM use** | no chords | Melody-only Irish trad |
-| MuseScore.com | per-score, uploader-selected | varies | ⚠ their publisher blanket license **does not travel with the file** |
+| Corpus                     | License                             | Bar positions?          | Ship it?                                                                                |
+| -------------------------- | ----------------------------------- | ----------------------- | --------------------------------------------------------------------------------------- |
+| McGill Billboard           | **CC0**                             | yes                     | Annotations yes; the 1958–91 songs are all in copyright                                 |
+| Isophonics                 | ⚠ **none stated**                   | yes                     | No — unverifiable, and the most-litigated repertoire alive                              |
+| Weimar Jazz DB             | **ODbL 1.0**                        | yes                     | Transcribed solos over protected standards; ODbL doesn't fix that                       |
+| iRb corpus (Zenodo)        | **CC BY 4.0**                       | yes                     | ⚠ 1,186 charts scraped from an iReal Pro forum by a depositor who never held the rights |
+| **ChoCo**                  | CC BY 4.0 (some NC-SA)              | **yes**, `measure:beat` | Best-engineered, exactly our format — but aggregates Real Book / iReal Pro / Wikifonia  |
+| Chordonomicon              | CC BY-**NC**                        | **no**                  | No on both counts                                                                       |
+| Impro-Visor leadsheets     | ⚠ unlicensed                        | yes                     | The project deliberately excludes them from its OSS distribution — that's a tell        |
+| mikeoliphant/JazzStandards | ⚠ no license                        | yes                     | No — but **the best schema design found**; read it as a format reference                |
+| Mutopia                    | PD / CC BY / CC BY-SA, per piece    | notation                | **Yes** — genuinely clean, classical/PD                                                 |
+| The Session                | ODbL + custom ⚠ **forbids LLM use** | no chords               | Melody-only Irish trad                                                                  |
+| MuseScore.com              | per-score, uploader-selected        | varies                  | ⚠ their publisher blanket license **does not travel with the file**                     |
 
 **The one sentence that disposes of this whole section: a CC-BY license on a chord corpus grants you
 the compiler's rights, not the composers'.** Every corpus containing the repertoire we want traces
@@ -104,7 +104,7 @@ gitignored dev directory so shipping them is structurally impossible.
 ## 5. CC-licensed real songs — thin, and mostly non-commercial
 
 Jonathan Coulton's whole catalog is **CC BY-NC 3.0** (verified on his FAQ) — the best pick, with real
-recognition in a developer-adjacent audience. Nine Inch Nails' *Ghosts I–IV* and *The Slip* are CC
+recognition in a developer-adjacent audience. Nine Inch Nails' _Ghosts I–IV_ and _The Slip_ are CC
 BY-NC-SA but harmonically sparse and poor teaching material. FMA's ~8,880 CC-BY tracks and ccMixter
 are commercially usable but carry zero recognition, which defeats the point.
 
@@ -119,23 +119,23 @@ Years verified against year-indexed jazz-standard references except where marked
 
 **The best teaching tunes, ranked by what they unlock:**
 
-| Title | Year | Teaches |
-| --- | --- | --- |
-| **I Got Rhythm** | 1930 | Rhythm changes; AABA; I–vi–ii–V turnarounds; a pure circle-of-fifths bridge |
-| **Sweet Georgia Brown** | 1925 | **Pure circle of fifths** — III7–VI7–II7–V7–I across the whole first half |
-| **Honeysuckle Rose** | 1929 | Two bars of ii–V repeated — the most efficient ii–V drill that exists |
-| **Avalon** | 1920 | Almost entirely circle-of-fifths; second-best circle drill |
-| **On the Sunny Side of the Street** | 1930 | Clean AABA + secondary dominants; the ideal *first* standard after the blues |
-| **But Not for Me** | 1930 | Textbook ii–V–I in E♭ with a relative-minor detour |
-| **Blue Skies** | 1927 | Minor→parallel-major AABA; the definitive "same tune, two modes" lesson |
-| **Softly, As in a Morning Sunrise** | 1928 | Minor modal vamp + minor ii–V; the best PD minor tune |
-| **What Is This Thing Called Love?** | 1929 | Minor ii–V (ø7–V7alt–i); gateway to minor-key jazz |
-| **Mack the Knife** | 1928 ⚠EU | Endlessly repeating I–vi–ii–V — the most efficient turnaround drill |
-| **Ain't Misbehavin'** | 1929 | Stride comping, chromatic descending bass |
-| **Body and Soul** | 1930 US-only | The ballad; bridge modulates D♭→D and back |
-| **Oh, Lady Be Good!** | 1924 | The most-played jam tune in jazz after the blues |
-| **Bye Bye Blackbird** | 1926 | I–VI–ii–V spine; Miles made it modal — teaches reinterpretation |
-| **Basin Street Blues** | 1928 | *Not* a 12-bar despite the name — teaches that "blues" in a title means nothing |
+| Title                               | Year         | Teaches                                                                         |
+| ----------------------------------- | ------------ | ------------------------------------------------------------------------------- |
+| **I Got Rhythm**                    | 1930         | Rhythm changes; AABA; I–vi–ii–V turnarounds; a pure circle-of-fifths bridge     |
+| **Sweet Georgia Brown**             | 1925         | **Pure circle of fifths** — III7–VI7–II7–V7–I across the whole first half       |
+| **Honeysuckle Rose**                | 1929         | Two bars of ii–V repeated — the most efficient ii–V drill that exists           |
+| **Avalon**                          | 1920         | Almost entirely circle-of-fifths; second-best circle drill                      |
+| **On the Sunny Side of the Street** | 1930         | Clean AABA + secondary dominants; the ideal _first_ standard after the blues    |
+| **But Not for Me**                  | 1930         | Textbook ii–V–I in E♭ with a relative-minor detour                              |
+| **Blue Skies**                      | 1927         | Minor→parallel-major AABA; the definitive "same tune, two modes" lesson         |
+| **Softly, As in a Morning Sunrise** | 1928         | Minor modal vamp + minor ii–V; the best PD minor tune                           |
+| **What Is This Thing Called Love?** | 1929         | Minor ii–V (ø7–V7alt–i); gateway to minor-key jazz                              |
+| **Mack the Knife**                  | 1928 ⚠EU     | Endlessly repeating I–vi–ii–V — the most efficient turnaround drill             |
+| **Ain't Misbehavin'**               | 1929         | Stride comping, chromatic descending bass                                       |
+| **Body and Soul**                   | 1930 US-only | The ballad; bridge modulates D♭→D and back                                      |
+| **Oh, Lady Be Good!**               | 1924         | The most-played jam tune in jazz after the blues                                |
+| **Bye Bye Blackbird**               | 1926         | I–VI–ii–V spine; Miles made it modal — teaches reinterpretation                 |
+| **Basin Street Blues**              | 1928         | _Not_ a 12-bar despite the name — teaches that "blues" in a title means nothing |
 
 **More jazz standards, all PD:** Stardust (1929, US-only) · Mean to Me (1929) · More Than You Know
 (1929) · Just You, Just Me (1929) · Black and Blue (1929) · Liza (1929) · Rockin' Chair (1929,
@@ -152,14 +152,14 @@ Exactly Like You (1930) · Confessin' (1930) · After You've Gone (1918) · Indi
 (1922) · Bugle Call Rag (1922) · Farewell Blues (1922) · Margie (1920) · The Sheik of Araby (1921)
 
 **Blues** ⚠ (years from general reference; all safely pre-1931): St. Louis Blues (Handy, 1914 — 12-bar
-*plus a habanera minor strain*; teaches that the blues has a tango in it) · Memphis Blues (1912) ·
+_plus a habanera minor strain_; teaches that the blues has a tango in it) · Memphis Blues (1912) ·
 Beale Street Blues (1917) · Nobody Knows You When You're Down and Out (1923 — 16-bar with descending
 chromatic bass, the best PD "sophisticated blues") · Trouble in Mind (1924 — **8-bar**, teaches that
 blues isn't always 12) · How Long Blues (1928 — 8-bar, piano idiom) · Careless Love · Frankie and
 Johnny · St. James Infirmary (minor 8-bar).
 
 **Ragtime / stride** — the direct ancestor of the left-hand technique the app doesn't teach, and the
-best PD source of genuinely *pianistic* material: Maple Leaf Rag (1899) · The Entertainer (1902) ·
+best PD source of genuinely _pianistic_ material: Maple Leaf Rag (1899) · The Entertainer (1902) ·
 Solace (1909, a habanera) · Weeping Willow · Pine Apple Rag · Gladiolus Rag.
 
 **Gospel / spirituals — directly on-mission for the funk/soul priority, and completely free:** Swing
@@ -175,12 +175,12 @@ Fair.
 
 ## 7. Recommendation
 
-| Strategy | Legal risk | Content | Cost | Ceiling |
-| --- | --- | --- | --- | --- |
-| **A. PD + CC only** | very low | strong jazz/blues/ragtime/gospel; **zero** funk/songwriter | ~5–8 days for 40 charts | hard stop at 1930 |
-| **B. Import only** | lowest | unlimited, but empty on first launch — near-fatal for a learning app | ~6–10 days | unlimited |
-| C. Link out to Hooktheory | low | breaks the practice flow mid-lesson | ~1 day | poor |
-| D. Licensed API | lowest *after* the deal | excellent | a **business** cost, not a dev one — minimums, reporting, lawyers | inaccessible to a solo project |
+| Strategy                  | Legal risk              | Content                                                              | Cost                                                              | Ceiling                        |
+| ------------------------- | ----------------------- | -------------------------------------------------------------------- | ----------------------------------------------------------------- | ------------------------------ |
+| **A. PD + CC only**       | very low                | strong jazz/blues/ragtime/gospel; **zero** funk/songwriter           | ~5–8 days for 40 charts                                           | hard stop at 1930              |
+| **B. Import only**        | lowest                  | unlimited, but empty on first launch — near-fatal for a learning app | ~6–10 days                                                        | unlimited                      |
+| C. Link out to Hooktheory | low                     | breaks the practice flow mid-lesson                                  | ~1 day                                                            | poor                           |
+| D. Licensed API           | lowest _after_ the deal | excellent                                                            | a **business** cost, not a dev one — minimums, reporting, lawyers | inaccessible to a solo project |
 
 ### Do A, then B.
 
@@ -189,10 +189,10 @@ a standard is 5–10 minutes of typing for someone who knows the tune. Sequence 
 curriculum: blues → rhythm changes → ii–V ballads → circle-of-fifths tunes → minor keys →
 ragtime/stride technique.
 
-Opening twelve: *I Got Rhythm* · *Sweet Georgia Brown* · *Honeysuckle Rose* · *On the Sunny Side of
-the Street* · *But Not for Me* · *Bye Bye Blackbird* · *Oh Lady Be Good* · *Softly As in a Morning
-Sunrise* · *St. Louis Blues* · *Nobody Knows You When You're Down and Out* · *Trouble in Mind* ·
-*Maple Leaf Rag*.
+Opening twelve: _I Got Rhythm_ · _Sweet Georgia Brown_ · _Honeysuckle Rose_ · _On the Sunny Side of
+the Street_ · _But Not for Me_ · _Bye Bye Blackbird_ · _Oh Lady Be Good_ · _Softly As in a Morning
+Sunrise_ · _St. Louis Blues_ · _Nobody Knows You When You're Down and Out_ · _Trouble in Mind_ ·
+_Maple Leaf Rag_.
 
 Hand-authoring means **we own the charts outright** — our specific selection and arrangement over a
 PD tune is our original work, licensable however we like, with no provenance question ever. Worth
@@ -204,7 +204,7 @@ source`. (Current `Song` has no `year`, `composer`, `form`, `pd` or `melody` fie
 **Phase 2 — import (~3–4 days).** Build the **iReal Pro URL importer first** — highest-leverage
 single feature in this report. The format is publicly documented by Technimo
 (`irealbook://Title=Composer=Style=Key=n=Progression`), there's a reference implementation to check
-against (`daumling/ireal-renderer`), and it is *the* format our target user already has hundreds of
+against (`daumling/ireal-renderer`), and it is _the_ format our target user already has hundreds of
 charts in. Then **ChordPro** (~1 day, trivial, huge in the worship/songwriter world — precisely the
 missing repertoire). Skip MusicXML initially.
 

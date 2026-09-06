@@ -1,3 +1,5 @@
+import { diagnose } from '@/engine/diagnosis';
+import type { ExerciseInstance } from '@/engine/types';
 import type { TakeResult, JudgeVerdict } from '@/engine/types';
 import { ScoreDial } from '@/ui/ScoreDial';
 import { StarRating } from '@/ui/StarRating';
@@ -15,26 +17,27 @@ const VERDICT_COLOR: Record<JudgeVerdict, string> = {
 
 /** Worst verdict per target, in target order. */
 function targetStrip(result: TakeResult, targetCount: number): JudgeVerdict[] {
-  const order: JudgeVerdict[] = ['missed', 'wrong', 'ok', 'good', 'perfect'];
-  const strip: JudgeVerdict[] = Array.from({ length: targetCount }, () => 'missed');
+  const rank: Record<JudgeVerdict, number> = { perfect: 0, good: 1, ok: 2, wrong: 3, extra: 3, missed: 4 };
+  const strip: (JudgeVerdict | undefined)[] = Array.from({ length: targetCount });
   for (const j of result.judgments) {
     if (j.targetIndex < 0 || j.targetIndex >= targetCount) continue;
-    const prev = strip[j.targetIndex] ?? 'missed';
-    if (order.indexOf(j.verdict) < order.indexOf(prev) && prev !== 'missed') continue;
-    // Keep the best "hit" verdict but never upgrade an actual miss marker set by a hit.
-    strip[j.targetIndex] = j.verdict === 'wrong' && prev !== 'missed' ? prev : j.verdict;
+    const prev = strip[j.targetIndex];
+    if (prev === undefined || rank[j.verdict] > rank[prev]) strip[j.targetIndex] = j.verdict;
   }
-  return strip;
+  return strip.map((v) => v ?? 'missed');
 }
 
 interface ResultsOverlayProps {
   result: TakeResult;
+  instance?: ExerciseInstance | null;
+  practiceOnly?: boolean;
   targetCount: number;
   isTempo: boolean;
   failCount: number;
   allowSkip: boolean;
   onRetry: () => void;
   onRetrySlower?: (() => void) | undefined;
+  onFocus?: (() => void) | undefined;
   onContinue: () => void;
   onSkip: () => void;
   /** Placement mode: bail out of the checkpoint chain and start the path here. */
@@ -50,13 +53,24 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
           <ScoreDial score={p.result.score} />
           <div className={styles['summary']}>
             <StarRating stars={p.result.stars} />
-            <h3>{p.result.passed ? 'Passed!' : 'Not yet, you’re close'}</h3>
+            <h3>
+              {p.practiceOnly
+                ? 'Practice complete'
+                : p.result.passed
+                  ? 'Passed!'
+                  : 'Let’s focus the next try'}
+            </h3>
             <p className={styles['split']}>
               Notes {Math.round(p.result.pitchAccuracy * 100)}%
               {p.isTempo && <> · Timing {Math.round(p.result.timingAccuracy * 100)}%</>}
             </p>
           </div>
         </div>
+        <p>{diagnose(p.result, p.instance)}</p>
+        {p.result.firstAnswerAccuracy !== undefined && (
+          <p>First answers: {Math.round(p.result.firstAnswerAccuracy * 100)}%</p>
+        )}
+        {p.practiceOnly && <p>Try the full exercise at the target tempo to complete this step.</p>}
         <div className={styles['strip']} aria-label="Per-note results">
           {strip.map((v, i) => (
             <span
@@ -69,12 +83,15 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
         </div>
         <div className={styles['actions']}>
           <Button onClick={p.onRetry}>Try again</Button>
+          {p.onFocus && !p.practiceOnly && !p.result.passed && (
+            <Button onClick={p.onFocus}>Practice the trouble spot</Button>
+          )}
           {p.onRetrySlower && !p.result.passed && (
             <Button variant="ghost" onClick={p.onRetrySlower}>
               Practice slower
             </Button>
           )}
-          {p.result.passed && (
+          {p.result.passed && !p.practiceOnly && (
             <Button variant="primary" onClick={p.onContinue}>
               Continue
             </Button>

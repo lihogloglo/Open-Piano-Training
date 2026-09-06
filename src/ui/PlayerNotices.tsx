@@ -1,6 +1,8 @@
+import { unlockAudio } from '@/audio/clock';
+import { Button } from './Button';
 import { useSyncExternalStore } from 'react';
 import { Link } from 'react-router';
-import { getSamplerStatus, subscribeSampler } from '@/audio/sampler';
+import { getSamplerStatus, subscribeSampler, ensureSamplerLoaded } from '@/audio/sampler';
 import { useMidiStore } from '@/store/midiStore';
 import styles from './PlayerNotices.module.css';
 
@@ -12,6 +14,7 @@ import styles from './PlayerNotices.module.css';
  */
 export function PlayerNotices() {
   const midiStatus = useMidiStore((s) => s.status);
+  const computerBase = useMidiStore((s) => s.computerBase);
   const sampler = useSyncExternalStore(subscribeSampler, getSamplerStatus, getSamplerStatus);
 
   const noDevice = midiStatus === 'no-device' || midiStatus === 'unsupported' || midiStatus === 'denied';
@@ -19,15 +22,11 @@ export function PlayerNotices() {
   return (
     <>
       {noDevice && (
-        <div className={styles['notice']} role="status">
+        <div className={`${styles['notice']} ${styles['inputMode']}`} role="status">
           <span>
-            {midiStatus === 'denied'
-              ? 'MIDI access is blocked in this browser.'
-              : midiStatus === 'unsupported'
-                ? "This browser can't talk to MIDI keyboards."
-                : 'No keyboard connected.'}{' '}
-            You can play with your computer keys: <kbd>A</kbd> to <kbd>K</kbd> for white notes, <kbd>W</kbd>/
-            <kbd>E</kbd>/<kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> for black.
+            Computer keyboard active: <kbd>A</kbd> to <kbd>K</kbd> for white notes, <kbd>W</kbd>/<kbd>E</kbd>/
+            <kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> for black. Z/X shift octaves. A starts at C
+            {Math.floor(computerBase / 12) - 1}.
           </span>
           <Link to="/setup" className={styles['link']}>
             Set up
@@ -43,9 +42,10 @@ export function PlayerNotices() {
       {sampler.state === 'error' && (
         <div className={styles['notice']} role="status">
           <span>
-            The piano samples didn&apos;t load. Everything still works, you just won&apos;t hear the app play
-            along. Check your connection and reload.
+            The piano sounds did not load. You can use your keyboard's own sound for note practice. Listening
+            tasks need the app sound.
           </span>
+          <Button onClick={() => void unlockAudio().then(ensureSamplerLoaded)}>Retry audio</Button>
         </div>
       )}
     </>

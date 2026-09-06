@@ -42,6 +42,7 @@ Three implementations of `MidiAdapter` (interface in 02):
 - `AudioContext` starts suspended: `unlock()` is called from the first user gesture (Setup screen's "Enable sound" button and any Start button). Until unlocked, suppress echo silently.
 - API: `load(onProgress)`, `noteOn(midi, vel)`, `noteOff(midi)`, `setPedal(down)` (route CC64 so releases sustain), `setVolume(v)`, `mute(bool)`.
 - Echo path is direct: `midiStore.ingest` calls `sampler.echo(e)` synchronously with `time: undefined` (= now). Never queue through a scheduler.
+- Sample source: `scripts/fetch-samples.mjs` vendors the 226 OGG files into `public/samples/`. The sampler sends one HEAD request at load time and uses the local copy if it answers, otherwise smplr's own host. The desktop build always ships the local copy.
 - Loading UX: lazy-load on first screen that needs sound; show a small progress pill ("Loading piano… 40%"); app remains usable meanwhile (visuals only). Cache via PWA runtime caching (CacheFirst for the sample CDN origin).
 - Users with keyboard speakers: Settings + TransportBar mute toggle ("Use your piano's sound").
 
@@ -65,3 +66,15 @@ Settings → "Calibrate timing": metronome plays 8 clicks at 90 BPM; user plays 
 5. Sustain pedal: affects audio, logged in takes, **ignored by correctness matching**.
 6. Chord rolls: matching tolerance lives in the matcher (04), not the adapter — adapter stays raw.
 7. Multiple MIDI inputs sending simultaneously (e.g., through-port duplicates): dedupe identical events (same midi+kind) within 3ms in `midiStore.ingest`.
+
+## Review changes (2026-09-06)
+
+Pointer input and computer keys now use the same event ingestion as MIDI.
+Rapid note-on/off repetitions remain distinct. Identical duplicate messages within three milliseconds remain filtered.
+Disconnect and focus loss release held notes and sustain. Pending audio starts use cancellation tokens.
+Muting releases current sampler voices. Replays use recorded velocity and include the recorded note range.
+
+The local sample probe uses GET, which the browser service worker can satisfy offline.
+The sample cache limit is 512 files, above the current 226-file piano library.
+Programmatic demonstrations wait for the sampler. Audio load failures expose a retry control.
+Physical latency, pedal behavior, and audible offline quality remain human checks.

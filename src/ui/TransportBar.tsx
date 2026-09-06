@@ -16,6 +16,7 @@ interface TransportBarProps {
   beatIndex: number | null;
   beatsPerBar?: number;
   canStart: boolean;
+  hideStart?: boolean;
   onStart: () => void;
   pips?: LadderPips;
   startLabel?: string;
@@ -27,6 +28,7 @@ export function TransportBar({
   beatIndex,
   beatsPerBar = 4,
   canStart,
+  hideStart = false,
   onStart,
   pips,
   startLabel,
@@ -39,14 +41,16 @@ export function TransportBar({
 
   return (
     <div className={styles['bar']}>
-      <Button
-        variant="primary"
-        onClick={onStart}
-        disabled={!canStart || loading}
-        title={loading ? 'Waiting for the piano sounds to load' : 'Space'}
-      >
-        {loading ? 'Loading sounds…' : label}
-      </Button>
+      {!hideStart && (
+        <Button
+          variant="primary"
+          onClick={onStart}
+          disabled={!canStart || loading}
+          title={loading ? 'Waiting for the piano sounds to load' : 'Space'}
+        >
+          {loading ? 'Loading sounds…' : label}
+        </Button>
+      )}
 
       {bpm !== null && (
         <span className={styles['bpm']}>

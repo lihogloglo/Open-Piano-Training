@@ -1,4 +1,4 @@
-import { test, expect, chromium, type BrowserContext } from '@playwright/test';
+import { test, expect, chromium, type Browser, type BrowserContext } from '@playwright/test';
 import { spawn, type ChildProcess } from 'node:child_process';
 import { existsSync } from 'node:fs';
 
@@ -14,16 +14,21 @@ const BASE = `http://localhost:${PORT}`;
 
 let server: ChildProcess | null = null;
 let context: BrowserContext | null = null;
+let browser: Browser | null = null;
 
 test.describe('offline (production build)', () => {
   test.describe.configure({ mode: 'serial', timeout: 180_000 });
 
   test.beforeAll(async () => {
     if (!existsSync('dist/sw.js')) return;
-    server = spawn('npx', ['vite', 'preview', '--port', String(PORT), '--strictPort'], {
-      shell: true,
-      stdio: 'ignore',
-    });
+    server = spawn(
+      process.execPath,
+      ['node_modules/vite/bin/vite.js', 'preview', '--port', String(PORT), '--strictPort'],
+      {
+        windowsHide: true,
+        stdio: 'ignore',
+      },
+    );
     // Wait for the preview server to answer.
     for (let i = 0; i < 60; i++) {
       try {
@@ -38,13 +43,14 @@ test.describe('offline (production build)', () => {
 
   test.afterAll(async () => {
     await context?.close();
+    await browser?.close();
     server?.kill();
   });
 
   test('a second visit works offline, with the app shell and sounds cached', async () => {
     test.skip(!existsSync('dist/sw.js'), 'Run `npm run build` first — this test needs dist/.');
 
-    const browser = await chromium.launch();
+    browser = await chromium.launch();
     context = await browser.newContext({ baseURL: BASE });
     const page = await context.newPage();
     // Land inside the app shell rather than the welcome wizard, which renders
@@ -74,6 +80,23 @@ test.describe('offline (production build)', () => {
     });
     expect(precached.total, 'the service worker should have precached the shell').toBeGreaterThan(10);
 
+    // Load through the controlling worker so the complete local piano is cached.
+    await page.goto(`${BASE}/studio/morning-steps?midi=fake`);
+    await page.getByLabel('Practice tempo').fill('160');
+    await page.getByRole('button', { name: 'Hear this phrase' }).click();
+    await expect(page.getByRole('heading', { name: 'Listen to the phrase' })).toBeVisible();
+    await expect
+      .poll(
+        () =>
+          page.evaluate(async () => {
+            const cache = await caches.open('keysense-samples');
+            return (await cache.keys()).filter((r) => r.url.includes('/samples/')).length;
+          }),
+        { timeout: 60_000 },
+      )
+      .toBeGreaterThanOrEqual(226);
+    await page.goto(`${BASE}/practice?midi=fake`);
+
     // Now pull the plug and reload.
     await context.setOffline(true);
     await page.reload();
@@ -94,19 +117,14 @@ test.describe('offline (production build)', () => {
     await page.goto(`${BASE}/settings?midi=fake`);
     await expect(page.getByRole('heading', { name: 'Settings' })).toBeVisible();
 
-    // Sound: the sampler chunk itself must be precached, or an offline visit
-    // could not even attempt to play. (The samples are fetched on first audio
-    // unlock and held by a cache-first rule; populating that cache needs a real
-    // user gesture, so "sound after a genuine offline reload" stays on the
-    // manual checklist in docs/STATUS.md.)
-    const hasAudioChunk = await page.evaluate(async () => {
-      for (const name of await caches.keys()) {
-        const keys = await (await caches.open(name)).keys();
-        if (keys.some((r) => /assets\/.*\.js$/.test(new URL(r.url).pathname))) return true;
-      }
-      return false;
-    });
-    expect(hasAudioChunk).toBe(true);
+    await page.goto(`${BASE}/studio/morning-steps?midi=fake`);
+    await page.getByLabel('Practice tempo').fill('160');
+    await page.getByRole('button', { name: 'Hear this phrase' }).click();
+    await expect(page.getByRole('heading', { name: 'Listen to the phrase' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Practice this phrase' })).toBeEnabled({ timeout: 30_000 });
+    await expect(page.getByRole('button', { name: 'Retry audio' })).toHaveCount(0);
+
+    // The demonstration completed with cached samples. Audible quality remains a human check.
 
     await browser.close();
     context = null;

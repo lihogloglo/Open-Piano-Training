@@ -1,7 +1,7 @@
+import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useEffect } from 'react';
 import { useMidiStore } from '@/store/midiStore';
 import { Keyboard } from '@/ui/Keyboard';
-import { playNote, stopNote } from '@/audio/sampler';
 import styles from './panels.module.css';
 
 const isFirefox = navigator.userAgent.includes('Firefox');
@@ -82,8 +82,8 @@ export function MidiSetupPanel() {
           range={[48, 84]}
           pressed={activeNotes}
           height={120}
-          onKeyDown={(m) => playNote(m)}
-          onKeyUp={(m) => stopNote(m)}
+          onKeyDown={inputNoteOn}
+          onKeyUp={inputNoteOff}
         />
         <p className={styles['hearYou']} data-heard={heard}>
           {heard ? '✓ We hear you!' : 'Play any key. It should light up here.'}

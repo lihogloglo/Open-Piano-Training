@@ -1,71 +1,96 @@
-# pianolearning
+# Open Piano Training
 
-A theory-first, MIDI-native piano learning path: from zero to fluent in the _system_ of the keyboard — scales, chords, inversions, functional harmony — so songs become something you can reason about.
+> A theory-first piano course that turns scales, chords, and harmony into practical keyboard skills.
 
-The app is **Keysense**. Plug in a MIDI keyboard (or use the computer keys), and it takes you from finding middle C to comping an unseen chart and improvising over your own left hand. Everything runs locally in the browser; nothing you play leaves the device.
+[![CI](https://github.com/lihogloglo/Open-Piano-Training/actions/workflows/ci.yml/badge.svg)](https://github.com/lihogloglo/Open-Piano-Training/actions/workflows/ci.yml)
+[![Latest release](https://img.shields.io/github/v/release/lihogloglo/Open-Piano-Training)](https://github.com/lihogloglo/Open-Piano-Training/releases/latest)
 
-## Run it
+The application is called **Keysense**. Connect a MIDI keyboard or use your computer keyboard, then follow a guided path from finding middle C to reading charts, comping, and improvising. Every exercise responds to what you play, and all learning data stays on your device.
+
+## What is included
+
+- Eight stages covering keyboard geography, scales, triads, functional harmony, inversions, sevenths, comping, sight-reading, ear training, and improvisation
+- Immediate note and timing feedback from a MIDI controller, the on-screen piano, or QWERTY keys
+- Daily practice sessions with spaced repetition, streaks, ratings, checkpoints, and progress tracking
+- Twelve transposable song studies, three complete studio pieces, and a free-play sandbox
+- Local-first storage, backup and restore, and offline support
+- An installable Windows desktop app and a browser-based PWA
+
+## Download for Windows
+
+Download the current portable app from [GitHub Releases](https://github.com/lihogloglo/Open-Piano-Training/releases/latest). It runs from a single `.exe` and does not require an installer.
+
+The desktop build includes its piano samples and works without a network connection. Windows may show a SmartScreen warning because the executable is not code-signed.
+
+## Run in a browser
+
+You need [Node.js 22](https://nodejs.org/) and npm.
+
+```bash
+git clone https://github.com/lihogloglo/Open-Piano-Training.git
+cd Open-Piano-Training
+npm ci
+npm run dev
+```
+
+Open `http://localhost:5173` in Chrome, Edge, or Opera for Web MIDI support. A MIDI keyboard is optional: the on-screen piano works with a mouse or touch, and the computer keyboard uses `A`–`K` for white keys, `W`, `E`, `T`, `Y`, and `U` for black keys, and `Z`/`X` to change octaves.
+
+## Build the desktop app
+
+On Windows:
 
 ```bash
 npm ci
-npm run dev            # http://localhost:5173
+npm run desktop:build
 ```
 
-No MIDI keyboard to hand? The computer keyboard works, and `?midi=fake` selects the scripted test adapter.
+This downloads the piano samples, creates the production web build, and writes an installer plus a portable executable to `release/`.
 
-## Install it on Windows
-
-Keysense also builds as a desktop app, so there is no dev server to start.
+To open the Electron app without packaging it:
 
 ```bash
-npm run desktop:build   # downloads the samples, builds, then packages
+npm run desktop
 ```
 
-Two files land in `release/`:
+## Curriculum
 
-- **Keysense Setup 0.1.0.exe** — the installer. It makes a Start menu entry and a desktop shortcut.
-- **Keysense-0.1.0-portable.exe** — one file, no install. Run it from anywhere.
+| Stage | Title                 | Focus                                                      |
+| ----: | --------------------- | ---------------------------------------------------------- |
+|     0 | Bearings              | Keyboard layout, note names, and a first five-finger shape |
+|     1 | One key, whole system | C major, scale degrees, and primary chords                 |
+|     2 | The spelling engine   | Building triads from any note in any key                   |
+|     3 | The Roman lens        | Functional harmony and reading chord charts                |
+|     4 | Smooth hands          | Inversions and voice leading                               |
+|     5 | The whole map         | Sevenths, minor harmony, and all twelve keys               |
+|     6 | Charts for real       | Shells, guide tones, comping grooves, and sight-reading    |
+|     7 | Your own voice        | Improvisation, blues, swing, and learning songs by ear     |
 
-The desktop app works with no network. It carries the piano samples inside it, which is most of its 139 MB.
+After Stage 7, spaced reviews, rating challenges, song studies, and the sandbox keep the course useful for ongoing practice.
 
-Pushing a version tag (`git tag v0.1.1 && git push origin v0.1.1`) builds the
-portable .exe on GitHub Actions and attaches it to a release.
-
-To run the shell without packaging it:
+## Development
 
 ```bash
-npm run desktop         # builds the web app, then opens it in Electron
+npm run check          # lint, types, contrast checks, and unit tests
+npm run format:check   # formatting
+npm run build          # production PWA build
+npm run check:bundle   # compressed bundle-size budget
+npm run test:e2e       # Playwright end-to-end suite
 ```
 
-## Verify it
+The app is built with React, TypeScript, Vite, Web MIDI, Web Audio, Dexie, Zustand, VexFlow, Vitest, Playwright, and Electron. CI runs the complete validation suite on every branch and pull request. Version tags build the portable Windows release automatically.
 
-```bash
-npm run check          # lint + typecheck + contrast + unit tests (~10s)
-npm run build          # production build (PWA, service worker, icons)
-npm run check:bundle   # eager-bundle budget (< 450 kB gz)
-npx playwright test    # full e2e suite (~25 min; the path marathon is most of it)
-```
+## Privacy and browser support
 
-## The eight stages
+Keysense has no accounts, analytics, or server-side progress storage. Practice history is stored in IndexedDB on your device. Use the backup tools in Settings before clearing browser data or moving to another device.
 
-| Stage | Title                 | What it gives you                                            |
-| ----- | --------------------- | ------------------------------------------------------------ |
-| 0     | Bearings              | The keyboard's layout, note names, a first five-finger shape |
-| 1     | One key, whole system | C major from the inside: scale, degrees, its three chords    |
-| 2     | The spelling engine   | Build any triad from any note, in any key                    |
-| 3     | The Roman lens        | Chords get jobs — functional harmony and your first charts   |
-| 4     | Smooth hands          | Inversions and voice leading                                 |
-| 5     | The whole map         | Sevenths, minor, all twelve keys                             |
-| 6     | Charts for real       | Shells, guide tones, comping grooves, sight-reading a chart  |
-| 7     | Your own voice        | Improvisation, the blues, swing, working songs out by ear    |
+Web MIDI is supported by Chromium-based desktop browsers. Safari and iOS do not expose Web MIDI, but the on-screen and computer-keyboard inputs remain available. The interface needs a window at least 1024 pixels wide so the piano remains playable.
 
-Finish it and the app keeps going: FSRS-scheduled reviews, rating challenges per strand, twelve transposable songs, and a sandbox with no ceiling.
+## Project documentation
 
-## Docs
+- [Project plan](PLAN.md) — product research, learning path, design, and roadmap
+- [Implementation guide](IMPLEMENTATION.md) — architecture, data model, MIDI/audio, exercise engine, UI, curriculum, and scheduling
+- [Current status](docs/STATUS.md) — completed work, verification, and known gaps
+- [Technical decisions](docs/decisions.md) — documented implementation choices and tradeoffs
+- [Song sourcing](docs/song-sourcing.md) — provenance and licensing notes for included musical material
 
-- [PLAN.md](PLAN.md) — the project plan: landscape research, the 8-stage learning path, product design, tech stack, roadmap.
-- [IMPLEMENTATION.md](IMPLEMENTATION.md) — the build specification (architecture, data model, MIDI/audio, exercise engine, UI/UX, curriculum, progress/scheduling, build order).
-- [docs/STATUS.md](docs/STATUS.md) — where the build stands and what is still open.
-- [docs/decisions.md](docs/decisions.md) — every deviation from the spec, with its reason.
-
-Status: all eight phases of [the build order](docs/implementation/08-build-order.md) are complete. The outstanding item is a pass on real hardware — latency feel and timing-window tuning on an actual keyboard.
+The software is feature-complete through all eight planned stages. Teacher review, testing with more physical MIDI hardware, and observation with beginner learners remain useful areas for contribution.

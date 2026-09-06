@@ -1,0 +1,2 @@
+# Keep source formatting identical in Linux and Windows checkouts.
+* text=auto eol=lf

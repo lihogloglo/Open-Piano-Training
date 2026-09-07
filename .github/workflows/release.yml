@@ -8,10 +8,17 @@ name: Release (Windows)
 # You can also start it by hand from the Actions tab. A hand-started run builds
 # `source_ref` and creates the tag itself, so the tag does not have to exist
 # first. Point `source_ref` at the tag to rebuild a release that already exists.
+#
+# A third way needs no tag and no Actions tab: push a branch named after the
+# version, for example `release/v0.1.3`. The run builds that branch and creates
+# the tag on it. This is the route for anyone who can push a branch but not a
+# tag. Delete the branch afterwards. The tag and the release stay.
 on:
   push:
     tags:
       - 'v*'
+    branches:
+      - 'release/v*'
   workflow_dispatch:
     inputs:
       tag:
@@ -40,9 +47,16 @@ jobs:
 
       - run: npm ci
 
-      - name: Check release version
+      # One name for the version, whichever of the three routes started the run:
+      # the input, the pushed tag, or the release branch minus its prefix.
+      - name: Work out the version this run publishes
+        shell: bash
         env:
-          RELEASE_TAG: ${{ github.event.inputs.tag || github.ref_name }}
+          INPUT_TAG: ${{ github.event.inputs.tag }}
+          REF_NAME: ${{ github.ref_name }}
+        run: echo "RELEASE_TAG=${INPUT_TAG:-${REF_NAME#release/}}" >> "$GITHUB_ENV"
+
+      - name: Check release version
         run: node -e "const v = require('./package.json').version; if (process.env.RELEASE_TAG !== 'v' + v) throw new Error('Tag and package version must match');"
 
       - run: npm run check
@@ -64,8 +78,8 @@ jobs:
       - name: Publish to the release
         env:
           GH_TOKEN: ${{ github.token }}
-          TAG: ${{ github.event.inputs.tag || github.ref_name }}
         shell: bash
         run: |
+          TAG="$RELEASE_TAG"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "Keysense ${TAG#v}" --generate-notes
           gh release upload "$TAG" release/*-portable.exe --clobber

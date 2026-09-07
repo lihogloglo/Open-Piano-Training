@@ -31,6 +31,8 @@ export function SettingsScreen() {
   const setReadStrandEnabled = useSettingsStore((s) => s.setReadStrandEnabled);
   const reducedMotion = useSettingsStore((s) => s.reducedMotion);
   const setReducedMotion = useSettingsStore((s) => s.setReducedMotion);
+  const tourist = useSettingsStore((s) => s.tourist);
+  const setTourist = useSettingsStore((s) => s.setTourist);
   const fileRef = useRef<HTMLInputElement>(null);
   const [wipeArmed, setWipeArmed] = useState(false);
 
@@ -214,6 +216,43 @@ export function SettingsScreen() {
               onClick={() => {
                 setReadStrandEnabled(false);
                 void syncReadStrand(false);
+              }}
+            >
+              Off
+            </button>
+          </div>
+        </div>
+      </Card>
+
+      <Card>
+        <h3>Tourist mode</h3>
+        <p className={styles['note']}>
+          Tourist mode opens the whole path. Every unit is unlocked, and you can skip a step or jump to any
+          step of a lesson. In exchange, the visit does not count: no unit is passed, no take is saved, no
+          review is scheduled, and no practice minutes are added. Turn it off to go back to your real path,
+          which stands exactly where you left it.
+        </p>
+        <div className={styles['row']}>
+          <span>Tourist mode</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label="Tourist mode">
+            <button
+              role="radio"
+              aria-checked={tourist}
+              data-selected={tourist}
+              onClick={() => {
+                setTourist(true);
+                toast('Tourist mode on. Nothing you do now is recorded.', 'warn');
+              }}
+            >
+              On
+            </button>
+            <button
+              role="radio"
+              aria-checked={!tourist}
+              data-selected={!tourist}
+              onClick={() => {
+                setTourist(false);
+                toast('Tourist mode off. Your progress is being recorded again.', 'ok');
               }}
             >
               Off

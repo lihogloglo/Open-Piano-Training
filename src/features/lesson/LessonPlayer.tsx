@@ -1,5 +1,6 @@
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
+  clearResume,
   resumeKey,
   saveResume,
   queueRetest,
@@ -18,6 +19,7 @@ import { resolveSeed } from '@/engine/rng';
 import { subscribeMidiEvents, useMidiStore } from '@/store/midiStore';
 import { TakeRecorder } from '@/engine/replay';
 import { useRunStore } from '@/store/runStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import { db, markUnitInProgress, saveTake } from '@/progress/db';
 import { getSession, completeUnit, markBlockComplete } from '@/progress/service';
 import { Keyboard } from '@/ui/Keyboard';
@@ -90,6 +92,7 @@ function improvTint(
 
 function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume | null }) {
   const navigate = useNavigate();
+  const tourist = useSettingsStore((s) => s.tourist);
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session');
   const sessionBlock = searchParams.get('block');
@@ -124,10 +127,17 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       : null;
 
   const finishUnit = useCallback(async () => {
+    // A tourist reaches the end of the unit and leaves no trace: no pass, no
+    // placement chain, no epilogue. The path is exactly where they left it.
+    if (tourist) {
+      toast(`End of ${unit.title}. Nothing was recorded.`);
+      void navigate('/path');
+      return;
+    }
     const scores = gradedScores.current;
     const score = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
     await completeUnit(unit, score, flaggedRef.current);
-    await db.meta.delete(resumeKey(unit.id));
+    await clearResume(unit.id);
     if (placement) {
       const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
       if (next) {
@@ -152,7 +162,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       return;
     }
     void navigate('/path');
-  }, [unit, placement, sessionId, sessionBlock, navigate]);
+  }, [unit, tourist, placement, sessionId, sessionBlock, navigate]);
 
   const advance = useCallback(() => {
     if (advancing.current) return;
@@ -182,6 +192,23 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       })();
     }
   }, [stepIdx, unit, finishUnit, sessionId, sessionBlock, navigate]);
+
+  /** Tourist mode: go straight to any step of the unit. */
+  const jumpTo = useCallback(
+    (idx: number) => {
+      if (idx < 0 || idx >= unit.steps.length || idx === stepIdx) return;
+      abortRun();
+      advancing.current = false;
+      setStepIdx(idx);
+    },
+    [unit.steps.length, stepIdx, abortRun],
+  );
+
+  /** Tourist mode: leave the current step without finishing it. */
+  const skipStep = useCallback(() => {
+    abortRun();
+    advance();
+  }, [abortRun, advance]);
 
   const requestExit = useCallback(() => {
     const running = useRunStore.getState().phase !== 'idle' && useRunStore.getState().phase !== 'done';
@@ -225,6 +252,31 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       <div className={styles['progress']} aria-hidden>
         <span style={{ width: `${((stepIdx + 1) / unit.steps.length) * 100}%` }} />
       </div>
+
+      {/* Tourist mode: leave any step, or go straight to another one. Every
+          gate in this player stays where it is — this bar walks past it. */}
+      {tourist && (
+        <div className={styles['touristBar']} data-testid="tourist-bar">
+          <label className={styles['jump']}>
+            Jump to
+            <select
+              value={stepIdx}
+              onChange={(e) => jumpTo(Number(e.target.value))}
+              aria-label="Jump to step"
+            >
+              {unit.steps.map((s, i) => (
+                <option key={s.id} value={i}>
+                  {i + 1}. {STEP_CHIP[s.kind]}
+                </option>
+              ))}
+            </select>
+          </label>
+          <Button variant="ghost" onClick={skipStep}>
+            Skip this step
+            <Icon name="chevronRight" size={16} />
+          </Button>
+        </div>
+      )}
 
       {/* Explain steps need the instrument too — their demos play through the
           sampler, and a missing keyboard is better learned early than late. */}

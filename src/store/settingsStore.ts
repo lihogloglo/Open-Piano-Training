@@ -1,4 +1,5 @@
 import { readPreferences } from '@/progress/preferences';
+import { setTouristMode } from '@/progress/tourist';
 import { create } from 'zustand';
 
 export type ThemeSetting = 'dark' | 'light' | 'system';
@@ -19,6 +20,8 @@ interface SettingsState {
   reducedMotion: boolean;
   largePractice: boolean;
   creativeFocus: 'melody' | 'rhythm' | 'harmony';
+  /** Tourist mode: every unit opens, every step skips, nothing is recorded. */
+  tourist: boolean;
   setTheme(theme: ThemeSetting): void;
   setOnboarded(v: boolean): void;
   setDeviceId(id: string | null): void;
@@ -27,6 +30,7 @@ interface SettingsState {
   setLatencyOffsetMs(ms: number): void;
   setReadStrandEnabled(v: boolean): void;
   setReducedMotion(v: boolean): void;
+  setTourist(v: boolean): void;
 }
 
 const LS_KEY = 'ks.settings.v1';
@@ -47,6 +51,8 @@ interface PersistedSettings {
   reducedMotion: boolean;
   largePractice: boolean;
   creativeFocus: 'melody' | 'rhythm' | 'harmony';
+  /** Tourist mode: every unit opens, every step skips, nothing is recorded. */
+  tourist: boolean;
 }
 
 const defaults: PersistedSettings = {
@@ -63,6 +69,7 @@ const defaults: PersistedSettings = {
   reducedMotion: false,
   largePractice: false,
   creativeFocus: 'melody',
+  tourist: false,
 };
 
 function load(): PersistedSettings {
@@ -87,6 +94,7 @@ function persist(state: SettingsState): void {
     reducedMotion,
     largePractice: state.largePractice,
     creativeFocus: state.creativeFocus,
+    tourist: state.tourist,
   };
   try {
     localStorage.setItem(LS_KEY, JSON.stringify(data));
@@ -105,6 +113,7 @@ export const useSettingsStore = create<SettingsState>((set) => ({
   setLatencyOffsetMs: (latencyOffsetMs) => set({ latencyOffsetMs }),
   setReadStrandEnabled: (readStrandEnabled) => set({ readStrandEnabled }),
   setReducedMotion: (reducedMotion) => set({ reducedMotion }),
+  setTourist: (tourist) => set({ tourist }),
 }));
 
 useSettingsStore.subscribe((state) => persist(state));
@@ -136,4 +145,19 @@ export function initMotionPreference(): void {
   };
   apply();
   useSettingsStore.subscribe(apply);
+}
+
+/**
+ * Keeps the progress layer's tourist flag in step with the setting, and lets a
+ * `?tourist=1` link turn the mode on. The link writes the setting like any
+ * other switch, so the mode stays visible in Settings and the learner can turn
+ * it off there.
+ */
+export function initTouristMode(): void {
+  const store = useSettingsStore.getState();
+  const params = new URLSearchParams(window.location.search);
+  const fromUrl = params.get('tourist');
+  if (fromUrl !== null && fromUrl !== '0') store.setTourist(true);
+  setTouristMode(useSettingsStore.getState().tourist);
+  useSettingsStore.subscribe((state) => setTouristMode(state.tourist));
 }

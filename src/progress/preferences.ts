@@ -15,6 +15,7 @@ export const preferencesSchema = z
     reducedMotion: z.boolean(),
     largePractice: z.boolean().optional(),
     creativeFocus: z.enum(['melody', 'rhythm', 'harmony']).optional(),
+    tourist: z.boolean().optional(),
   })
   .partial();
 

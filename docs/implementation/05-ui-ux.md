@@ -128,7 +128,7 @@ Three tabs:
 
 ### Settings
 
-Sections: Practice (daily minutes goal 10/15/20/30, read strand toggle) · Sound (app piano on/off, volumes) · MIDI (device picker, live monitor strip, calibrate timing) · Appearance (theme, reduce motion) · Data (export JSON, import, wipe w/ double confirm) · About (licenses page — required by attribution terms of samples/fonts). No profile name is collected.
+Sections: Practice (daily minutes goal 10/15/20/30, read strand toggle) · Sound (app piano on/off, volumes) · MIDI (device picker, live monitor strip, calibrate timing) · Appearance (theme, reduce motion) · Data (export JSON, import, wipe w/ double confirm) · About (licenses page — required by attribution terms of samples/fonts). No profile name is collected. Tourist mode is its own section (see below).
 
 ## Component inventory (`src/ui/`) — key contracts
 
@@ -187,3 +187,12 @@ Reload restores the step, ladder successes, and latest assessment outcome.
 The computer-keyboard notice states the active mapping and octave without a failure treatment.
 Progress names completed, independent, and retained performances separately. It displays the attempted conditions.
 Accessibility checks include the studio and lesson player.
+
+## Tourist mode (2026-09-07)
+
+A visitor's view of the whole app. One switch in Settings, or a `?tourist=1` link, turns it on.
+
+- **Path**: locked nodes stay dim and keep their lock icon, but they open. The unit card's button reads "Preview", above a line that says the visit is not recorded.
+- **Lesson player**: a control bar under the progress rail carries a "Jump to" menu over the unit's steps and a "Skip this step" button. Every gate stays where it is. The bar walks past it.
+- **Nothing is recorded**: no unit status, no take, no review card, no rating, no practice minute, no resume point. Finishing a unit gives a plain toast and returns to the Path, with no placement chain, no session tick and no epilogue.
+- **It says so everywhere**: a banner in the app shell, and a notice at the top of every player.

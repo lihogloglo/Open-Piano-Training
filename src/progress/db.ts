@@ -1,4 +1,5 @@
 import { readPreferences } from './preferences';
+import { isTourist } from './tourist';
 import { validateBackup } from './backupSchema';
 import Dexie, { type EntityTable } from 'dexie';
 import type { Take } from '@/engine/replay';
@@ -70,6 +71,7 @@ const MAX_TAKES = 500;
 
 /** Persist a take; prune oldest non-best takes past the cap. Never throws. */
 export async function saveTake(take: Take): Promise<void> {
+  if (isTourist()) return;
   try {
     await db.takes.put(take);
     const count = await db.takes.count();
@@ -92,6 +94,7 @@ export async function getUnitProgressMap(): Promise<Map<string, UnitProgressRow>
 }
 
 export async function markUnitPassed(unitId: string, score: number, flagged = false): Promise<void> {
+  if (isTourist()) return;
   const existing = await db.unitProgress.get(unitId);
   await db.unitProgress.put({
     unitId,
@@ -103,6 +106,7 @@ export async function markUnitPassed(unitId: string, score: number, flagged = fa
 }
 
 export async function markUnitInProgress(unitId: string): Promise<void> {
+  if (isTourist()) return;
   const existing = await db.unitProgress.get(unitId);
   if (existing?.status === 'passed') return;
   await db.unitProgress.put({

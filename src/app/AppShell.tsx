@@ -5,6 +5,7 @@ import { useSettingsStore } from '@/store/settingsStore';
 import { useMidiStore, type MidiStatus } from '@/store/midiStore';
 import { ConnectionBanner } from './ConnectionBanner';
 import { ViewportNotice } from './ViewportNotice';
+import { TouristBanner } from './TouristBanner';
 import styles from './AppShell.module.css';
 
 const DOT_STATUS: Partial<Record<MidiStatus, { dot: string; label: string }>> = {
@@ -76,6 +77,7 @@ export function AppShell() {
       <main className={styles['main']}>
         <ViewportNotice />
         <ConnectionBanner />
+        <TouristBanner />
         <Outlet />
       </main>
     </div>

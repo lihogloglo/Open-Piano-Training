@@ -4,6 +4,7 @@ import { useSyncExternalStore } from 'react';
 import { Link } from 'react-router';
 import { getSamplerStatus, subscribeSampler, ensureSamplerLoaded } from '@/audio/sampler';
 import { useMidiStore } from '@/store/midiStore';
+import { useSettingsStore } from '@/store/settingsStore';
 import styles from './PlayerNotices.module.css';
 
 /**
@@ -13,6 +14,7 @@ import styles from './PlayerNotices.module.css';
  * worst possible first impression.
  */
 export function PlayerNotices() {
+  const tourist = useSettingsStore((s) => s.tourist);
   const midiStatus = useMidiStore((s) => s.status);
   const computerBase = useMidiStore((s) => s.computerBase);
   const sampler = useSyncExternalStore(subscribeSampler, getSamplerStatus, getSamplerStatus);
@@ -21,6 +23,18 @@ export function PlayerNotices() {
 
   return (
     <>
+      {tourist && (
+        <div
+          className={`${styles['notice']} ${styles['tourist']}`}
+          role="status"
+          data-testid="tourist-notice"
+        >
+          <span>Tourist mode is on. Play as much as you like. Nothing here is recorded.</span>
+          <Link to="/settings" className={styles['link']}>
+            Turn off
+          </Link>
+        </div>
+      )}
       {noDevice && (
         <div className={`${styles['notice']} ${styles['inputMode']}`} role="status">
           <span>

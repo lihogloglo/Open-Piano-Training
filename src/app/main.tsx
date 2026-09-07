@@ -6,12 +6,13 @@ import '@fontsource-variable/geist-mono';
 import '@/styles/global.css';
 import { router } from './router';
 import { Providers } from './providers';
-import { initTheme, initMotionPreference } from '@/store/settingsStore';
+import { initTheme, initMotionPreference, initTouristMode } from '@/store/settingsStore';
 import { installRunTestBridge } from '@/store/runTestBridge';
 import { registerServiceWorker } from './registerSW';
 
 initTheme();
 initMotionPreference();
+initTouristMode();
 installRunTestBridge();
 registerServiceWorker();
 

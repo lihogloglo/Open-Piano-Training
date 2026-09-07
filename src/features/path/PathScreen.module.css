@@ -262,6 +262,14 @@
   color: var(--text-2);
 }
 
+/* Tourist mode: the modal says plainly that this visit does not count. */
+.touristNote {
+  color: var(--text-2);
+  font-size: var(--fs-s);
+  border-left: 3px solid var(--warn);
+  padding-left: var(--space-3);
+}
+
 .modalActions {
   display: flex;
   gap: var(--space-3);

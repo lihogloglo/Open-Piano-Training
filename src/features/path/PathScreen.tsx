@@ -6,6 +6,7 @@ import { useLiveQuery } from 'dexie-react-hooks';
 import { buildPath, nodeStatuses, type NodeStatus, type PathNode } from '@/curriculum/path';
 import { getUnitProgressMap } from '@/progress/db';
 import { startWorkout } from '@/progress/service';
+import { useSettingsStore } from '@/store/settingsStore';
 import { ProgressRing } from '@/ui/ProgressRing';
 import { StarRating } from '@/ui/StarRating';
 import { Modal } from '@/ui/Modal';
@@ -28,6 +29,7 @@ function starsFor(score: number): 0 | 1 | 2 | 3 {
 
 export function PathScreen() {
   const navigate = useNavigate();
+  const tourist = useSettingsStore((s) => s.tourist);
   const progress = useLiveQuery(getUnitProgressMap, [], null);
   const [selected, setSelected] = useState<PathNode | null>(null);
   const hereRef = useRef<HTMLButtonElement | null>(null);
@@ -98,7 +100,9 @@ export function PathScreen() {
                     data-status={status}
                     data-kind={node.kind}
                     data-flagged={row?.flagged ? 'true' : undefined}
-                    disabled={status === 'locked'}
+                    // Tourist mode opens a locked node. The lock stays drawn,
+                    // because the unit is still locked for the real path.
+                    disabled={status === 'locked' && !tourist}
                     onClick={() => {
                       if (node.kind === 'review') {
                         void startWorkout().then((plan) => {
@@ -161,6 +165,11 @@ export function PathScreen() {
             ))}
             <span className={styles['strandChip']}>{selected.minutes} min</span>
           </div>
+          {tourist && statuses.get(selected.id) === 'locked' && (
+            <p className={styles['touristNote']}>
+              Tourist mode. You can look at this unit now. Nothing you play here is recorded.
+            </p>
+          )}
           {progress.get(selected.id)?.status === 'passed' && (
             <p>
               Best score: {Math.round((progress.get(selected.id)?.bestScore ?? 0) * 100)}%. Replay any time,
@@ -169,7 +178,11 @@ export function PathScreen() {
           )}
           <div className={styles['modalActions']}>
             <Button variant="primary" size="l" onClick={() => void navigate(`/lesson/${selected.id}`)}>
-              {progress.get(selected.id)?.status === 'passed' ? 'Redo' : 'Start'}
+              {statuses.get(selected.id) === 'locked'
+                ? 'Preview'
+                : progress.get(selected.id)?.status === 'passed'
+                  ? 'Redo'
+                  : 'Start'}
             </Button>
             <Button variant="ghost" onClick={() => setSelected(null)}>
               Not now

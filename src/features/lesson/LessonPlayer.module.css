@@ -54,6 +54,33 @@
   flex-shrink: 0;
 }
 
+/* Tourist mode controls. Muted, and clearly not part of the lesson itself. */
+.touristBar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  padding: var(--space-2) var(--space-4);
+  flex-shrink: 0;
+  font-size: var(--fs-s);
+  color: var(--text-3);
+}
+
+.jump {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+}
+
+.jump select {
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-m);
+  color: var(--text);
+  font: inherit;
+  padding: 4px 8px;
+}
+
 .progress span {
   display: block;
   height: 100%;

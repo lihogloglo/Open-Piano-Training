@@ -1,4 +1,5 @@
 import { readPreferences } from './preferences';
+import { isTourist } from './tourist';
 import type { Unit } from '@/curriculum/schema';
 import { getUnitProgressMap, markUnitPassed, db, type AtomProgressRow } from './db';
 import { ATOMS, READ_STRAND_ATOMS } from './atoms';
@@ -43,6 +44,7 @@ async function trackAtoms(unit: Unit, score: number, flagged: boolean): Promise<
 
 /** Unit passed: persist status and start tracking its concept atoms. */
 export async function completeUnit(unit: Unit, score: number, flagged: boolean): Promise<void> {
+  if (isTourist()) return;
   await markUnitPassed(unit.id, score, flagged);
   await trackAtoms(unit, score, flagged);
   // Checkpoint pass ⇒ the whole stage counts as passed (placement path) and
@@ -66,6 +68,7 @@ export async function completeUnit(unit: Unit, score: number, flagged: boolean):
 
 /** A review/warmup drill finished: grade the atom's card. */
 export async function gradeAtom(atomId: string, score: number, now = new Date()): Promise<void> {
+  if (isTourist()) return;
   const row = await db.atomProgress.get(atomId);
   if (!row) return;
   const card = reviewCard(row.fsrs as StoredCard, score, now);
@@ -148,6 +151,7 @@ export async function getSession(sessionId: string): Promise<SessionPlan | null>
 }
 
 export async function markBlockComplete(sessionId: string, blockIdx: number, minutes: number): Promise<void> {
+  if (isTourist()) return;
   await db.transaction('rw', db.sessions, db.meta, async () => {
     const row = await db.sessions.get(sessionId);
     if (!row) return;
@@ -164,6 +168,7 @@ export async function markBlockComplete(sessionId: string, blockIdx: number, min
 }
 
 export async function addPracticeMinutes(date: string, minutes: number): Promise<void> {
+  if (isTourist()) return;
   if (!Number.isFinite(minutes) || minutes <= 0) return;
   await db.transaction('rw', db.meta, async () => {
     const row = await db.meta.get('practiceDays');
@@ -301,6 +306,7 @@ async function loadRetests(): Promise<NonNullable<SessionInputs['retests']>> {
 }
 
 export async function resolveRetest(key: string): Promise<void> {
+  if (isTourist()) return;
   await db.transaction('rw', db.meta, db.unitProgress, async () => {
     const row = await db.meta.get(key);
     const unitId = (row?.value as { unitId?: string } | undefined)?.unitId;

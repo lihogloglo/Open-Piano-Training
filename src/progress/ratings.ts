@@ -3,6 +3,7 @@ import { createRng } from '@/engine/rng';
 import { ATOMS, type SkillAtom } from './atoms';
 import { db, type RatingRow } from './db';
 import { localDateString } from './sessionBuilder';
+import { isTourist } from './tourist';
 
 /**
  * The SASR-style rating ladder (07 §Ratings).
@@ -208,11 +209,13 @@ export async function recordChallenge(
   const before = existing ? clampLevel(existing.level, strand, tracked) : initialLevel(strand, tracked);
   const outcome = applyChallengeResult(strand, before, passedCount, tracked);
   const date = localDateString(now);
-  await db.ratings.put({
-    strand,
-    level: outcome.after,
-    history: [...(existing?.history ?? []), { date, level: outcome.after }].slice(-52),
-  });
+  // A tourist still sees the result screen. The level just does not move.
+  if (!isTourist())
+    await db.ratings.put({
+      strand,
+      level: outcome.after,
+      history: [...(existing?.history ?? []), { date, level: outcome.after }].slice(-52),
+    });
   return outcome;
 }
 

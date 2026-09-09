@@ -1,3 +1,5 @@
+import { LanguageSelect } from '@/ui/LanguageSelect';
+import { tr } from '@/i18n';
 import { useRef, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useSettingsStore, type ThemeSetting } from '@/store/settingsStore';
@@ -11,9 +13,9 @@ import { CalibrationPanel } from './CalibrationPanel';
 import styles from './SettingsScreen.module.css';
 
 const THEMES: { value: ThemeSetting; label: string }[] = [
-  { value: 'dark', label: 'Dark' },
-  { value: 'light', label: 'Light' },
-  { value: 'system', label: 'System' },
+  { value: 'dark', label: tr('Dark') },
+  { value: 'light', label: tr('Light') },
+  { value: 'system', label: tr('System') },
 ];
 
 const GOALS = [10, 15, 20, 30];
@@ -47,17 +49,19 @@ export function SettingsScreen() {
     a.download = `keysense-export-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
-    toast('Progress exported', 'ok');
+    toast(tr('Progress exported'), 'ok');
   };
 
   const doImport = async (file: File) => {
     try {
       await importAll(await file.text());
       const preferences = JSON.parse(localStorage.getItem('ks.settings.v1') ?? '{}');
+      const previousLanguage = useSettingsStore.getState().language;
       useSettingsStore.setState(preferences);
-      toast('Progress and preferences imported. Welcome back', 'ok');
+      if (previousLanguage !== useSettingsStore.getState().language) window.location.reload();
+      toast(tr('Progress and preferences imported. Welcome back'), 'ok');
     } catch (err) {
-      toast(err instanceof Error ? err.message : 'Import failed', 'err');
+      toast(err instanceof Error ? err.message : tr('Import failed'), 'err');
     }
   };
 
@@ -68,40 +72,44 @@ export function SettingsScreen() {
       return;
     }
     await Promise.all(db.tables.map((t) => t.clear()));
-    toast('All progress wiped', 'warn');
+    toast(tr('All progress wiped'), 'warn');
     setWipeArmed(false);
   };
 
   return (
     <div className={styles['wrap']}>
-      <h1>Settings</h1>
+      <h1>{tr('Settings')}</h1>
+      <Card>
+        <LanguageSelect />
+        <p className={styles['note']}>{tr('Changing language reloads the app. Your progress is saved.')}</p>
+      </Card>
 
       <Card>
-        <h3>Practice</h3>
-        <label>
+        <h3>{tr('Practice')}</h3>
+        <label className={styles['settingLabel']}>
           <input
             type="checkbox"
             checked={largePractice}
             onChange={(e) => useSettingsStore.setState({ largePractice: e.target.checked })}
           />{' '}
-          Larger practice display
+          {tr('Larger practice display')}
         </label>
-        <label>
-          Creative focus{' '}
+        <label className={styles['settingLabel']}>
+          {tr('Creative focus')}{' '}
           <select
             value={creativeFocus}
             onChange={(e) =>
               useSettingsStore.setState({ creativeFocus: e.target.value as 'melody' | 'rhythm' | 'harmony' })
             }
           >
-            <option value="melody">Melody</option>
-            <option value="rhythm">Rhythm</option>
-            <option value="harmony">Harmony</option>
+            <option value="melody">{tr('Melody')}</option>
+            <option value="rhythm">{tr('Rhythm')}</option>
+            <option value="harmony">{tr('Harmony')}</option>
           </select>
         </label>
         <div className={styles['row']}>
-          <span>Daily goal</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="Daily goal">
+          <span>{tr('Daily goal')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('Daily goal')}>
             {GOALS.map((g) => (
               <button
                 key={g}
@@ -110,7 +118,8 @@ export function SettingsScreen() {
                 data-selected={dailyMinutes === g}
                 onClick={() => setDailyMinutes(g)}
               >
-                {g} min
+                {g}
+                {tr(' min')}
               </button>
             ))}
           </div>
@@ -118,17 +127,17 @@ export function SettingsScreen() {
       </Card>
 
       <Card>
-        <h3>Sound</h3>
+        <h3>{tr('Sound')}</h3>
         <div className={styles['row']}>
-          <span>App piano sound</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="App piano sound">
+          <span>{tr('App piano sound')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('App piano sound')}>
             <button
               role="radio"
               aria-checked={audioEnabled}
               data-selected={audioEnabled}
               onClick={() => setAudioEnabled(true)}
             >
-              On
+              {tr('On')}
             </button>
             <button
               role="radio"
@@ -136,22 +145,22 @@ export function SettingsScreen() {
               data-selected={!audioEnabled}
               onClick={() => setAudioEnabled(false)}
             >
-              My piano's own
+              {tr("My piano's own")}
             </button>
           </div>
         </div>
       </Card>
 
       <Card>
-        <h3>Timing calibration</h3>
+        <h3>{tr('Timing calibration')}</h3>
         <CalibrationPanel />
       </Card>
 
       <Card>
-        <h3>Appearance</h3>
+        <h3>{tr('Appearance')}</h3>
         <div className={styles['row']}>
-          <span>Theme</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="Theme">
+          <span>{tr('Theme')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('Theme')}>
             {THEMES.map((t) => (
               <button
                 key={t.value}
@@ -166,15 +175,15 @@ export function SettingsScreen() {
           </div>
         </div>
         <div className={styles['row']}>
-          <span>Reduce motion</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="Reduce motion">
+          <span>{tr('Reduce motion')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('Reduce motion')}>
             <button
               role="radio"
               aria-checked={reducedMotion}
               data-selected={reducedMotion}
               onClick={() => setReducedMotion(true)}
             >
-              On
+              {tr('On')}
             </button>
             <button
               role="radio"
@@ -182,32 +191,33 @@ export function SettingsScreen() {
               data-selected={!reducedMotion}
               onClick={() => setReducedMotion(false)}
             >
-              Follow system
+              {tr('Follow system')}
             </button>
           </div>
         </div>
       </Card>
 
       <Card>
-        <h3>Reading music</h3>
+        <h3>{tr('Reading music')}</h3>
         <p className={styles['note']}>
-          {APP_NAME} teaches the keyboard by ear and by symbol, not from the page. The reading strand is a
-          separate, optional track: short generated phrases on a staff, plus its own rating. Turn it on
-          whenever you want it, and nothing else changes.
+          {APP_NAME}
+          {tr(
+            ' teaches the keyboard by ear and by symbol, not from the page. The reading strand is a separate, optional track: short generated phrases on a staff, plus its own rating. Turn it on whenever you want it, and nothing else changes.',
+          )}
         </p>
         <div className={styles['row']}>
-          <span>Reading strand</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="Reading strand">
+          <span>{tr('Reading strand')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('Reading strand')}>
             <button
               role="radio"
               aria-checked={readStrandEnabled}
               data-selected={readStrandEnabled}
               onClick={() => {
                 setReadStrandEnabled(true);
-                void syncReadStrand(true).then(() => toast('Reading strand on', 'ok'));
+                void syncReadStrand(true).then(() => toast(tr('Reading strand on'), 'ok'));
               }}
             >
-              On
+              {tr('On')}
             </button>
             <button
               role="radio"
@@ -218,33 +228,32 @@ export function SettingsScreen() {
                 void syncReadStrand(false);
               }}
             >
-              Off
+              {tr('Off')}
             </button>
           </div>
         </div>
       </Card>
 
       <Card>
-        <h3>Tourist mode</h3>
+        <h3>{tr('Tourist mode')}</h3>
         <p className={styles['note']}>
-          Tourist mode opens the whole path. Every unit is unlocked, and you can skip a step or jump to any
-          step of a lesson. In exchange, the visit does not count: no unit is passed, no take is saved, no
-          review is scheduled, and no practice minutes are added. Turn it off to go back to your real path,
-          which stands exactly where you left it.
+          {tr(
+            'Tourist mode opens the whole path. Every unit is unlocked, and you can skip a step or jump to any step of a lesson. In exchange, the visit does not count: no unit is passed, no take is saved, no review is scheduled, and no practice minutes are added. Turn it off to go back to your real path, which stands exactly where you left it.',
+          )}
         </p>
         <div className={styles['row']}>
-          <span>Tourist mode</span>
-          <div className={styles['segmented']} role="radiogroup" aria-label="Tourist mode">
+          <span>{tr('Tourist mode')}</span>
+          <div className={styles['segmented']} role="radiogroup" aria-label={tr('Tourist mode')}>
             <button
               role="radio"
               aria-checked={tourist}
               data-selected={tourist}
               onClick={() => {
                 setTourist(true);
-                toast('Tourist mode on. Nothing you do now is recorded.', 'warn');
+                toast(tr('Tourist mode on. Nothing you do now is recorded.'), 'warn');
               }}
             >
-              On
+              {tr('On')}
             </button>
             <button
               role="radio"
@@ -252,23 +261,25 @@ export function SettingsScreen() {
               data-selected={!tourist}
               onClick={() => {
                 setTourist(false);
-                toast('Tourist mode off. Your progress is being recorded again.', 'ok');
+                toast(tr('Tourist mode off. Your progress is being recorded again.'), 'ok');
               }}
             >
-              Off
+              {tr('Off')}
             </button>
           </div>
         </div>
       </Card>
 
       <Card>
-        <h3>Data</h3>
+        <h3>{tr('Data')}</h3>
         <p className={styles['note']}>
-          Everything you do in {APP_NAME} lives on this device. Export a backup before switching machines.
+          {tr('Everything you do in ')}
+          {APP_NAME}
+          {tr(' lives on this device. Export a backup before switching machines.')}
         </p>
         <div className={styles['dataRow']}>
-          <Button onClick={() => void doExport()}>Export progress</Button>
-          <Button onClick={() => fileRef.current?.click()}>Import…</Button>
+          <Button onClick={() => void doExport()}>{tr('Export progress')}</Button>
+          <Button onClick={() => fileRef.current?.click()}>{tr('Import…')}</Button>
           <input
             ref={fileRef}
             type="file"
@@ -281,18 +292,19 @@ export function SettingsScreen() {
             }}
           />
           <Button variant="ghost" onClick={() => void doWipe()}>
-            {wipeArmed ? 'Really wipe everything?' : 'Wipe all progress'}
+            {wipeArmed ? tr('Really wipe everything?') : tr('Wipe all progress')}
           </Button>
         </div>
       </Card>
 
       <Card>
-        <h3>About</h3>
+        <h3>{tr('About')}</h3>
         <p className={styles['note']}>
-          {APP_NAME}. {APP_TAGLINE} Works offline once loaded; nothing you play leaves this device.
+          {APP_NAME}. {APP_TAGLINE}
+          {tr(' Works offline once loaded; nothing you play leaves this device.')}
         </p>
         <div className={styles['dataRow']}>
-          <Button onClick={() => void navigate('/licenses')}>Licenses &amp; credits</Button>
+          <Button onClick={() => void navigate('/licenses')}>{tr('Licenses & credits')}</Button>
         </div>
       </Card>
     </div>

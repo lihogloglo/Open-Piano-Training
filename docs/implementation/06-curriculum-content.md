@@ -155,3 +155,21 @@ Teacher and beginner reviews remain open in `docs/improvement-tracker.md`.
 
 The chronological rehearsal lint now uses only earlier teaching steps. It checks graded checkpoint material too.
 Ten previously hidden violations were repaired. The core path now has 421 steps, 348 exercises, and 64 ladders across 68 units.
+
+## Translation support (2026-09-09)
+
+All eight stages and the practical studio have French text in `src/i18n/locales/fr.json`.
+English messages remain the authoring source and fallback.
+The language is selected before these modules initialize.
+Lesson IDs, prerequisites, exercises, notes, tempos, and scoring rules remain unchanged.
+French content must satisfy the same schema length limits as English.
+The locale tests compare generated exercise mechanics across languages.
+See `docs/localization.md` for the translation workflow and notation conventions.
+
+## Optional lesson repetitions (2026-09-09)
+
+Normal mode offers a skip control for lesson practice and ordinary graded exercises.
+Learners can select any ladder tempo and continue after passing the final tempo.
+The authored slower repetitions remain available for learners who need them.
+Skipped assessments remain flagged for review. Checkpoint assessments still require a pass.
+Daily warmup and review exercises can also be skipped without changing skill scores.

@@ -1,3 +1,4 @@
+import { getLocale, tr } from '@/i18n';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Take } from '@/engine/replay';
 import { Keyboard } from '@/ui/Keyboard';
@@ -52,7 +53,7 @@ export function ReplayPlayer({
     if (token !== generation.current) return;
     if (getSamplerStatus().state !== 'ready') {
       stop();
-      toast('The piano sounds are not ready. Retry audio first.', 'info');
+      toast(tr('The piano sounds are not ready. Retry audio first.'), 'info');
       return;
     }
     const live = new Set<number>();
@@ -77,7 +78,7 @@ export function ReplayPlayer({
 
   useEffect(() => stop, [stop]);
 
-  const date = new Date(take.startedAt).toLocaleDateString(undefined, {
+  const date = new Date(take.startedAt).toLocaleDateString(getLocale(), {
     month: 'short',
     day: 'numeric',
     year: 'numeric',
@@ -100,10 +101,10 @@ export function ReplayPlayer({
       />
       <div className={styles['replayActions']}>
         <Button variant={playing ? 'ghost' : 'secondary'} onClick={playing ? stop : play}>
-          {playing ? 'Stop' : 'Play'}
+          {playing ? tr('Stop') : tr('Play')}
         </Button>
         <span className={styles['muted']}>
-          {Math.round(take.result.score * 100)}%{take.bpm !== null ? ` · ${take.bpm} BPM` : ''}
+          {Math.round(take.result.score * 100)}%{take.bpm !== null ? tr(' · {v0} BPM', { v0: take.bpm }) : ''}
         </span>
       </div>
     </div>

@@ -1,3 +1,4 @@
+import { sourceText, tr } from '@/i18n';
 import { useEffect, useMemo, useRef, useState } from 'react';
 import { Link, useParams } from 'react-router';
 import { MUSIC_STUDIES, type MusicStudy, type PlayedNote } from '@/curriculum/content/musicianship';
@@ -25,14 +26,20 @@ export function StudioScreen() {
   if (study) return <StudyPlayer key={study.id} study={study} />;
   return (
     <main className={styles['catalog']}>
-      <Link to="/path">Back to the path</Link>
-      <h1>At the piano</h1>
-      <p>Build rhythm, comfortable movement, and complete musical performances alongside the harmony path.</p>
+      <Link to="/path">{tr('Back to the path')}</Link>
+      <h1>{tr('At the piano')}</h1>
+      <p>
+        {tr(
+          'Build rhythm, comfortable movement, and complete musical performances alongside the harmony path.',
+        )}
+      </p>
       <div className={styles['cards']}>
         {MUSIC_STUDIES.map((s) => (
           <Link className={styles['card']} key={s.id} to={`/studio/${s.id}`}>
             <small>
-              {s.kind === 'piece' ? 'Complete piece' : 'Practical lesson'} · Suggested from Stage {s.stage}
+              {s.kind === 'piece' ? tr('Complete piece') : tr('Practical lesson')}
+              {tr(' · Suggested from Stage ')}
+              {s.stage}
             </small>
             <h2>{s.title}</h2>
             <p>{s.selfChecks[0]}</p>
@@ -105,7 +112,7 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
   const def = (assessment: boolean): ExerciseDef => ({
     generator: 'phrase',
     params: {
-      title: study.title,
+      title: sourceText(study.title),
       studyId: study.id,
       notes,
       beatsPerBar: study.beatsPerBar,
@@ -134,7 +141,7 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
     if (generation !== demoGeneration.current) return;
     if (getSamplerStatus().state !== 'ready') {
       setPlayingDemo(false);
-      toast('The piano sound is not ready. Retry audio, then hear the phrase.', 'info');
+      toast(tr('The piano sound is not ready. Retry audio, then hear the phrase.'), 'info');
       return;
     }
     demoNotes.current = notes.map((n) => n.midi);
@@ -184,34 +191,42 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
   return (
     <main className={styles['player']}>
       <header className={styles['header']}>
-        <Link to="/studio">All practical lessons</Link>
+        <Link to="/studio">{tr('All practical lessons')}</Link>
         <h1>{study.title}</h1>
-        <span>Pedal {pedal ? 'down' : 'up'}</span>
+        <span>
+          {tr('Pedal ')}
+          {pedal ? tr('down') : tr('up')}
+        </span>
       </header>
       <PlayerNotices />
       <section className={styles['content']}>
         {activeTarget && busy && (
           <p className={styles['prompt']}>
-            {run.listening ? 'Listen…' : activeTarget.label} · {activeTarget.detail}
+            {run.listening ? tr('Listen…') : activeTarget.label} · {activeTarget.detail}
           </p>
         )}
         {run.result && (
           <div role="status">
             <strong>
               {Math.round(run.result.score * 100)}% ·{' '}
-              {run.instance?.def.assessment ? 'Performance' : 'Practice'} at {run.bpm} BPM
+              {run.instance?.def.assessment ? tr('Performance') : tr('Practice')}
+              {tr(' at ')}
+              {run.bpm}
+              {tr(' BPM')}
             </strong>
             <p>{diagnose(run.result, run.instance)}</p>
-            <Button onClick={() => start(false)}>Repeat this phrase</Button>{' '}
-            <Button onClick={() => run.abortRun()}>Change phrase or settings</Button>
+            <Button onClick={() => start(false)}>{tr('Repeat this phrase')}</Button>{' '}
+            <Button onClick={() => run.abortRun()}>{tr('Change phrase or settings')}</Button>
           </div>
         )}
         {busy && (
           <div className={styles['live']}>
-            {playingDemo && <h2>Listen to the phrase</h2>}
+            {playingDemo && <h2>{tr('Listen to the phrase')}</h2>}
             {run.phase === 'count-in' && (
               <p>
-                Count {Array.from({ length: study.beatsPerBar }, (_, i) => i + 1).join(', ')}, then begin.
+                {tr('Count ')}
+                {Array.from({ length: study.beatsPerBar }, (_, i) => i + 1).join(', ')}
+                {tr(', then begin.')}
               </p>
             )}
             <Button
@@ -222,28 +237,30 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                 run.abortRun();
               }}
             >
-              Stop and adjust
+              {tr('Stop and adjust')}
             </Button>
           </div>
         )}
         <div hidden={busy || run.phase === 'done'}>
           <details>
-            <summary>How to read this practice</summary>
+            <summary>{tr('How to read this practice')}</summary>
             <p>
-              C4 means middle C. The number shows the octave, a group of eight note names from one C to the
-              next. R and L mean right and left hand. Finger 1 is the thumb and finger 5 is the little finger.
-              A beat is a steady pulse. A bar groups beats: count 1 to {study.beatsPerBar}, then start again.
-              A phrase is a short musical sentence. The note cards show when to press and how many beats to
-              hold.
+              {tr(
+                'C4 means middle C. The number shows the octave, a group of eight note names from one C to the next. R and L mean right and left hand. Finger 1 is the thumb and finger 5 is the little finger. A beat is a steady pulse. A bar groups beats: count 1 to ',
+              )}
+              {study.beatsPerBar}
+              {tr(
+                ', then start again. A phrase is a short musical sentence. The note cards show when to press and how many beats to hold.',
+              )}
             </p>
           </details>
           <p>{study.instruction}</p>
           {study.movementGuide && <MovementGuide />}
           <div className={styles['controls']}>
             <label>
-              Tempo{' '}
+              {tr('Tempo')}{' '}
               <input
-                aria-label="Practice tempo"
+                aria-label={tr('Practice tempo')}
                 type="number"
                 min={40}
                 max={160}
@@ -254,13 +271,13 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                   setTempo(Math.max(40, Math.min(160, Number(e.target.value) || 40)));
                 }}
               />{' '}
-              BPM
+              {tr('BPM')}
             </label>
             {study.kind === 'piece' && (
               <label>
-                Arrangement{' '}
+                {tr('Arrangement')}{' '}
                 <select
-                  aria-label="Arrangement"
+                  aria-label={tr('Arrangement')}
                   value={arrangement}
                   disabled={busy}
                   onChange={(e) => {
@@ -268,16 +285,16 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                     setArrangement(e.target.value);
                   }}
                 >
-                  <option value="melody">1. Melody</option>
-                  <option value="bass">2. Melody and bass</option>
-                  <option value="chords">3. Melody and chords</option>
+                  <option value="melody">{tr('1. Melody')}</option>
+                  <option value="bass">{tr('2. Melody and bass')}</option>
+                  <option value="chords">{tr('3. Melody and chords')}</option>
                 </select>
               </label>
             )}
             <label>
-              Hands{' '}
+              {tr('Hands')}{' '}
               <select
-                aria-label="Hands"
+                aria-label={tr('Hands')}
                 value={hand}
                 disabled={busy}
                 onChange={(e) => {
@@ -285,15 +302,15 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                   setHand(e.target.value as typeof hand);
                 }}
               >
-                <option value="both">Both hands</option>
-                <option value="rh">Right hand</option>
-                <option value="lh">Left hand</option>
+                <option value="both">{tr('Both hands')}</option>
+                <option value="rh">{tr('Right hand')}</option>
+                <option value="lh">{tr('Left hand')}</option>
               </select>
             </label>
             <label>
-              Phrase{' '}
+              {tr('Phrase')}{' '}
               <select
-                aria-label="Phrase"
+                aria-label={tr('Phrase')}
                 value={phrase}
                 disabled={busy}
                 onChange={(e) => {
@@ -301,10 +318,11 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                   setPhrase(Number(e.target.value));
                 }}
               >
-                <option value={-1}>Whole piece</option>
+                <option value={-1}>{tr('Whole piece')}</option>
                 {Array.from({ length: Math.ceil(study.bars / 2) }, (_, i) => (
                   <option key={i} value={i * 2}>
-                    Bars {i * 2 + 1}–{Math.min(study.bars, i * 2 + 2)}
+                    {tr('Bars ')}
+                    {i * 2 + 1}–{Math.min(study.bars, i * 2 + 2)}
                   </option>
                 ))}
               </select>
@@ -318,15 +336,15 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
                   setReveal(false);
                 }}
               >
-                Another example
+                {tr('Another example')}
               </Button>
             )}
             <Button disabled={busy || !notes.length} onClick={() => void demo()}>
-              Hear this phrase
+              {tr('Hear this phrase')}
             </Button>
             {study.ear && (
               <Button disabled={busy} onClick={() => setReveal(!reveal)}>
-                {reveal ? 'Hide the phrase' : 'Reveal for practice'}
+                {reveal ? tr('Hide the phrase') : tr('Reveal for practice')}
               </Button>
             )}
           </div>
@@ -334,11 +352,13 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
             <Phrase notes={notes} meter={study.beatsPerBar} />
           )}
           {notes.length === 0 && (
-            <p>This arrangement has no notes for that hand. Choose both hands or add accompaniment.</p>
+            <p>
+              {tr('This arrangement has no notes for that hand. Choose both hands or add accompaniment.')}
+            </p>
           )}
         </div>
         <details hidden={busy} className={styles['checks']}>
-          <summary>Listen and check your playing</summary>
+          <summary>{tr('Listen and check your playing')}</summary>
           {study.selfChecks.map((check) => (
             <label key={check}>
               <input
@@ -355,19 +375,22 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
             disabled={checked.length !== study.selfChecks.length}
             onClick={() => {
               if (isTourist()) {
-                toast('Self-check complete. Tourist mode keeps it unsaved.');
+                toast(tr('Self-check complete. Tourist mode keeps it unsaved.'));
                 return;
               }
               void db.meta
-                .put({ key: `study:${study.id}`, value: { title: study.title, completedAt: Date.now() } })
+                .put({
+                  key: `study:${study.id}`,
+                  value: { title: sourceText(study.title), completedAt: Date.now() },
+                })
                 .then(() => setSaved(true));
             }}
           >
-            Save my self-check
+            {tr('Save my self-check')}
           </Button>
           {saved && (
             <p role="status">
-              Completed. Independent and retained performances appear in Progress after assessment.
+              {tr('Completed. Independent and retained performances appear in Progress after assessment.')}
             </p>
           )}
         </details>
@@ -401,9 +424,11 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
           disabled={busy || !notes.length || (study.ear && (!heard || reveal))}
           onClick={() => start(true)}
         >
-          Perform without hints
+          {tr('Perform without hints')}
         </Button>
-        <span>Only note starts are scored. Use the self-checks for touch, releases, balance, and pedal.</span>
+        <span>
+          {tr('Only note starts are scored. Use the self-checks for touch, releases, balance, and pedal.')}
+        </span>
       </div>
     </main>
   );
@@ -411,17 +436,26 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
 
 function Phrase({ notes, meter }: { notes: PlayedNote[]; meter: number }) {
   return (
-    <div className={styles['phrase']} role="region" tabIndex={0} aria-label="Phrase notes and durations">
+    <div
+      className={styles['phrase']}
+      role="region"
+      tabIndex={0}
+      aria-label={tr('Phrase notes and durations')}
+    >
       {notes.map((n, i) => (
         <span key={i}>
           <strong>
-            {n.hand === 'lh' ? 'L' : 'R'} ·{' '}
+            {n.hand === 'lh' ? tr('L') : tr('R')} ·{' '}
             {['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'][n.midi % 12]}
             {Math.floor(n.midi / 12) - 1}
           </strong>
           <small>
-            Bar {Math.floor(n.atBeat / meter) + 1}, beat {(n.atBeat % meter) + 1} ·{' '}
-            {Math.round(n.durBeats * 10) / 10} beats{n.finger ? ` · finger ${n.finger}` : ''}
+            {tr('Bar ')}
+            {Math.floor(n.atBeat / meter) + 1}
+            {tr(', beat ')}
+            {(n.atBeat % meter) + 1} · {Math.round(n.durBeats * 10) / 10}
+            {tr(' beats')}
+            {n.finger ? tr(' · finger {v0}', { v0: n.finger }) : ''}
           </small>
         </span>
       ))}

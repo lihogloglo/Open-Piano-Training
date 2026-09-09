@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { memo, useMemo } from 'react';
 import { layoutKeys, displayName, majorDegreeOf, WHITE_W, BLACK_H_RATIO, type KeyGeometry } from './utils';
 import styles from './Keyboard.module.css';
@@ -115,7 +116,7 @@ const Key = memo(function Key(p: KeyProps) {
       {showLabel && (
         <text x={geo.x + geo.width / 2} y={VIEW_H - 8} textAnchor="middle" className={styles['label']}>
           {geo.midi % 12 === 0 && p.label && p.label !== displayName(geo.midi)
-            ? `${displayName(geo.midi)} · ${p.label}`
+            ? tr('{v0} · {v1}', { v0: displayName(geo.midi), v1: p.label })
             : (p.label ?? displayName(geo.midi))}
         </text>
       )}
@@ -169,7 +170,10 @@ export function Keyboard({
       preserveAspectRatio="none"
       style={{ height, width: '100%', display: 'block' }}
       role={onKeyDown ? 'group' : 'img'}
-      aria-label={`Piano keyboard, ${displayName(layout.lo)} to ${displayName(layout.hi)}`}
+      aria-label={tr('Piano keyboard, {v0} to {v1}', {
+        v0: displayName(layout.lo),
+        v1: displayName(layout.hi),
+      })}
     >
       {ordered.map((geo) => (
         <Key

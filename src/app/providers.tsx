@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { PracticeTime } from './PracticeTime';
 import { Component, useEffect, type ErrorInfo, type ReactNode } from 'react';
 import { ToastViewport } from '@/ui/Toast';
@@ -49,9 +50,9 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryStat
       return (
         <div style={{ display: 'grid', placeItems: 'center', height: '100%', padding: 24 }}>
           <div style={{ maxWidth: 480, textAlign: 'center', display: 'grid', gap: 16 }}>
-            <h2>Something broke. Your progress is safe.</h2>
+            <h2>{tr('Something broke. Your progress is safe.')}</h2>
             <p style={{ color: 'var(--text-2)' }}>
-              Everything you've done is stored on this device. Reloading usually fixes it.
+              {tr("Everything you've done is stored on this device. Reloading usually fixes it.")}
             </p>
             <pre
               style={{
@@ -68,7 +69,7 @@ class ErrorBoundary extends Component<{ children: ReactNode }, ErrorBoundaryStat
             </pre>
             <div>
               <Button variant="primary" onClick={() => window.location.reload()}>
-                Reload
+                {tr('Reload')}
               </Button>
             </div>
           </div>

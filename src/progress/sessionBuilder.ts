@@ -1,3 +1,4 @@
+import { sourceText, tr } from '@/i18n';
 import { getUnit } from '@/curriculum/content';
 import type { ExerciseDef } from '@/engine/types';
 import type { Unit } from '@/curriculum/schema';
@@ -21,7 +22,14 @@ export type SessionBlock =
       minutes: number;
       retests?: { key: string; unitId: string; stepId: string; exercise: ExerciseDef }[];
     }
-  | { kind: 'create'; title: string; prompt: string; minutes: number };
+  | {
+      kind: 'create';
+      title: string;
+      prompt: string;
+      basePrompt?: string;
+      reviewAtomId?: string;
+      minutes: number;
+    };
 
 export interface SessionPlan {
   id: string;
@@ -47,7 +55,9 @@ export interface SessionInputs {
 }
 
 /** Rotate among create tasks from lessons the learner has completed. */
-function creativeChallenge(inputs: SessionInputs): { title: string; prompt: string } {
+function creativeChallenge(
+  inputs: SessionInputs,
+): Omit<Extract<SessionBlock, { kind: 'create' }>, 'kind' | 'minutes'> {
   const candidates = (inputs.learnedUnitIds ?? []).flatMap((id) => {
     const unit = getUnit(id);
     return (
@@ -63,7 +73,7 @@ function creativeChallenge(inputs: SessionInputs): { title: string; prompt: stri
       : focus === 'harmony'
         ? /chord|progression|harmony/i
         : /melody|phrase|song/i
-    ).test(c.prompt),
+    ).test(sourceText(c.prompt)),
   );
   const pool = preferred.length ? preferred : candidates;
   const dayIndex = Math.floor(
@@ -76,19 +86,22 @@ function creativeChallenge(inputs: SessionInputs): { title: string; prompt: stri
   );
   const fallback = [
     {
-      title: 'Two small phrases',
-      prompt:
+      title: tr('Two small phrases'),
+      prompt: tr(
         'Choose any two nearby white keys. Play a short question, leave a silence, then play an answer.',
+      ),
     },
     {
-      title: 'Make a rhythm',
-      prompt:
+      title: tr('Make a rhythm'),
+      prompt: tr(
         'Choose one white key. Tap a steady beat with your foot. Play twice, leave two beats of silence, and repeat.',
+      ),
     },
     {
-      title: 'Listen and change',
-      prompt:
+      title: tr('Listen and change'),
+      prompt: tr(
         'Choose one white key. Play it gently three times. Try a different spacing between the notes and listen to the change.',
+      ),
     },
   ];
   const challenge = (pool.length ? pool : fallback)[dayIndex % (pool.length || fallback.length)]!;
@@ -97,8 +110,12 @@ function creativeChallenge(inputs: SessionInputs): { title: string; prompt: stri
     .sort((a, b) => (a.lastScore ?? a.bestScore) - (b.lastScore ?? b.bestScore))[0];
   const label = weak ? ATOMS.get(weak.atomId)?.label : undefined;
   return {
-    ...challenge,
-    prompt: label ? `${challenge.prompt} Finish with one slow review of ${label}.` : challenge.prompt,
+    title: sourceText(challenge.title),
+    basePrompt: sourceText(challenge.prompt),
+    ...(weak && label ? { reviewAtomId: weak.atomId } : {}),
+    prompt: label
+      ? tr('{v0} Finish with one slow review of {v1}.', { v0: challenge.prompt, v1: label })
+      : challenge.prompt,
   };
 }
 
@@ -140,7 +157,7 @@ export function buildSession(inputs: SessionInputs): SessionPlan {
     blocks.push({
       kind: 'new',
       unitId: next.id,
-      title: next.title,
+      title: sourceText(next.title),
       minutes: Math.min(budget, Math.ceil((endStep - start) * perStep)),
       endStep,
     });

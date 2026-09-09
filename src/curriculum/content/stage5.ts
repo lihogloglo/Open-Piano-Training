@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
@@ -49,10 +50,11 @@ const ALL_KEYS = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F
 export const stage5: Stage = {
   id: 's5',
   ordinal: 5,
-  title: 'The whole map',
-  tagline: 'Sevenths, minor, all 12 keys',
-  summary:
+  title: tr('The whole map'),
+  tagline: tr('Sevenths, minor, all 12 keys'),
+  summary: tr(
     'Everything so far has lived in a few friendly keys with three-note chords. Now the map opens: a fourth note turns triads into colours, minor gets its own gravity, and the twelve keys stop being twelve separate problems.',
+  ),
   unitIds: ['s5.u1', 's5.u2', 's5.u3', 's5.u4', 's5.u5', 's5.u6', 's5.u7', 's5.u8', 's5.u9', 's5.cp'],
 };
 
@@ -61,7 +63,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u1',
     stageId: 's5',
     ordinal: 0,
-    title: 'Four notes: maj7 & 7',
+    title: tr('Four notes: maj7 & 7'),
     strandWeights: { theory: 3, ear: 2 },
     concepts: ['spell:maj7', 'spell:7', 'ear:quality:maj7', 'ear:quality:7'],
     prerequisites: ['s4.cp'],
@@ -74,11 +76,13 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Keep stacking thirds. A triad is 1-3-5; add one more third on top and you get a **seventh chord** — 1-3-5-7. Two of them run most of the music you know.',
+            md: tr(
+              'Keep stacking thirds. A triad is 1-3-5; add one more third on top and you get a **seventh chord** — 1-3-5-7. Two of them run most of the music you know.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C, then Cmaj7 (add B), then C7 (add B♭). Same base, two different moods.',
+            caption: tr('C, then Cmaj7 (add B), then C7 (add B♭). Same base, two different moods.'),
             demo: {
               bpm: 56,
               loop: false,
@@ -99,11 +103,13 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: '**maj7** (7th a half step under the octave) is the dreamy one — it sits still. **7**, the *dominant*, drops that 7th a half step. That leaves a **tritone** between it and the 3rd — three whole steps, exactly half an octave. It is the most unstable gap in music, and it is there on purpose: it *pulls*, and where it pulls is home.',
+            md: tr(
+              '**maj7** (7th a half step under the octave) is the dreamy one — it sits still. **7**, the *dominant*, drops that 7th a half step. That leaves a **tritone** between it and the 3rd — three whole steps, exactly half an octave. It is the most unstable gap in music, and it is there on purpose: it *pulls*, and where it pulls is home.',
+            ),
           },
           {
             kind: 'earCheck',
-            question: 'Which one wants to go somewhere?',
+            question: tr('Which one wants to go somewhere?'),
             demo: {
               bpm: 60,
               loop: false,
@@ -114,24 +120,26 @@ export const stage5Units: Unit[] = [
                 { midi: 70, atBeat: 0, durBeats: 2 },
               ],
             },
-            options: ['This one rests', 'This one pulls'],
+            options: [tr('This one rests'), tr('This one pulls')],
             correctIndex: 1,
           },
           {
             kind: 'playCheck',
-            ask: 'Build **Cmaj7**: the triad, plus one more third on top.',
+            ask: tr('Build **Cmaj7**: the triad, plus one more third on top.'),
             notes: ['C', 'E', 'G', 'B'],
             count: 4,
             distinct: 'name',
-            hint: 'C–E–G, then B. The 7th sits a half step under the octave, which is why it glows rather than pushes.',
+            hint: tr(
+              'C–E–G, then B. The 7th sits a half step under the octave, which is why it glows rather than pushes.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Now make it a **C7**: play the note that replaces the B.',
+            ask: tr('Now make it a **C7**: play the note that replaces the B.'),
             notes: ['Bb'],
             count: 1,
             distinct: 'octave',
-            hint: 'Drop the 7th a half step. One black key, and the chord stops resting.',
+            hint: tr('Drop the 7th a half step. One black key, and the chord stops resting.'),
           },
         ],
       },
@@ -180,8 +188,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u1.c1',
-        prompt:
+        prompt: tr(
           'The backing rocks between Imaj7 and V7 — rest and pull, over and over. Play anything you like on top, then try landing on the 7th of each chord as it turns over. One note, and you can hear which of the two you are sitting in.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['Imaj7', 'V7'], loops: 3, bpm: 72 }),
       },
     ],
@@ -190,7 +199,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u2',
     stageId: 's5',
     ordinal: 1,
-    title: 'm7 and the ii-V-I cell',
+    title: tr('m7 and the ii-V-I cell'),
     strandWeights: { theory: 2, keys: 3, ear: 1 },
     concepts: ['spell:m7', 'prog:ii-v-i:c', 'prog:ii-v-i:g', 'prog:ii-v-i:f', 'ear:quality:m7'],
     prerequisites: ['s5.u1'],
@@ -203,33 +212,39 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The third seventh chord: **m7** — a minor triad with a minor 7th on top. Soft, open, completely at home in the middle of a phrase.',
+            md: tr(
+              'The third seventh chord: **m7** — a minor triad with a minor 7th on top. Soft, open, completely at home in the middle of a phrase.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Now put all three together. **ii-V-I** is the most-used three chords in music after I-IV-V: Dm7 wants G7, G7 wants Cmaj7. Learn this cell and you have learned the engine of a thousand standards.',
+            md: tr(
+              'Now put all three together. **ii-V-I** is the most-used three chords in music after I-IV-V: Dm7 wants G7, G7 wants Cmaj7. Learn this cell and you have learned the engine of a thousand standards.',
+            ),
           },
           {
             kind: 'progressionCard',
             roman: ['ii7', 'V7', 'Imaj7'],
             key: C,
-            songRefs: ['Jazz standards, bossa nova, most film ballads'],
+            songRefs: [tr('Jazz standards, bossa nova, most film ballads')],
           },
           {
             kind: 'playCheck',
-            ask: 'Play **Dm7** — the ii of C major.',
+            ask: tr('Play **Dm7** — the ii of C major.'),
             notes: ['D', 'F', 'A', 'C'],
             count: 4,
             distinct: 'name',
-            hint: 'D minor with a C on top. Four notes, and every one of them is a white key.',
+            hint: tr('D minor with a C on top. Four notes, and every one of them is a white key.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Now the three roots of the cell, left hand: **D, G, C**.',
+            ask: tr('Now the three roots of the cell, left hand: **D, G, C**.'),
             notes: ['D', 'G', 'C'],
             count: 3,
             distinct: 'name',
-            hint: 'Down a fourth, then down a fifth. That bass line says the cell more than the chords do.',
+            hint: tr(
+              'Down a fourth, then down a fifth. That bass line says the cell more than the chords do.',
+            ),
           },
         ],
       },
@@ -285,8 +300,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u2.c1',
-        prompt:
+        prompt: tr(
           'ii–V–I under your hands, round and round. Try playing only the 3rds and 7ths of each chord — two notes — and hear how little it takes to say the whole progression. That discovery is what Stage 6 is built on.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['ii7', 'V7', 'Imaj7'], loops: 3, bpm: 72 }),
       },
     ],
@@ -295,7 +311,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u3',
     stageId: 's5',
     ordinal: 2,
-    title: 'The dark ones: m7♭5 & dim7',
+    title: tr('The dark ones: m7♭5 & dim7'),
     strandWeights: { theory: 3 },
     concepts: ['spell:m7b5', 'spell:dim7'],
     prerequisites: ['s5.u2'],
@@ -308,15 +324,19 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Two more sevenths, both built on a diminished triad. **m7♭5** (also written ø) sits on the 7th degree of a major key, where it is dominant-function and leans hard on **I**. Its day job is elsewhere: in a *minor* key it is the **iiø7**, the chord that opens a minor ii–V–i.',
+            md: tr(
+              'Two more sevenths, both built on a diminished triad. **m7♭5** (also written ø) sits on the 7th degree of a major key, where it is dominant-function and leans hard on **I**. Its day job is elsewhere: in a *minor* key it is the **iiø7**, the chord that opens a minor ii–V–i.',
+            ),
           },
           {
             kind: 'text',
-            md: '**dim7** stacks minor thirds all the way up: every note is 3 semitones from the next. It has no home key of its own, which is exactly why it can slide anywhere — the great connective tissue chord.',
+            md: tr(
+              '**dim7** stacks minor thirds all the way up: every note is 3 semitones from the next. It has no home key of its own, which is exactly why it can slide anywhere — the great connective tissue chord.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Bm7♭5, then Bdim7. Listen for the last note dropping a half step.',
+            caption: tr('Bm7♭5, then Bdim7. Listen for the last note dropping a half step.'),
             demo: {
               bpm: 56,
               loop: false,
@@ -334,19 +354,21 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'playCheck',
-            ask: 'Play **Bm7♭5**: B, D, F, A.',
+            ask: tr('Play **Bm7♭5**: B, D, F, A.'),
             notes: ['B', 'D', 'F', 'A'],
             count: 4,
             distinct: 'name',
-            hint: 'The diminished triad B–D–F, with a plain minor 7th on top. All white keys.',
+            hint: tr('The diminished triad B–D–F, with a plain minor 7th on top. All white keys.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Make it **Bdim7**: play the note that replaces the A.',
+            ask: tr('Make it **Bdim7**: play the note that replaces the A.'),
             notes: ['Ab'],
             count: 1,
             distinct: 'octave',
-            hint: 'Drop the 7th a half step so every gap is three semitones. Now it is perfectly symmetrical — and homeless.',
+            hint: tr(
+              'Drop the 7th a half step so every gap is three semitones. Now it is perfectly symmetrical — and homeless.',
+            ),
           },
         ],
       },
@@ -384,8 +406,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u3.c1',
-        prompt:
+        prompt: tr(
           'A minor loop is playing. Between any two of its chords, slide a dim7 in — any root, one beat. It will fit, because a chord with no home cannot be in the wrong place. Find the two or three spots where it sounds deliberate rather than lucky.',
+        ),
         exercise: play({
           key: Am,
           palette: 'chordtones',
@@ -400,7 +423,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u4',
     stageId: 's5',
     ordinal: 3,
-    title: 'Relative minor',
+    title: tr('Relative minor'),
     strandWeights: { theory: 2, keys: 3 },
     concepts: ['scale:a:natminor:rh', 'scale:a:natminor:lh', 'scale:a:harmminor:rh', 'theory:relative'],
     prerequisites: ['s5.u3'],
@@ -413,11 +436,13 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "A minor is C major's **relative minor** — the exact same white keys, started from a different note. Nothing changes under your hands; what changes is which note feels like home.",
+            md: tr(
+              "A minor is C major's **relative minor** — the exact same white keys, started from a different note. Nothing changes under your hands; what changes is which note feels like home.",
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C major up, then the same notes from A. Same keys, different gravity.',
+            caption: tr('C major up, then the same notes from A. Same keys, different gravity.'),
             demo: {
               bpm: 100,
               loop: false,
@@ -443,23 +468,27 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'The rule: **relative minor is three half steps down from the major tonic** (C → A). One catch — natural minor has no leading tone, so its v chord is limp. Raise the 7th (G → G♯) and you get **harmonic minor**, which hands minor keys a real dominant: E7 → Am.',
+            md: tr(
+              'The rule: **relative minor is three half steps down from the major tonic** (C → A). One catch — natural minor has no leading tone, so its v chord is limp. Raise the 7th (G → G♯) and you get **harmonic minor**, which hands minor keys a real dominant: E7 → Am.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Three half steps down from C — play the home note of its relative minor.',
+            ask: tr('Three half steps down from C — play the home note of its relative minor.'),
             notes: ['A'],
             count: 1,
             distinct: 'octave',
-            hint: 'C, B, B♭, A. Same seven white keys as C major; different note in charge.',
+            hint: tr('C, B, B♭, A. Same seven white keys as C major; different note in charge.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Play the one note harmonic minor changes: the raised 7th of A minor.',
+            ask: tr('Play the one note harmonic minor changes: the raised 7th of A minor.'),
             notes: ['G#'],
             count: 1,
             distinct: 'octave',
-            hint: 'G becomes G♯, a half step under A. That is the leading tone minor keys borrow to get a real V.',
+            hint: tr(
+              'G becomes G♯, a half step under A. That is the leading tone minor keys borrow to get a real V.',
+            ),
           },
         ],
       },
@@ -548,8 +577,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u4.c1',
-        prompt:
+        prompt: tr(
           'Play over the A minor backing using only white keys — then, on the bar before the loop turns over, raise the G to G♯ and hold it. You have just borrowed harmonic minor for one beat, which is exactly how real music uses it.',
+        ),
         exercise: play({ key: Am, palette: 'chordtones', roman: ['i', 'iv', 'V7', 'i'], loops: 3, bpm: 70 }),
       },
     ],
@@ -558,7 +588,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u5',
     stageId: 's5',
     ordinal: 4,
-    title: 'Minor progressions',
+    title: tr('Minor progressions'),
     strandWeights: { keys: 3, create: 1 },
     concepts: ['prog:i-vi-iii-vii:am', 'prog:i-iv-v:am', 'song:ember'],
     prerequisites: ['s5.u4'],
@@ -571,29 +601,35 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Minor keys have their own four-chord loop: **i-VI-III-VII**. The capitals are not a typo — in a minor key those degrees really are major chords, and that mix of dark root and bright neighbours is the whole sound.',
+            md: tr(
+              'Minor keys have their own four-chord loop: **i-VI-III-VII**. The capitals are not a typo — in a minor key those degrees really are major chords, and that mix of dark root and bright neighbours is the whole sound.',
+            ),
           },
           {
             kind: 'progressionCard',
             roman: ['i', 'VI', 'III', 'VII'],
             key: Am,
-            songRefs: ['Minor-key folk, film cues, half of modern pop in a sad mood'],
+            songRefs: [tr('Minor-key folk, film cues, half of modern pop in a sad mood')],
           },
           {
             kind: 'playCheck',
-            ask: 'Play the **VI** of A minor: F, A, C.',
+            ask: tr('Play the **VI** of A minor: F, A, C.'),
             notes: ['F', 'A', 'C'],
             count: 3,
             distinct: 'name',
-            hint: 'Capital numeral, major chord — and it is the same F major you have played since Stage 1.',
+            hint: tr(
+              'Capital numeral, major chord — and it is the same F major you have played since Stage 1.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'And the **VII**: G, B, D.',
+            ask: tr('And the **VII**: G, B, D.'),
             notes: ['G', 'B', 'D'],
             count: 3,
             distinct: 'name',
-            hint: 'A whole step under the tonic, major, and no leading tone anywhere. That flat 7th is why minor loops sound modal rather than classical.',
+            hint: tr(
+              'A whole step under the tonic, major, and no leading tone anywhere. That flat 7th is why minor loops sound modal rather than classical.',
+            ),
           },
         ],
       },
@@ -665,8 +701,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u5.c1',
-        prompt:
+        prompt: tr(
           'Loop i-VI-III-VII in A minor and find a melody in the right hand that only uses the white keys. Let one note hang over a chord change — the note stays, the chord moves under it, and that friction is the point.',
+        ),
         exercise: play({
           key: Am,
           palette: 'chordtones',
@@ -681,7 +718,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u6',
     stageId: 's5',
     ordinal: 5,
-    title: 'Around the circle: sharps',
+    title: tr('Around the circle: sharps'),
     strandWeights: { keys: 3, theory: 2 },
     concepts: [
       'scale:a:major:rh',
@@ -704,7 +741,9 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'You already know C, G, D and F. Keep walking up in fifths and each new key adds exactly one sharp: **A** (3), **E** (4), **B** (5). The order the sharps arrive never changes — F♯ C♯ G♯ D♯ A♯.',
+            md: tr(
+              'You already know C, G, D and F. Keep walking up in fifths and each new key adds exactly one sharp: **A** (3), **E** (4), **B** (5). The order the sharps arrive never changes — F♯ C♯ G♯ D♯ A♯.',
+            ),
           },
           {
             kind: 'circleOfFifths',
@@ -712,23 +751,29 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Here is the part nobody tells beginners: A, E and B are **easier** under the hand than C, not harder. The black keys give your long fingers somewhere to sit. Same fingering as C major, better ergonomics.',
+            md: tr(
+              'Here is the part nobody tells beginners: A, E and B are **easier** under the hand than C, not harder. The black keys give your long fingers somewhere to sit. Same fingering as C major, better ergonomics.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'A major has three sharps. Play them: F♯, C♯, G♯.',
+            ask: tr('A major has three sharps. Play them: F♯, C♯, G♯.'),
             notes: ['F#', 'C#', 'G#'],
             count: 3,
             distinct: 'name',
-            hint: 'The order never changes: F♯ first, then C♯, then G♯. Each new key keeps the previous ones.',
+            hint: tr(
+              'The order never changes: F♯ first, then C♯, then G♯. Each new key keeps the previous ones.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'E major keeps those three and adds one. Play the fourth sharp.',
+            ask: tr('E major keeps those three and adds one. Play the fourth sharp.'),
             notes: ['D#'],
             count: 1,
             distinct: 'octave',
-            hint: 'Next along the same chain: F♯ C♯ G♯ **D♯**. It is always the 7th degree of the new key.',
+            hint: tr(
+              'Next along the same chain: F♯ C♯ G♯ **D♯**. It is always the 7th degree of the new key.',
+            ),
           },
         ],
       },
@@ -834,8 +879,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u6.c1',
-        prompt:
+        prompt: tr(
           'Improvise in E major — four sharps, and your hand will want to sit on the black keys rather than reach for them. Notice that it is more comfortable than C, not less. That is the ergonomic secret of the sharp keys.',
+        ),
         exercise: play({
           key: { tonic: 'E', mode: 'major' },
           palette: 'chordtones',
@@ -849,7 +895,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u7',
     stageId: 's5',
     ordinal: 6,
-    title: 'Around the circle: flats',
+    title: tr('Around the circle: flats'),
     strandWeights: { keys: 3, theory: 2 },
     concepts: [
       'scale:bb:major:rh',
@@ -870,7 +916,9 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Now walk the other way — down in fifths from C — and each key adds a flat: **B♭** (2), **E♭** (3), **A♭** (4). The flats arrive in their own fixed order: B♭ E♭ A♭ D♭ G♭.',
+            md: tr(
+              'Now walk the other way — down in fifths from C — and each key adds a flat: **B♭** (2), **E♭** (3), **A♭** (4). The flats arrive in their own fixed order: B♭ E♭ A♭ D♭ G♭.',
+            ),
           },
           {
             kind: 'circleOfFifths',
@@ -878,23 +926,25 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'These are the horn keys — brass and reeds live here, so most jazz and soul charts do too. The rule everywhere on this side: the thumb avoids the black keys. That is why B♭ starts on finger 4, and it is why the right hand needs a slightly different route for each flat key. Your left hand gets off lightly — one fingering covers all of them.',
+            md: tr(
+              'These are the horn keys — brass and reeds live here, so most jazz and soul charts do too. The rule everywhere on this side: the thumb avoids the black keys. That is why B♭ starts on finger 4, and it is why the right hand needs a slightly different route for each flat key. Your left hand gets off lightly — one fingering covers all of them.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play the two flats of **B♭ major**: B♭ and E♭.',
+            ask: tr('Play the two flats of **B♭ major**: B♭ and E♭.'),
             notes: ['Bb', 'Eb'],
             count: 2,
             distinct: 'name',
-            hint: 'Flats arrive in their own order: B♭ E♭ A♭ D♭ G♭. Two of them, and the key is B♭.',
+            hint: tr('Flats arrive in their own order: B♭ E♭ A♭ D♭ G♭. Two of them, and the key is B♭.'),
           },
           {
             kind: 'playCheck',
-            ask: 'A♭ major has four. Play the two that B♭ major did **not** have.',
+            ask: tr('A♭ major has four. Play the two that B♭ major did **not** have.'),
             notes: ['Ab', 'Db'],
             count: 2,
             distinct: 'name',
-            hint: 'Keep going down the same chain: B♭ E♭ **A♭ D♭**.',
+            hint: tr('Keep going down the same chain: B♭ E♭ **A♭ D♭**.'),
           },
         ],
       },
@@ -1022,8 +1072,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u7.c1',
-        prompt:
+        prompt: tr(
           'A backing in E♭ — three flats, and the key half the soul records you love were cut in. Play chord tones over it until the geography stops feeling like a foreign country. Flat keys are only awkward while they are unfamiliar.',
+        ),
         exercise: play({
           key: { tonic: 'Eb', mode: 'major' },
           palette: 'chordtones',
@@ -1037,7 +1088,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u8',
     stageId: 's5',
     ordinal: 7,
-    title: 'The far side',
+    title: tr('The far side'),
     strandWeights: { keys: 2, theory: 3 },
     concepts: ['scale:db:major:rh', 'scale:gb:major:rh', 'keysig:db:major', 'keysig:gb:major'],
     prerequisites: ['s5.u7'],
@@ -1050,11 +1101,15 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'At the bottom of the circle the two directions meet. **D♭ major and C♯ major are the same five black keys and two white keys** — the same sound, spelled two different ways. Same for G♭ and F♯.',
+            md: tr(
+              'At the bottom of the circle the two directions meet. **D♭ major and C♯ major are the same five black keys and two white keys** — the same sound, spelled two different ways. Same for G♭ and F♯.',
+            ),
           },
           {
             kind: 'text',
-            md: "Which spelling a chart uses is a scribe's choice, not a musical one: D♭ needs 5 flats, C♯ needs 7 sharps, so most writers pick D♭. Your hands do not care. **Enharmonic** is the word for two names, one sound.",
+            md: tr(
+              "Which spelling a chart uses is a scribe's choice, not a musical one: D♭ needs 5 flats, C♯ needs 7 sharps, so most writers pick D♭. Your hands do not care. **Enharmonic** is the word for two names, one sound.",
+            ),
           },
           {
             kind: 'circleOfFifths',
@@ -1062,23 +1117,27 @@ export const stage5Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: "Good news: D♭ is many pianists' favourite key. Five black keys under the long fingers, thumbs on the two whites — it almost plays itself.",
+            md: tr(
+              "Good news: D♭ is many pianists' favourite key. Five black keys under the long fingers, thumbs on the two whites — it almost plays itself.",
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'D♭ major has exactly two white keys in it. Play them.',
+            ask: tr('D♭ major has exactly two white keys in it. Play them.'),
             notes: ['F', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'D♭ E♭ F G♭ A♭ B♭ C — the 3rd and the 7th. Those two are where your thumbs go.',
+            hint: tr('D♭ E♭ F G♭ A♭ B♭ C — the 3rd and the 7th. Those two are where your thumbs go.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Play the key that is both **F♯ and G♭**.',
+            ask: tr('Play the key that is both **F♯ and G♭**.'),
             notes: ['F#'],
             count: 1,
             distinct: 'octave',
-            hint: 'One key, two names. Which name a chart uses depends on the key signature it is trying to keep tidy.',
+            hint: tr(
+              'One key, two names. Which name a chart uses depends on the key signature it is trying to keep tidy.',
+            ),
           },
         ],
       },
@@ -1145,8 +1204,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u8.c1',
-        prompt:
+        prompt: tr(
           'Improvise in D♭ using only the black keys. Those five are D♭ major **pentatonic** — five notes, no half steps anywhere, so nothing in the set can clash. Then add the F and the C when you want the light to change. This is the key that convinces people the black keys are the easy ones.',
+        ),
         exercise: play({
           key: { tonic: 'Db', mode: 'major' },
           palette: 'pentatonic',
@@ -1161,7 +1221,7 @@ export const stage5Units: Unit[] = [
     id: 's5.u9',
     stageId: 's5',
     ordinal: 8,
-    title: 'ii-V-I everywhere',
+    title: tr('ii-V-I everywhere'),
     strandWeights: { keys: 3, ear: 2 },
     concepts: ['prog:ii-v-i:all', 'ear:prog:iivi', 'song:round-the-circle'],
     prerequisites: ['s5.u8'],
@@ -1174,15 +1234,19 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'This is the unit that turns twelve keys into one skill. **ii-V-I keeps the same chord roles in every key.** The notes and finger positions change. Find ii, V and I in the new key, then practice the changes slowly.',
+            md: tr(
+              'This is the unit that turns twelve keys into one skill. **ii-V-I keeps the same chord roles in every key.** The notes and finger positions change. Find ii, V and I in the new key, then practice the changes slowly.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Round the Circle walks the cell down in fourths — C, F, B♭, E♭. Four keys, one gesture, repeated until it stops feeling like four things.',
+            md: tr(
+              'Round the Circle walks the cell down in fourths — C, F, B♭, E♭. Four keys, one gesture, repeated until it stops feeling like four things.',
+            ),
           },
           {
             kind: 'earCheck',
-            question: 'ii-V-I, or IV-V-I?',
+            question: tr('ii-V-I, or IV-V-I?'),
             demo: {
               bpm: 66,
               loop: false,
@@ -1201,16 +1265,18 @@ export const stage5Units: Unit[] = [
                 { midi: 71, atBeat: 2, durBeats: 2 },
               ],
             },
-            options: ['ii-V-I', 'IV-V-I'],
+            options: [tr('ii-V-I'), tr('IV-V-I')],
             correctIndex: 0,
           },
           {
             kind: 'playCheck',
-            ask: 'Left hand: the three roots of a ii–V–I in **B♭** — C, F, B♭.',
+            ask: tr('Left hand: the three roots of a ii–V–I in **B♭** — C, F, B♭.'),
             notes: ['C', 'F', 'Bb'],
             count: 3,
             distinct: 'name',
-            hint: 'Down a fourth, down a fifth — the same shape as D, G, C was in the key of C. The gesture never changes.',
+            hint: tr(
+              'Down a fourth, down a fifth — the same shape as D, G, C was in the key of C. The gesture never changes.',
+            ),
           },
         ],
       },
@@ -1267,8 +1333,9 @@ export const stage5Units: Unit[] = [
       {
         kind: 'create',
         id: 's5.u9.c1',
-        prompt:
+        prompt: tr(
           'ii–V–I in F, looping. Play it with the left hand taking roots and the right hand taking whatever it likes — then move the whole thing to B♭ by ear when the loop comes round. If your hand can find it without being told the letters, this stage has done its job.',
+        ),
         exercise: play({
           key: { tonic: 'F', mode: 'major' },
           palette: 'chordtones',
@@ -1283,7 +1350,7 @@ export const stage5Units: Unit[] = [
     id: 's5.cp',
     stageId: 's5',
     ordinal: 9,
-    title: 'Checkpoint: The whole map',
+    title: tr('Checkpoint: The whole map'),
     strandWeights: { keys: 3, theory: 2, ear: 1 },
     concepts: [],
     prerequisites: ['s5.u9'],
@@ -1296,7 +1363,9 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The whole-map test: a scale in a key you did not choose, sevenths spelled on sight, ii-V-I away from C, a minor progression played for real, and sevenths by ear.',
+            md: tr(
+              'The whole-map test: a scale in a key you did not choose, sevenths spelled on sight, ii-V-I away from C, a minor progression played for real, and sevenths by ear.',
+            ),
           },
         ],
       },

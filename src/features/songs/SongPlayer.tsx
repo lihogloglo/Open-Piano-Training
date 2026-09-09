@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { saveTake } from '@/progress/db';
 import { exerciseRange } from '@/ui/Keyboard/utils';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
@@ -50,7 +51,10 @@ export function SongPlayer() {
       if (s.phase === 'done' && prev.phase !== 'done' && s.result) {
         if (s.lastTake) void saveTake(s.lastTake);
         const pct = Math.round(s.result.score * 100);
-        toast(s.result.passed ? `Nice, ${pct}%` : `${pct}%, loop it again`, s.result.passed ? 'ok' : 'info');
+        toast(
+          s.result.passed ? tr('Nice, {v0}%', { v0: pct }) : tr('{v0}%, loop it again', { v0: pct }),
+          s.result.passed ? 'ok' : 'info',
+        );
       }
     });
   }, []);
@@ -86,7 +90,7 @@ export function SongPlayer() {
         <button
           className={styles['close']}
           onClick={() => void navigate('/songs')}
-          aria-label="Back to songs"
+          aria-label={tr('Back to songs')}
         >
           <Icon name="close" />
         </button>
@@ -94,10 +98,10 @@ export function SongPlayer() {
         <span className={styles['style']}>{song.styleRef}</span>
         <div className={styles['controls']}>
           <label>
-            Key
+            {tr('Key')}
             <select
               disabled={active}
-              aria-label="Key"
+              aria-label={tr('Key')}
               value={tonic}
               onChange={(e) => {
                 abortRun();
@@ -110,10 +114,10 @@ export function SongPlayer() {
             </select>
           </label>
           <label>
-            Tempo
+            {tr('Tempo')}
             <select
               disabled={active}
-              aria-label="Tempo"
+              aria-label={tr('Tempo')}
               value={tempoPct}
               onChange={(e) => {
                 abortRun();
@@ -125,18 +129,18 @@ export function SongPlayer() {
             </select>
           </label>
           <label>
-            Mode
+            {tr('Mode')}
             <select
               disabled={active}
-              aria-label="Mode"
+              aria-label={tr('Mode')}
               value={practiceMode ? 'practice' : 'intime'}
               onChange={(e) => {
                 abortRun();
                 setPracticeMode(e.target.value === 'practice');
               }}
             >
-              <option value="practice">Practice (waits for you)</option>
-              <option value="intime">In time</option>
+              <option value="practice">{tr('Practice (waits for you)')}</option>
+              <option value="intime">{tr('In time')}</option>
             </select>
           </label>
         </div>
@@ -144,8 +148,9 @@ export function SongPlayer() {
 
       <PlayerNotices />
       <p>
-        Play one chord per bar. Any octave and inversion work. In time mode, watch first, then play after the
-        count-in.
+        {tr(
+          'Play one chord per bar. Any octave and inversion work. In time mode, watch first, then play after the count-in.',
+        )}
       </p>
       <div className={styles['chartZone']}>
         {instance ? (
@@ -165,8 +170,13 @@ export function SongPlayer() {
           </div>
         ) : (
           <div className={styles['intro']}>
-            <p>One chord per bar, any octave or inversion. Pick a key and the chart follows you.</p>
-            {result && <p>Last take: {Math.round(result.score * 100)}%</p>}
+            <p>{tr('One chord per bar, any octave or inversion. Pick a key and the chart follows you.')}</p>
+            {result && (
+              <p>
+                {tr('Last take: ')}
+                {Math.round(result.score * 100)}%
+              </p>
+            )}
           </div>
         )}
       </div>
@@ -189,12 +199,12 @@ export function SongPlayer() {
         beatsPerBar={beatsPerBar}
         canStart={true}
         onStart={start}
-        {...(phase === 'idle' ? { startLabel: 'Play the chart' } : {})}
+        {...(phase === 'idle' ? { startLabel: tr('Play the chart') } : {})}
       />
       {phase === 'done' && (
         <div className={styles['footerHint']}>
           <Button variant="ghost" onClick={() => abortRun()}>
-            Change key or tempo
+            {tr('Change key or tempo')}
           </Button>
         </div>
       )}

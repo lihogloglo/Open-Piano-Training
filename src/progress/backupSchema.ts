@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { generate } from '@/engine/generators';
 import type { ExerciseDef } from '@/engine/types';
 import { preferencesSchema } from './preferences';
@@ -10,7 +11,7 @@ const score = z.number().min(0).max(1);
 const time = z.number().finite().nonnegative();
 const id = z.string().min(1).max(200);
 const date = z.string().refine((s) => Number.isFinite(Date.parse(s)), 'Invalid date');
-const unitId = id.refine((s) => !!getUnit(s), 'Unknown lesson');
+const unitId = id.refine((s) => !!getUnit(s), tr('Unknown lesson'));
 const judgment = z.object({
   targetIndex: z.number().int().min(-1),
   midi: z.number().int(),
@@ -49,7 +50,14 @@ const block = z.discriminatedUnion('kind', [
     exercises: z.array(z.object({ atomId: id, def: exerciseDefSchema })),
     minutes: time,
   }),
-  z.object({ kind: z.literal('create'), title: id, prompt: z.string(), minutes: time }),
+  z.object({
+    kind: z.literal('create'),
+    title: id,
+    prompt: z.string(),
+    basePrompt: z.string().optional(),
+    reviewAtomId: id.optional(),
+    minutes: time,
+  }),
 ]);
 
 export const backupSchema = z.object({
@@ -131,7 +139,7 @@ export const backupSchema = z.object({
               completedBlocks: z.array(z.number().int().nonnegative()),
               catchUp: z.boolean(),
             })
-            .refine((p) => p.completedBlocks.every((i) => i < p.blocks.length), 'Invalid session block'),
+            .refine((p) => p.completedBlocks.every((i) => i < p.blocks.length), tr('Invalid session block')),
         }),
       ),
       settings: z.array(kv),
@@ -142,13 +150,13 @@ export const backupSchema = z.object({
 
 function validateExercise(def: ExerciseDef, seed = 1): void {
   const instance = generate(def, seed);
-  if (instance.targets.length === 0) throw new Error('Empty saved exercise');
+  if (instance.targets.length === 0) throw new Error(tr('Empty saved exercise'));
 }
 
 function validateRetest(value: unknown): void {
   const r = z.object({ unitId, stepId: id, exercise: exerciseDefSchema }).parse(value);
   if (!getUnit(r.unitId)?.steps.some((s) => s.id === r.stepId && s.kind === 'graded'))
-    throw new Error('Unknown retest step');
+    throw new Error(tr('Unknown retest step'));
   validateExercise(r.exercise);
 }
 
@@ -162,24 +170,25 @@ export function validateBackup(json: string): z.infer<typeof backupSchema> {
     if (new Set(keys).size !== keys.length) throw new Error(`Duplicate records in ${name}`);
   }
   for (const row of data.tables.sessions) {
-    if (row.id !== row.plan.id || row.date !== row.plan.date) throw new Error('Session identity mismatch');
+    if (row.id !== row.plan.id || row.date !== row.plan.date)
+      throw new Error(tr('Session identity mismatch'));
     for (const block of row.plan.blocks) {
       if (block.kind === 'new' && block.endStep && block.endStep > getUnit(block.unitId)!.steps.length)
-        throw new Error('Saved section exceeds lesson length');
+        throw new Error(tr('Saved section exceeds lesson length'));
       if (block.kind === 'warmup')
         for (const item of block.exercises) {
-          if (!ATOMS.has(item.atomId)) throw new Error('Unknown warmup skill');
+          if (!ATOMS.has(item.atomId)) throw new Error(tr('Unknown warmup skill'));
           validateExercise(item.def);
         }
       if (block.kind === 'review') for (const retest of block.retests ?? []) validateRetest(retest);
       if (block.kind === 'review' && block.atomIds.some((id) => !ATOMS.has(id)))
-        throw new Error('Unknown review skill');
+        throw new Error(tr('Unknown review skill'));
     }
   }
   if (data.tables.atomProgress.some((row) => !ATOMS.has(row.atomId)))
-    throw new Error('Unknown tracked skill');
+    throw new Error(tr('Unknown tracked skill'));
   if (data.tables.takes.some((row) => row.atomIds.some((id) => !ATOMS.has(id))))
-    throw new Error('Unknown skill in recording');
+    throw new Error(tr('Unknown skill in recording'));
   for (const row of data.tables.meta) {
     if (row.key === 'practiceDays') z.record(z.string(), time).parse(row.value);
     if (row.key.startsWith('lessonResume:')) {
@@ -205,15 +214,15 @@ export function validateBackup(json: string): z.infer<typeof backupSchema> {
         })
         .parse(row.value);
       const unit = getUnit(row.key.slice(13));
-      if (!unit?.steps.some((s) => s.id === resume.stepId)) throw new Error('Unknown saved lesson step');
+      if (!unit?.steps.some((s) => s.id === resume.stepId)) throw new Error(tr('Unknown saved lesson step'));
       for (const [stepId, lit] of Object.entries(resume.ladders)) {
         const step = unit.steps.find((s) => s.id === stepId);
         if (step?.kind !== 'ladder' || lit.length !== step.tempos.length)
-          throw new Error('Invalid saved tempo ladder');
+          throw new Error(tr('Invalid saved tempo ladder'));
       }
       for (const [stepId, outcome] of Object.entries(resume.assessments ?? {})) {
         if (!unit.steps.some((s) => s.id === stepId && s.kind === 'graded'))
-          throw new Error('Unknown assessment step');
+          throw new Error(tr('Unknown assessment step'));
         validateExercise(outcome.exercise, outcome.seed);
       }
     }

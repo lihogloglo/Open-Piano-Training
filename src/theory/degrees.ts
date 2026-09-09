@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { keyScaleNotes, type KeyContext } from './keys';
 import { namePc, pcOf, type MidiNumber } from './notes';
 
@@ -15,13 +16,13 @@ export const DEGREE_COLOR_VARS: Record<Degree, string> = {
 };
 
 export const DEGREE_NAMES: Record<Degree, string> = {
-  1: 'tonic',
-  2: 'supertonic',
-  3: 'mediant',
-  4: 'subdominant',
-  5: 'dominant',
-  6: 'submediant',
-  7: 'leading tone',
+  1: tr('tonic'),
+  2: tr('supertonic'),
+  3: tr('mediant'),
+  4: tr('subdominant'),
+  5: tr('dominant'),
+  6: tr('submediant'),
+  7: tr('leading tone'),
 };
 
 /** Scale degree of a midi note in the key (its diatonic scale), or null if non-diatonic. */

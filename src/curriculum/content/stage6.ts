@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
@@ -47,10 +48,11 @@ const II_V_I = ['ii7', 'V7', 'Imaj7'];
 export const stage6: Stage = {
   id: 's6',
   ordinal: 6,
-  title: 'Charts for real',
-  tagline: 'Comping craft',
-  summary:
+  title: tr('Charts for real'),
+  tagline: tr('Comping craft'),
+  summary: tr(
     'A chord chart is not sheet music — it tells you what, never how. This stage is the how: the voicings working pianists actually use, the rhythms that turn chords into a groove, and the confidence to read a chart you have never seen.',
+  ),
   unitIds: ['s6.u1', 's6.u2', 's6.u3', 's6.u4', 's6.u5', 's6.u6', 's6.u7', 's6.u8', 's6.cp'],
 };
 
@@ -59,7 +61,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u1',
     stageId: 's6',
     ordinal: 0,
-    title: 'Reading the language',
+    title: tr('Reading the language'),
     strandWeights: { theory: 3 },
     concepts: ['read:symbols:full'],
     prerequisites: ['s5.cp'],
@@ -72,15 +74,19 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Time to read every symbol a chart can throw at you. The grammar is regular: **root**, then **quality**, then **extensions**, then an optional **/bass**.',
+            md: tr(
+              'Time to read every symbol a chart can throw at you. The grammar is regular: **root**, then **quality**, then **extensions**, then an optional **/bass**.',
+            ),
           },
           {
             kind: 'text',
-            md: '`Am` minor · `A7` dominant · `Amaj7` major 7th · `Am7♭5` half-diminished · `Asus4` the 3rd replaced by the 4th · `A6` add the 6th · `Aadd9` add the 9th without a 7th · `A/C♯` A major with C♯ in the bass.\n\nThe one that trips people: **`A7` is not "A major 7"** — it is a dominant. Major 7 always says `maj7`.',
+            md: tr(
+              '`Am` minor · `A7` dominant · `Amaj7` major 7th · `Am7♭5` half-diminished · `Asus4` the 3rd replaced by the 4th · `A6` add the 6th · `Aadd9` add the 9th without a 7th · `A/C♯` A major with C♯ in the bass.\n\nThe one that trips people: **`A7` is not "A major 7"** — it is a dominant. Major 7 always says `maj7`.',
+            ),
           },
           {
             kind: 'earCheck',
-            question: 'Which is the dominant?',
+            question: tr('Which is the dominant?'),
             demo: {
               bpm: 56,
               loop: false,
@@ -91,24 +97,26 @@ export const stage6Units: Unit[] = [
                 { midi: 67, atBeat: 0, durBeats: 1.5 },
               ],
             },
-            options: ['A7 (dominant)', 'Amaj7'],
+            options: [tr('A7 (dominant)'), tr('Amaj7')],
             correctIndex: 0,
           },
           {
             kind: 'playCheck',
-            ask: 'Play **Csus4** — the 3rd replaced, not added.',
+            ask: tr('Play **Csus4** — the 3rd replaced, not added.'),
             notes: ['C', 'F', 'G'],
             count: 3,
             distinct: 'name',
-            hint: 'The E leaves and the F takes its place. A sus chord is neither major nor minor, which is why it hangs.',
+            hint: tr(
+              'The E leaves and the F takes its place. A sus chord is neither major nor minor, which is why it hangs.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Now **Cadd9** — the 9th added, and the 7th left out.',
+            ask: tr('Now **Cadd9** — the 9th added, and the 7th left out.'),
             notes: ['C', 'E', 'G', 'D'],
             count: 4,
             distinct: 'name',
-            hint: 'The triad plus a D. If a chart wanted the 7th as well it would have said C9.',
+            hint: tr('The triad plus a D. If a chart wanted the 7th as well it would have said C9.'),
           },
         ],
       },
@@ -151,8 +159,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u1.c1',
-        prompt:
+        prompt: tr(
           'One backing, one rule: change nothing but the quality. Play the I bar as a triad, then maj7, then 6, then sus4, then add9. Five symbols, one root, and each one is a different weather.',
+        ),
         exercise: play({
           key: C,
           palette: 'chordtones',
@@ -167,7 +176,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u2',
     stageId: 's6',
     ordinal: 1,
-    title: 'Shells',
+    title: tr('Shells'),
     strandWeights: { keys: 3 },
     concepts: ['voicing:shell17', 'voicing:shell13'],
     prerequisites: ['s6.u1'],
@@ -180,12 +189,15 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "A chord symbol says which notes. It never says which ones to leave out, or where to put them. That choice is called a **voicing**, and this stage is a tour of the ones working pianists use.\n\nStart here: you do not need all four notes. A **shell** is two — the **root**, and the one note that decides the chord's identity, its **7th** or its **3rd**. Everything else is decoration.",
+            md: tr(
+              "A chord symbol says which notes. It never says which ones to leave out, or where to put them. That choice is called a **voicing**, and this stage is a tour of the ones working pianists use.\n\nStart here: you do not need all four notes. A **shell** is two — the **root**, and the one note that decides the chord's identity, its **7th** or its **3rd**. Everything else is decoration.",
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption:
+            caption: tr(
               'Dm7 · G7 · Cmaj7 as 1-7 shells in the left hand. Two notes each, and it still says ii-V-I.',
+            ),
             demo: {
               bpm: 60,
               loop: false,
@@ -201,23 +213,27 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Why bother? Because two notes leave your right hand free for the melody, they never sound muddy down low, and they are fast enough to keep up with a chart at tempo.',
+            md: tr(
+              'Why bother? Because two notes leave your right hand free for the melody, they never sound muddy down low, and they are fast enough to keep up with a chart at tempo.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Left hand: play the **1-7 shell of G7** — its root and its 7th.',
+            ask: tr('Left hand: play the **1-7 shell of G7** — its root and its 7th.'),
             notes: ['G', 'F'],
             count: 2,
             distinct: 'name',
-            hint: 'A dominant 7th is a whole step under the octave: G up to F. Two notes, and the chord is named.',
+            hint: tr(
+              'A dominant 7th is a whole step under the octave: G up to F. Two notes, and the chord is named.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Now the **1-3 shell of Cmaj7**.',
+            ask: tr('Now the **1-3 shell of Cmaj7**.'),
             notes: ['C', 'E'],
             count: 2,
             distinct: 'name',
-            hint: 'When the 3rd is the note that decides the mood, that is the one to keep.',
+            hint: tr('When the 3rd is the note that decides the mood, that is the one to keep.'),
           },
         ],
       },
@@ -275,8 +291,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u2.c1',
-        prompt:
+        prompt: tr(
           'Left hand plays shells and nothing else. Right hand does whatever it likes — and notice how much room it suddenly has. Playing less in the left hand is not a compromise; it is what makes the right hand possible.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: II_V_I, loops: 3, bpm: 72 }),
       },
     ],
@@ -285,7 +302,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u3',
     stageId: 's6',
     ordinal: 2,
-    title: 'Guide tones',
+    title: tr('Guide tones'),
     strandWeights: { keys: 3, theory: 1 },
     concepts: ['voicing:guidetones'],
     prerequisites: ['s6.u2'],
@@ -298,11 +315,13 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Here is the secret of ii-V-I. While the roots leap around, the **3rd and 7th barely move** — and when they do, they move by a half step. Those two notes are the **guide tones**, and they are what your ear is actually following.',
+            md: tr(
+              'Here is the secret of ii-V-I. While the roots leap around, the **3rd and 7th barely move** — and when they do, they move by a half step. Those two notes are the **guide tones**, and they are what your ear is actually following.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Dm7 → G7 → Cmaj7: watch F stay, C slide down to B. Roots in the left hand.',
+            caption: tr('Dm7 → G7 → Cmaj7: watch F stay, C slide down to B. Roots in the left hand.'),
             demo: {
               bpm: 60,
               loop: false,
@@ -321,23 +340,31 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Two notes in the right hand, one in the left, and the harmony is complete. This is the voicing to reach for when a chart moves faster than you can build full chords.',
+            md: tr(
+              'Two notes in the right hand, one in the left, and the harmony is complete. This is the voicing to reach for when a chart moves faster than you can build full chords.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Right hand: the guide tones of **Dm7** — its 3rd and 7th.',
+            ask: tr('Right hand: the guide tones of **Dm7** — its 3rd and 7th.'),
             notes: ['F', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'D–F–A–C: the 3rd is F, the 7th is C. Those two are the whole chord as far as your ear is concerned.',
+            hint: tr(
+              'D–F–A–C: the 3rd is F, the 7th is C. Those two are the whole chord as far as your ear is concerned.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Move to **G7**: one of those two notes stays, the other drops a half step. Play the new pair.',
+            ask: tr(
+              'Move to **G7**: one of those two notes stays, the other drops a half step. Play the new pair.',
+            ),
             notes: ['F', 'B'],
             count: 2,
             distinct: 'name',
-            hint: 'F is the 7th of G7 and stays put; C slides down to B, the 3rd. That half step is the whole ii–V motion.',
+            hint: tr(
+              'F is the 7th of G7 and stays put; C slides down to B, the 3rd. That half step is the whole ii–V motion.',
+            ),
           },
         ],
       },
@@ -375,8 +402,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u3.c1',
-        prompt:
+        prompt: tr(
           'Play only guide tones over the whole loop — two notes per chord, and let your hand find the version where they barely move. When the pair stops jumping, you have found the voicing a working pianist would have used.',
+        ),
         exercise: play({ key: F, palette: 'chordtones', roman: II_V_I, loops: 3, bpm: 70 }),
       },
     ],
@@ -385,7 +413,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u4',
     stageId: 's6',
     ordinal: 3,
-    title: 'Groove school: straight eighths',
+    title: tr('Groove school: straight eighths'),
     strandWeights: { keys: 3 },
     concepts: ['comp:straight8'],
     prerequisites: ['s6.u3'],
@@ -398,12 +426,15 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Chords with no rhythm are not music yet. **Comping** is playing the harmony *in time* — bass on the strong beats, chord stabs in the gaps.',
+            md: tr(
+              'Chords with no rhythm are not music yet. **Comping** is playing the harmony *in time* — bass on the strong beats, chord stabs in the gaps.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption:
+            caption: tr(
               'One bar of straight eighths over C: bass on 1 and 3, stabs on 2, the "and" of 3, and 4.',
+            ),
             demo: {
               bpm: 88,
               loop: true,
@@ -424,19 +455,27 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Play every note in the shown voicing at the shown beat. The score checks both the chord notes and their timing.',
+            md: tr(
+              'Play every note in the shown voicing at the shown beat. The score checks both the chord notes and their timing.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Count "1 and 2 and 3 and 4 and" out loud, twice. Then play a **C** exactly on the "and" of 2.',
+            ask: tr(
+              'Count "1 and 2 and 3 and 4 and" out loud, twice. Then play a **C** exactly on the "and" of 2.',
+            ),
             notes: ['C'],
             count: 1,
             distinct: 'octave',
-            hint: 'The offbeat is where a groove lives. Counting aloud is not a beginner crutch — it is how the placement gets accurate.',
+            hint: tr(
+              'The offbeat is where a groove lives. Counting aloud is not a beginner crutch — it is how the placement gets accurate.',
+            ),
           },
           {
             kind: 'text',
-            md: 'The pattern in this unit is one bar long and repeats: bass on **1** and **3**, chord on **2**, the "and" of **3**, and **4**. Learn the bar, and the chart takes care of itself.',
+            md: tr(
+              'The pattern in this unit is one bar long and repeats: bass on **1** and **3**, chord on **2**, the "and" of **3**, and **4**. Learn the bar, and the chart takes care of itself.',
+            ),
           },
         ],
       },
@@ -494,8 +533,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u4.c1',
-        prompt:
+        prompt: tr(
           'Comp along with the backing, but leave beat 1 of every second bar completely empty. Silence on a strong beat is the most conspicuous thing a rhythm section can do, and holding it is harder than playing.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3, bpm: 84 }),
       },
     ],
@@ -504,7 +544,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u5',
     stageId: 's6',
     ordinal: 4,
-    title: 'Groove school: ballad & boom-chuck',
+    title: tr('Groove school: ballad & boom-chuck'),
     strandWeights: { keys: 3, create: 1 },
     concepts: ['comp:ballad', 'comp:boomchuck'],
     prerequisites: ['s6.u4'],
@@ -517,23 +557,27 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Two more grooves for the toolkit. **Ballad accompaniment**: play the bass on beat 1, then the right-hand chord on beats 2, 3 and 4. Repeat that rhythm for each bar.',
+            md: tr(
+              'Two more grooves for the toolkit. **Ballad accompaniment**: play the bass on beat 1, then the right-hand chord on beats 2, 3 and 4. Repeat that rhythm for each bar.',
+            ),
           },
           {
             kind: 'text',
-            md: '**Boom-chuck**: bass on 1 and 3, chord on 2 and 4. It is the oldest trick in the book — ragtime, country, folk, half of everything — and it works because it puts the pulse where a foot taps.',
+            md: tr(
+              '**Boom-chuck**: bass on 1 and 3, chord on 2 and 4. It is the oldest trick in the book — ragtime, country, folk, half of everything — and it works because it puts the pulse where a foot taps.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Boom-chuck on a C bar. Play the two **bass** notes it uses: C, then G.',
+            ask: tr('Boom-chuck on a C bar. Play the two **bass** notes it uses: C, then G.'),
             notes: ['C', 'G'],
             count: 2,
             distinct: 'name',
-            hint: 'Root on 1, fifth on 3 — the alternating bass. The chord answers on 2 and 4.',
+            hint: tr('Root on 1, fifth on 3 — the alternating bass. The chord answers on 2 and 4.'),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'One bar of boom-chuck over C: bass, chord, bass, chord.',
+            caption: tr('One bar of boom-chuck over C: bass, chord, bass, chord.'),
             demo: {
               bpm: 92,
               loop: true,
@@ -625,8 +669,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u5.c1',
-        prompt:
+        prompt: tr(
           'Play the loop three times: once boom-chuck, once ballad, once straight eighths. Same chords, three different songs. Keep the one that fits the mood you want, and notice that you chose an arrangement rather than a chord.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'vi', 'IV', 'V'], loops: 3, bpm: 80 }),
       },
     ],
@@ -635,7 +680,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u6',
     stageId: 's6',
     ordinal: 5,
-    title: 'Melody on top',
+    title: tr('Melody on top'),
     strandWeights: { keys: 3 },
     concepts: ['texture:melody-lh'],
     prerequisites: ['s6.u5'],
@@ -648,19 +693,23 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The full arrangement: **left hand carries the harmony, right hand sings the tune.** This is why shells matter — a two-note left hand leaves the right hand somewhere to go.',
+            md: tr(
+              'The full arrangement: **left hand carries the harmony, right hand sings the tune.** This is why shells matter — a two-note left hand leaves the right hand somewhere to go.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Northline is in G. Play the **1-7 shell of its ii chord**, Am7: A and G.',
+            ask: tr('Northline is in G. Play the **1-7 shell of its ii chord**, Am7: A and G.'),
             notes: ['A', 'G'],
             count: 2,
             distinct: 'name',
-            hint: 'Root and 7th, left hand, low. The right hand is now free above it.',
+            hint: tr('Root and 7th, left hand, low. The right hand is now free above it.'),
           },
           {
             kind: 'text',
-            md: 'One warning about the right hand: these charts carry chords, not written melodies. What the app scores is the harmony. The tune on top is yours, and nobody is marking it.',
+            md: tr(
+              'One warning about the right hand: these charts carry chords, not written melodies. What the app scores is the harmony. The tune on top is yours, and nobody is marking it.',
+            ),
           },
         ],
       },
@@ -715,8 +764,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u6.c1',
-        prompt:
+        prompt: tr(
           'Left hand: shells, quietly. Right hand: one line, and make it sing rather than run. Give every phrase a breath at the end — a melody that never rests is just an exercise with a nice tone.',
+        ),
         exercise: play({
           key: { tonic: 'G', mode: 'major' },
           palette: 'chordtones',
@@ -731,7 +781,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u7',
     stageId: 's6',
     ordinal: 6,
-    title: 'Transpose anything',
+    title: tr('Transpose anything'),
     strandWeights: { keys: 3, theory: 2 },
     concepts: ['skill:transpose'],
     prerequisites: ['s6.u6'],
@@ -744,29 +794,37 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: '"Can we do it a third lower?" — the question every singer asks. The answer is not to rewrite the chart. **Read it in romans, play it in the new key.**',
+            md: tr(
+              '"Can we do it a third lower?" — the question every singer asks. The answer is not to rewrite the chart. **Read it in romans, play it in the new key.**',
+            ),
           },
           {
             kind: 'text',
-            md: "The workflow: name the progression by degree (I-vi-ii-V), find the new key's I, and let the shapes follow. You did this in Stage 3 without knowing it was a professional skill.",
+            md: tr(
+              "The workflow: name the progression by degree (I-vi-ii-V), find the new key's I, and let the shapes follow. You did this in Stage 3 without knowing it was a professional skill.",
+            ),
           },
           {
             kind: 'progressionCard',
             roman: ['I', 'vi', 'ii', 'V'],
             key: C,
-            songRefs: ['The turnaround that ends a thousand standards'],
+            songRefs: [tr('The turnaround that ends a thousand standards')],
           },
           {
             kind: 'playCheck',
-            ask: 'Same turnaround, down a third: play the **I–vi–ii–V roots in A♭** — A♭, F, B♭, E♭.',
+            ask: tr('Same turnaround, down a third: play the **I–vi–ii–V roots in A♭** — A♭, F, B♭, E♭.'),
             notes: ['Ab', 'F', 'Bb', 'Eb'],
             count: 4,
             distinct: 'name',
-            hint: 'Do not translate chord by chord. Find the new I, then let the degrees fall where they always do.',
+            hint: tr(
+              'Do not translate chord by chord. Find the new I, then let the degrees fall where they always do.',
+            ),
           },
           {
             kind: 'text',
-            md: 'That is the whole workflow, and it took you four notes. A singer asks for a different key; you move one anchor and the shapes follow.',
+            md: tr(
+              'That is the whole workflow, and it took you four notes. A singer asks for a different key; you move one anchor and the shapes follow.',
+            ),
           },
         ],
       },
@@ -821,8 +879,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u7.c1',
-        prompt:
+        prompt: tr(
           'The backing plays the turnaround in A♭ — a key you have drilled once. Play along without naming a single letter to yourself. If the numbers are doing the work, the key stops mattering, and that is the skill this unit is actually selling.',
+        ),
         exercise: play({
           key: { tonic: 'Ab', mode: 'major' },
           palette: 'chordtones',
@@ -837,7 +896,7 @@ export const stage6Units: Unit[] = [
     id: 's6.u8',
     stageId: 's6',
     ordinal: 7,
-    title: 'The unseen chart',
+    title: tr('The unseen chart'),
     strandWeights: { keys: 3 },
     concepts: ['skill:sightcomp'],
     prerequisites: ['s6.u7'],
@@ -850,23 +909,33 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'This one is generated fresh: a chart nobody has ever played, in a key chosen for you. Everything in it is familiar — the forms and the chords are ones you already know — but the exact sequence is new.',
+            md: tr(
+              'This one is generated fresh: a chart nobody has ever played, in a key chosen for you. Everything in it is familiar — the forms and the chords are ones you already know — but the exact sequence is new.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Two passes allowed. First time through, look ahead a bar and keep the left hand simple. Do not stop to fix mistakes — **keeping time matters more than any single chord**.',
+            md: tr(
+              'Two passes allowed. First time through, look ahead a bar and keep the left hand simple. Do not stop to fix mistakes — **keeping time matters more than any single chord**.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'One habit first. Play the **1-7 shell of B♭7** — the fallback voicing for a chord you meet at speed.',
+            ask: tr(
+              'One habit first. Play the **1-7 shell of B♭7** — the fallback voicing for a chord you meet at speed.',
+            ),
             notes: ['Bb', 'Ab'],
             count: 2,
             distinct: 'name',
-            hint: 'Root and flat 7th. When a bar arrives faster than you can think, this is what your left hand should do without asking.',
+            hint: tr(
+              'Root and flat 7th. When a bar arrives faster than you can think, this is what your left hand should do without asking.',
+            ),
           },
           {
             kind: 'text',
-            md: 'That is the sight-reading contract: a chord you half-recognise still gets a root and a 7th, on time. Full voicings are for the second pass.',
+            md: tr(
+              'That is the sight-reading contract: a chord you half-recognise still gets a root and a 7th, on time. Full voicings are for the second pass.',
+            ),
           },
         ],
       },
@@ -908,8 +977,9 @@ export const stage6Units: Unit[] = [
       {
         kind: 'create',
         id: 's6.u8.c1',
-        prompt:
+        prompt: tr(
           'No chart at all now — just a loop. Comp it the way you would a chart you had never seen: simple left hand, look ahead, no stopping. Reading is a nerve as much as a skill, and the nerve is trained by playing through the wrong note rather than around it.',
+        ),
         exercise: play({ key: F, palette: 'chordtones', roman: ['I', 'vi', 'ii', 'V'], loops: 3, bpm: 72 }),
       },
     ],
@@ -918,7 +988,7 @@ export const stage6Units: Unit[] = [
     id: 's6.cp',
     stageId: 's6',
     ordinal: 8,
-    title: 'Checkpoint: Comping',
+    title: tr('Checkpoint: Comping'),
     strandWeights: { keys: 3, theory: 1 },
     concepts: [],
     prerequisites: ['s6.u8'],
@@ -931,7 +1001,9 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The comping test: a chart you have never seen, the same turnaround in two keys, and shells and guide tones at tempo.',
+            md: tr(
+              'The comping test: a chart you have never seen, the same turnaround in two keys, and shells and guide tones at tempo.',
+            ),
           },
         ],
       },

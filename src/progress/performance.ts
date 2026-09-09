@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Take } from '@/engine/replay';
 
 export interface PerformanceMilestone {
@@ -31,17 +32,20 @@ export function performanceMilestones(takes: Take[]): PerformanceMilestone[] {
       bpm: take.bpm ?? take.exercise.bpm ?? null,
       hand: take.exercise.hand,
       conditions: [
-        take.exercise.mode === 'wait' ? 'Untimed recall' : 'Timed',
+        take.exercise.mode === 'wait' ? tr('Untimed recall') : tr('Timed'),
         typeof take.exercise.params['arrangement'] === 'string'
-          ? take.exercise.params['arrangement']
-          : take.exercise.rung,
+          ? tr(take.exercise.params['arrangement'])
+          : tr(take.exercise.rung),
         typeof take.exercise.params['phrase'] === 'number' && take.exercise.params['phrase'] >= 0
-          ? `Bars ${take.exercise.params['phrase'] + 1}-${take.exercise.params['phrase'] + 2}`
+          ? tr('Bars {v0}-{v1}', {
+              v0: take.exercise.params['phrase'] + 1,
+              v1: take.exercise.params['phrase'] + 2,
+            })
           : take.exercise.generator === 'phrase'
-            ? 'Whole piece'
+            ? tr('Whole piece')
             : null,
         typeof take.exercise.params['offset'] === 'number' && take.exercise.params['offset'] !== 0
-          ? `Transposed ${take.exercise.params['offset']} semitones`
+          ? tr('Transposed {v0} semitones', { v0: take.exercise.params['offset'] })
           : null,
       ]
         .filter(Boolean)

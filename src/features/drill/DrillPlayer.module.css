@@ -88,3 +88,10 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
+
+.skipBar {
+  display: flex;
+  justify-content: flex-end;
+  padding: var(--space-2) var(--space-4);
+  flex-shrink: 0;
+}

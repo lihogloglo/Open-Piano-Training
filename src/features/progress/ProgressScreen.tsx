@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { getUnit } from '@/curriculum/content';
 import { performanceMilestones } from '@/progress/performance';
 import { useState } from 'react';
@@ -59,14 +60,14 @@ export function ProgressScreen() {
   if (!tourist && atomRows.length === 0 && takes.length === 0 && studies.length === 0 && units.length === 0) {
     return (
       <div className={styles['wrap']}>
-        <h1>Progress</h1>
+        <h1>{tr('Progress')}</h1>
         <div className={styles['empty']}>
-          <p>Nothing to show yet. This page fills in as you play.</p>
+          <p>{tr('Nothing to show yet. This page fills in as you play.')}</p>
           <p className={styles['muted']}>
-            Ratings, a recall map of all 12 keys, your best takes, and badges all live here.
+            {tr('Ratings, a recall map of all 12 keys, your best takes, and badges all live here.')}
           </p>
           <Button variant="primary" onClick={() => void navigate('/practice')}>
-            Start today&apos;s session
+            {tr("Start today's session")}
           </Button>
         </div>
       </div>
@@ -76,35 +77,42 @@ export function ProgressScreen() {
   const drillCell = (cell: HeatCell): void => {
     const drillable = cell.atomIds.filter((id) => tracked.has(id) && ATOMS.get(id)?.drill);
     if (drillable.length === 0) {
-      toast('Nothing learned here yet. The path will get you there.');
+      toast(tr('Nothing learned here yet. The path will get you there.'));
       return;
     }
     void startWorkout().then((plan) => {
-      if (plan.blocks.length === 0) toast('Nothing due right now. Nice!');
+      if (plan.blocks.length === 0) toast(tr('Nothing due right now. Nice!'));
       else void navigate(`/drill/${plan.id}/0`);
     });
   };
 
   return (
     <div className={styles['wrap']}>
-      <h1>Progress</h1>
+      <h1>{tr('Progress')}</h1>
 
       <section className={styles['section']}>
-        <h2>Musical achievements</h2>
+        <h2>{tr('Musical achievements')}</h2>
         <p>
-          Completed means explored. Independent means passed without hints. Retained means repeated under the
-          same conditions on another day.
+          {tr(
+            'Completed means explored. Independent means passed without hints. Retained means repeated under the same conditions on another day.',
+          )}
         </p>
         <details>
-          <summary>Completed lessons and self-checks ({units.length + studies.length})</summary>
+          <summary>
+            {tr('Completed lessons and self-checks (')}
+            {units.length + studies.length})
+          </summary>
           {units.map((u) => (
             <p key={u.unitId}>
-              {getUnit(u.unitId)?.title ?? u.unitId} - Completed{u.flagged ? ' (extra review due)' : ''}
+              {getUnit(u.unitId)?.title ?? u.unitId}
+              {tr(' - Completed')}
+              {u.flagged ? tr(' (extra review due)') : ''}
             </p>
           ))}
           {studies.map((s) => (
             <p key={s.key}>
-              {String((s.value as { title?: string }).title ?? s.key)} - Completed (self-check)
+              {tr(String((s.value as { title?: string }).title ?? s.key))}
+              {tr(' - Completed (self-check)')}
             </p>
           ))}
         </details>
@@ -112,17 +120,17 @@ export function ProgressScreen() {
           .slice(0, 12)
           .map((m, i) => (
             <p key={i}>
-              {getUnit(m.title)?.title ?? m.title} - {m.level} -{' '}
-              {m.hand === 'both' ? 'Both hands' : m.hand === 'lh' ? 'Left hand' : 'Right hand'}
-              {m.bpm ? ` - ${m.bpm} BPM` : ' - Untimed'} - {m.conditions}
+              {getUnit(m.title)?.title ?? tr(m.title)} - {tr(m.level)} -{' '}
+              {m.hand === 'both' ? tr('Both hands') : m.hand === 'lh' ? tr('Left hand') : tr('Right hand')}
+              {m.bpm ? tr(' - {v0} BPM', { v0: m.bpm }) : tr(' - Untimed')} - {m.conditions}
             </p>
           ))}
       </section>
       <section className={styles['section']}>
         <div className={styles['sectionHead']}>
-          <h2>Ratings</h2>
+          <h2>{tr('Ratings')}</h2>
           <p className={styles['muted']}>
-            Always optional. A challenge only tests what you&apos;ve been taught.
+            {tr("Always optional. A challenge only tests what you've been taught.")}
           </p>
         </div>
         <div className={styles['dials']}>
@@ -134,13 +142,13 @@ export function ProgressScreen() {
             return (
               <div key={strand} className={styles['dialCard']} data-locked={!challengeable}>
                 <RatingDial level={level} label={STRAND_LABEL[strand]} pending={!row} />
-                <Sparkline values={history} label={`${STRAND_LABEL[strand]} trend`} />
+                <Sparkline values={history} label={tr('{v0} trend', { v0: STRAND_LABEL[strand] })} />
                 <Button
                   variant={challengeable ? 'secondary' : 'ghost'}
                   disabled={!challengeable}
                   onClick={() => void navigate(`/rating/${strand}`)}
                 >
-                  {challengeable ? (row ? 'Challenge again' : 'Take a challenge') : 'Locked'}
+                  {challengeable ? (row ? tr('Challenge again') : tr('Take a challenge')) : tr('Locked')}
                 </Button>
               </div>
             );
@@ -150,19 +158,19 @@ export function ProgressScreen() {
 
       <section className={styles['section']}>
         <div className={styles['sectionHead']}>
-          <h2>Recall map</h2>
-          <p>Review memory strength. Use performances above to track playing without hints.</p>
+          <h2>{tr('Recall map')}</h2>
+          <p>{tr('Review memory strength. Use performances above to track playing without hints.')}</p>
           <div className={styles['legend']}>
-            <span>Not started</span>
+            <span>{tr('Not started')}</span>
             <span className={styles['legendSwatch']} style={{ background: heatColor(0) }} />
             <span className={styles['legendSwatch']} style={{ background: heatColor(0.4) }} />
             <span className={styles['legendSwatch']} style={{ background: heatColor(1) }} />
-            <span>Strong recall</span>
+            <span>{tr('Strong recall')}</span>
           </div>
         </div>
         <div className={styles['heatScroll']}>
           <table className={styles['heatGrid']}>
-            <caption className="sr-only">Recall by key and skill family</caption>
+            <caption className="sr-only">{tr('Recall by key and skill family')}</caption>
             <thead>
               <tr>
                 <th />
@@ -181,8 +189,8 @@ export function ProgressScreen() {
                     const cell = cells.find((c) => c.key === key && c.family === family.id)!;
                     const state =
                       cell.tracked === 0
-                        ? 'not started'
-                        : `${cell.fluent} of ${cell.tracked} with strong recall`;
+                        ? tr('not started')
+                        : tr('{v0} of {v1} with strong recall', { v0: cell.fluent, v1: cell.tracked });
                     return (
                       <td key={key}>
                         <button
@@ -190,8 +198,8 @@ export function ProgressScreen() {
                           style={{ background: heatColor(cell.value) }}
                           disabled={cell.tracked === 0}
                           onClick={() => drillCell(cell)}
-                          title={`${family.label} in ${key}: ${state}`}
-                          aria-label={`${family.label} in ${key}, ${state}`}
+                          title={tr('{v0} in {v1}: {v2}', { v0: family.label, v1: key, v2: state })}
+                          aria-label={tr('{v0} in {v1}, {v2}', { v0: family.label, v1: key, v2: state })}
                         />
                       </td>
                     );
@@ -205,21 +213,24 @@ export function ProgressScreen() {
 
       {pairs.length > 0 && (
         <section className={styles['section']}>
-          <h2>Then vs now</h2>
+          <h2>{tr('Then vs now')}</h2>
           {openPair ? (
             <div className={styles['pairWrap']}>
               <div className={styles['pairHead']}>
                 <div>
                   <strong>{openPair.label}</strong>
-                  <p className={styles['muted']}>{openPair.daysApart} days apart</p>
+                  <p className={styles['muted']}>
+                    {openPair.daysApart}
+                    {tr(' days apart')}
+                  </p>
                 </div>
                 <Button variant="ghost" onClick={() => setOpenPair(null)}>
-                  Close
+                  {tr('Close')}
                 </Button>
               </div>
               <div className={styles['pairGrid']}>
-                <ReplayPlayer take={openPair.then} title="Then" compact />
-                <ReplayPlayer take={openPair.now} title="Now" compact />
+                <ReplayPlayer take={openPair.then} title={tr('Then')} compact />
+                <ReplayPlayer take={openPair.now} title={tr('Now')} compact />
               </div>
             </div>
           ) : (
@@ -229,7 +240,10 @@ export function ProgressScreen() {
                   <div className={styles['replayHead']}>
                     <div>
                       <p className={styles['replayTitle']}>{pair.label}</p>
-                      <p className={styles['muted']}>{pair.daysApart} days apart</p>
+                      <p className={styles['muted']}>
+                        {pair.daysApart}
+                        {tr(' days apart')}
+                      </p>
                     </div>
                   </div>
                   <Button
@@ -239,7 +253,7 @@ export function ProgressScreen() {
                       void markThenVsNowViewed();
                     }}
                   >
-                    Compare
+                    {tr('Compare')}
                   </Button>
                 </div>
               ))}
@@ -249,9 +263,11 @@ export function ProgressScreen() {
       )}
 
       <section className={styles['section']}>
-        <h2>Best takes</h2>
+        <h2>{tr('Best takes')}</h2>
         {starred.length === 0 ? (
-          <p className={styles['muted']}>Three-star takes get saved here so you can hear them again.</p>
+          <p className={styles['muted']}>
+            {tr('Three-star takes get saved here so you can hear them again.')}
+          </p>
         ) : (
           <div className={styles['replayList']}>
             {starred.map((take) => (
@@ -267,7 +283,7 @@ export function ProgressScreen() {
       </section>
 
       <section className={styles['section']}>
-        <h2>Badges</h2>
+        <h2>{tr('Badges')}</h2>
         <div className={styles['badgeWall']}>
           {BADGES.map((badge) => {
             const earned = badges.has(badge.id);

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useRunStore, type RunPhase } from '@/store/runStore';
 import { ExerciseSequence } from './ExerciseSequence';
 import { Button } from './Button';
@@ -42,8 +43,8 @@ export function TransportBar({
   const running = preview || phase === 'running' || phase === 'count-in';
   const abortRun = useRunStore((s) => s.abortRun);
   const label = preview
-    ? 'Stop demonstration'
-    : (startLabel ?? (phase === 'done' ? 'Try again' : running ? 'Restart' : 'Start'));
+    ? tr('Stop demonstration')
+    : (startLabel ?? (phase === 'done' ? tr('Try again') : running ? tr('Restart') : tr('Start')));
   const beatInBar = beatIndex === null ? null : ((beatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar;
   // Starting before the samples land would run the exercise in silence.
   const loading = useSamplerLoading();
@@ -58,16 +59,17 @@ export function TransportBar({
           variant="primary"
           onClick={preview ? abortRun : onStart}
           disabled={!preview && (!canStart || loading)}
-          title={loading ? 'Waiting for the piano sounds to load' : undefined}
+          title={loading ? tr('Waiting for the piano sounds to load') : undefined}
         >
-          {loading ? 'Loading sounds…' : label}
+          {loading ? tr('Loading sounds…') : label}
         </Button>
       )}
 
-      {preview && <span role="status">Watch and listen. Play after the count-in.</span>}
+      {preview && <span role="status">{tr('Watch and listen. Play after the count-in.')}</span>}
       {bpm !== null && (
         <span className={styles['bpm']}>
-          <span className="tabular">{bpm}</span> BPM
+          <span className="tabular">{bpm}</span>
+          {tr(' BPM')}
         </span>
       )}
 
@@ -76,12 +78,12 @@ export function TransportBar({
           {Array.from({ length: beatsPerBar }, (_, i) => (
             <span key={i} className={styles['beatDot']} data-active={running && beatInBar === i} />
           ))}
-          {phase === 'count-in' && <span className={styles['countinLabel']}>count-in</span>}
+          {phase === 'count-in' && <span className={styles['countinLabel']}>{tr('count-in')}</span>}
         </span>
       )}
 
       {pips && (
-        <span className={styles['pips']} aria-label="Tempo ladder">
+        <span className={styles['pips']} aria-label={tr('Tempo ladder')}>
           {pips.tempos.map((t, i) => (
             <button
               key={i}
@@ -89,7 +91,7 @@ export function TransportBar({
               data-lit={pips.lit[i]}
               data-current={i === pips.current}
               onClick={() => pips.onSelect?.(i)}
-              title={`${Math.round(t * 100)}% tempo`}
+              title={tr('{v0}% tempo', { v0: Math.round(t * 100) })}
             >
               {Math.round(t * 100)}%
             </button>

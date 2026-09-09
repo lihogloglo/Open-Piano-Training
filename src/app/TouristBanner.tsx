@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { Link } from 'react-router';
 import { useSettingsStore } from '@/store/settingsStore';
 import styles from './AppShell.module.css';
@@ -11,8 +12,8 @@ export function TouristBanner() {
   if (!tourist) return null;
   return (
     <div className={styles['offlineBanner']} role="status" data-testid="tourist-banner">
-      Tourist mode. Every unit is open, and nothing you do is recorded.{' '}
-      <Link to="/settings">Turn it off in Settings</Link>
+      {tr('Tourist mode. Every unit is open, and nothing you do is recorded.')}{' '}
+      <Link to="/settings">{tr('Turn it off in Settings')}</Link>
     </div>
   );
 }

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import type { ExerciseDef, ExerciseInstance, Target } from '../types';
 
@@ -14,7 +15,7 @@ export function generateKeyGroupFind(def: ExerciseDef, seed: number): ExerciseIn
   const targets: Target[] = Array.from({ length: params.count }, () => ({
     kind: 'pitch-class-group',
     pitchClasses: BLACK_KEY_PITCH_CLASSES,
-    label: 'any black key',
+    label: tr('any black key'),
   }));
 
   return {
@@ -22,9 +23,9 @@ export function generateKeyGroupFind(def: ExerciseDef, seed: number): ExerciseIn
     seed,
     targets,
     prompt: {
-      title: 'Find the black keys',
-      detail: 'Play any black key. Any octave counts.',
-      perTarget: targets.map(() => ({ label: 'Play any black key', detail: 'Any octave counts' })),
+      title: tr('Find the black keys'),
+      detail: tr('Play any black key. Any octave counts.'),
+      perTarget: targets.map(() => ({ label: tr('Play any black key'), detail: tr('Any octave counts') })),
     },
   };
 }

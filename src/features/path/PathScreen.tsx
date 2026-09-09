@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { MUSIC_LESSONS } from '@/curriculum/content/musicianship';
 import { Link } from 'react-router';
 import { useEffect, useRef, useState } from 'react';
@@ -16,11 +17,11 @@ import { toast } from '@/ui/Toast';
 import styles from './PathScreen.module.css';
 
 const STRAND_LABEL: Record<string, string> = {
-  ear: 'Hear',
-  theory: 'Name',
-  keys: 'Play',
-  read: 'Read',
-  create: 'Make',
+  ear: tr('Hear'),
+  theory: tr('Name'),
+  keys: tr('Play'),
+  read: tr('Read'),
+  create: tr('Make'),
 };
 
 function starsFor(score: number): 0 | 1 | 2 | 3 {
@@ -51,9 +52,9 @@ export function PathScreen() {
 
   return (
     <div className={styles['wrap']}>
-      <h1 className={styles['title']}>The Path</h1>
+      <h1 className={styles['title']}>{tr('The Path')}</h1>
       <p>
-        <Link to="/studio">At the piano: rhythm, technique, ear practice, and complete pieces</Link>
+        <Link to="/studio">{tr('At the piano: rhythm, technique, ear practice, and complete pieces')}</Link>
       </p>
       {sections.map(({ stage, nodes }) => {
         const real = nodes.filter((n) => n.unit);
@@ -63,7 +64,10 @@ export function PathScreen() {
             <div className={styles['stageHeader']}>
               <div className={styles['stageText']}>
                 <h2>
-                  <span className={styles['stageNo']}>Stage {stage.ordinal}</span>
+                  <span className={styles['stageNo']}>
+                    {tr('Stage ')}
+                    {stage.ordinal}
+                  </span>
                   {stage.title}
                 </h2>
                 <p className={styles['tagline']}>{stage.tagline}</p>
@@ -79,7 +83,8 @@ export function PathScreen() {
               <div className={styles['stageRing']}>
                 <ProgressRing fraction={real.length ? passed / real.length : 0} />
                 <span className={styles['stageCount']}>
-                  {passed}/{real.length} units
+                  {passed}/{real.length}
+                  {tr(' units')}
                 </span>
               </div>
             </div>
@@ -106,7 +111,7 @@ export function PathScreen() {
                       if (node.kind === 'review') {
                         void startWorkout().then((plan) => {
                           if (plan.blocks.length === 0) {
-                            toast('Nothing due to review. Keep walking the path!');
+                            toast(tr('Nothing due to review. Keep walking the path!'));
                             return;
                           }
                           void navigate(`/drill/${plan.id}/0`);
@@ -124,7 +129,7 @@ export function PathScreen() {
                       <span className={styles['nodeTitle']}>
                         {node.title}
                         {row?.flagged && (
-                          <span className={styles['flag']} title="Marked for extra review">
+                          <span className={styles['flag']} title={tr('Marked for extra review')}>
                             {' '}
                             *
                           </span>
@@ -132,11 +137,12 @@ export function PathScreen() {
                       </span>
                       <span className={styles['nodeMeta']}>
                         {node.kind === 'checkpoint'
-                          ? 'Checkpoint · '
+                          ? tr('Checkpoint · ')
                           : node.kind === 'review'
-                            ? 'Review · '
+                            ? tr('Review · ')
                             : ''}
-                        {node.minutes} min
+                        {node.minutes}
+                        {tr(' min')}
                         {row && row.bestScore > 0 && status === 'passed' && (
                           <StarRating stars={starsFor(row.bestScore)} size={12} />
                         )}
@@ -159,29 +165,33 @@ export function PathScreen() {
                 {STRAND_LABEL[s] ?? s}
               </span>
             ))}
-            <span className={styles['strandChip']}>{selected.minutes} min</span>
+            <span className={styles['strandChip']}>
+              {selected.minutes}
+              {tr(' min')}
+            </span>
           </div>
           {tourist && statuses.get(selected.id) === 'locked' && (
             <p className={styles['touristNote']}>
-              Tourist mode. You can look at this unit now. Nothing you play here is recorded.
+              {tr('Tourist mode. You can look at this unit now. Nothing you play here is recorded.')}
             </p>
           )}
           {progress.get(selected.id)?.status === 'passed' && (
             <p>
-              Best score: {Math.round((progress.get(selected.id)?.bestScore ?? 0) * 100)}%. Replay any time,
-              your best stands.
+              {tr('Best score: ')}
+              {Math.round((progress.get(selected.id)?.bestScore ?? 0) * 100)}
+              {tr('%. Replay any time, your best stands.')}
             </p>
           )}
           <div className={styles['modalActions']}>
             <Button variant="primary" size="l" onClick={() => void navigate(`/lesson/${selected.id}`)}>
               {statuses.get(selected.id) === 'locked'
-                ? 'Preview'
+                ? tr('Preview')
                 : progress.get(selected.id)?.status === 'passed'
-                  ? 'Redo'
-                  : 'Start'}
+                  ? tr('Redo')
+                  : tr('Start')}
             </Button>
             <Button variant="ghost" onClick={() => setSelected(null)}>
-              Not now
+              {tr('Not now')}
             </Button>
           </div>
         </Modal>

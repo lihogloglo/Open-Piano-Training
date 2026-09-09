@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { PIECES } from '@/curriculum/content/musicianship';
 import { Link } from 'react-router';
 import { useNavigate } from 'react-router';
@@ -32,17 +33,19 @@ export function SongsScreen() {
 
   return (
     <div className={styles['wrap']}>
-      <h1>Songs</h1>
-      <h2>Complete beginner pieces</h2>
-      <p>Original melodies with demonstrations, phrase loops, fingering, and three arrangements.</p>
+      <h1>{tr('Songs')}</h1>
+      <h2>{tr('Complete beginner pieces')}</h2>
+      <p>{tr('Original melodies with demonstrations, phrase loops, fingering, and three arrangements.')}</p>
       {PIECES.map((p) => (
         <p key={p.id}>
-          <Link to={`/studio/${p.id}`}>{p.title}</Link> - Suggested from Stage {p.stage}
+          <Link to={`/studio/${p.id}`}>{p.title}</Link>
+          {tr(' - Suggested from Stage ')}
+          {p.stage}
         </p>
       ))}
-      <h2>Chord charts</h2>
+      <h2>{tr('Chord charts')}</h2>
       <p className={styles['sub']}>
-        Original charts that use exactly what the path has taught. Every song works in every key.
+        {tr('Original charts that use exactly what the path has taught. Every song works in every key.')}
       </p>
       <div className={styles['grid']}>
         {SONGS.map((song) => {
@@ -66,11 +69,22 @@ export function SongsScreen() {
                 <span className={styles['style']}>{song.styleRef}</span>
                 <span className={styles['meta']}>
                   <span>
-                    {song.key.tonic} {song.key.mode}
+                    {song.key.tonic} {tr(song.key.mode)}
                   </span>
-                  <span className="tabular">{song.bpm} BPM</span>
-                  <span className="tabular">{bars} bars</span>
-                  {locked && <span className={styles['lockNote']}>unlocks in Stage {song.stage}</span>}
+                  <span className="tabular">
+                    {song.bpm}
+                    {tr(' BPM')}
+                  </span>
+                  <span className="tabular">
+                    {bars}
+                    {tr(' bars')}
+                  </span>
+                  {locked && (
+                    <span className={styles['lockNote']}>
+                      {tr('unlocks in Stage ')}
+                      {song.stage}
+                    </span>
+                  )}
                 </span>
                 <span className={styles['romans']}>
                   {[...new Set(song.romanized)].slice(0, 6).map((r) => (
@@ -85,7 +99,7 @@ export function SongsScreen() {
         })}
       </div>
       {!tourist && getUnit('s1.u7') && reached < 1 && (
-        <p className={styles['sub']}>Your first song opens with Stage 1, a few units away.</p>
+        <p className={styles['sub']}>{tr('Your first song opens with Stage 1, a few units away.')}</p>
       )}
     </div>
   );

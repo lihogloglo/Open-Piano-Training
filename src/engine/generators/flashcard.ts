@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { keySignature, type KeyContext } from '@/theory/keys';
 import { namePc } from '@/theory/notes';
@@ -55,18 +56,18 @@ const INTERVAL_SEMITONES: Record<string, number> = {
 };
 
 const INTERVAL_NAMES: Record<string, string> = {
-  m2: 'minor 2nd',
-  M2: 'major 2nd',
-  m3: 'minor 3rd',
-  M3: 'major 3rd',
-  P4: 'perfect 4th',
-  TT: 'tritone',
-  P5: 'perfect 5th',
-  m6: 'minor 6th',
-  M6: 'major 6th',
-  m7: 'minor 7th',
-  M7: 'major 7th',
-  P8: 'octave',
+  m2: tr('minor 2nd'),
+  M2: tr('major 2nd'),
+  m3: tr('minor 3rd'),
+  M3: tr('major 3rd'),
+  P4: tr('perfect 4th'),
+  TT: tr('tritone'),
+  P5: tr('perfect 5th'),
+  m6: tr('minor 6th'),
+  M6: tr('major 6th'),
+  m7: tr('minor 7th'),
+  M7: tr('major 7th'),
+  P8: tr('octave'),
 };
 
 /**
@@ -89,7 +90,10 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         if (cardKey === prev && (p.roots.length > 1 || p.qualities.length > 1)) continue;
         prev = cardKey;
         targets.push(freeChord(root, quality));
-        perTarget.push({ label: `Spell ${chordSymbol(root, quality)}`, detail: 'Play it in any octave' });
+        perTarget.push({
+          label: tr('Spell {v0}', { v0: chordSymbol(root, quality) }),
+          detail: tr('Play it in any octave'),
+        });
       } else if (p.kind === 'roman') {
         const key = rng.pick(p.keys);
         const roman = rng.pick(p.romans);
@@ -99,8 +103,8 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         const chord = parseRoman(roman, key);
         targets.push(freeChord(chord.root, chord.quality));
         perTarget.push({
-          label: `${roman} in ${key.tonic} ${key.mode} is…?`,
-          detail: 'Play the chord — any octave',
+          label: tr('{v0} in {v1} {v2} is…?', { v0: roman, v1: key.tonic, v2: key.mode }),
+          detail: tr('Play the chord — any octave'),
         });
       } else {
         const root = rng.pick(p.roots);
@@ -114,13 +118,13 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         targets.push({
           kind: 'set',
           midis,
-          label: `${INTERVAL_NAMES[interval]} above ${display}`,
+          label: tr('{v0} above {v1}', { v0: INTERVAL_NAMES[interval], v1: display }),
           octaveFlexible: true,
           transposeOnly: true,
         });
         perTarget.push({
-          label: `Play a ${INTERVAL_NAMES[interval]} above ${display}`,
-          detail: 'Both notes together — any octave',
+          label: tr('Play a {v0} above {v1}', { v0: INTERVAL_NAMES[interval], v1: display }),
+          detail: tr('Both notes together — any octave'),
         });
       }
       break;
@@ -133,13 +137,17 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
     beatsPerTarget: 2,
     prompt: {
       title:
-        p.kind === 'spell' ? 'Spelling drill' : p.kind === 'roman' ? 'Roman numeral drill' : 'Interval drill',
+        p.kind === 'spell'
+          ? tr('Spelling drill')
+          : p.kind === 'roman'
+            ? tr('Roman numeral drill')
+            : tr('Interval drill'),
       detail:
         p.kind === 'spell'
-          ? 'Build each chord from its symbol'
+          ? tr('Build each chord from its symbol')
           : p.kind === 'roman'
-            ? 'Turn each numeral into the chord it names'
-            : 'Measure up from each root',
+            ? tr('Turn each numeral into the chord it names')
+            : tr('Measure up from each root'),
       perTarget,
     },
   };
@@ -152,7 +160,7 @@ function nameToMidiSafe(root: string): number {
 /** Helper used by future choice-mode cards; exported for tests. */
 export function keySignatureAnswer(key: KeyContext): string {
   const sig = keySignature(key);
-  if (sig.alteration === 0) return 'no sharps or flats';
+  if (sig.alteration === 0) return tr('no sharps or flats');
   const n = Math.abs(sig.alteration);
   return `${n} ${sig.alteration > 0 ? 'sharp' : 'flat'}${n > 1 ? 's' : ''}`;
 }

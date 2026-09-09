@@ -15,7 +15,7 @@ async function seedFailedStep(page: import('@playwright/test').Page, unitId: str
         [step.id]: {
           exercise: { ...step.exercise, assessment: true },
           seed: 12,
-          failCount: 3,
+          failCount: 1,
           practiceOnly: false,
           result: {
             pitchAccuracy: 0.4,

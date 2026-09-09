@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useEffect, useRef, useState } from 'react';
 import { generate } from '@/engine/generators';
@@ -237,80 +238,81 @@ export function LabScreen() {
   return (
     <div className={styles['wrap']}>
       <div className={styles['header']}>
-        <h1>Lab</h1>
+        <h1>{tr('Lab')}</h1>
         <span className={styles['fps']} data-low={fps > 0 && fps < 55}>
-          {fps} fps
+          {fps}
+          {tr(' fps')}
         </span>
       </div>
       <Card>
         <div className={styles['controls']}>
           <label>
-            Generator
+            {tr('Generator')}
             <select value={generator} onChange={(e) => setGenerator(e.target.value)}>
-              <option value="scale-run">scale-run</option>
-              <option value="five-finger">five-finger</option>
-              <option value="chord-grip">chord-grip</option>
-              <option value="grip-interleave">grip-interleave</option>
-              <option value="flashcard">flashcard (spell)</option>
-              <option value="progression-play">progression-play</option>
-              <option value="harmonize">harmonize (acceptAlternatives)</option>
-              <option value="ear-progression">ear-progression</option>
-              <option value="comp-pattern">comp-pattern</option>
-              <option value="unseen-chart">unseen-chart</option>
-              <option value="improv">improv</option>
-              <option value="read-snippet">read-snippet</option>
+              <option value="scale-run">{tr('scale-run')}</option>
+              <option value="five-finger">{tr('five-finger')}</option>
+              <option value="chord-grip">{tr('chord-grip')}</option>
+              <option value="grip-interleave">{tr('grip-interleave')}</option>
+              <option value="flashcard">{tr('flashcard (spell)')}</option>
+              <option value="progression-play">{tr('progression-play')}</option>
+              <option value="harmonize">{tr('harmonize (acceptAlternatives)')}</option>
+              <option value="ear-progression">{tr('ear-progression')}</option>
+              <option value="comp-pattern">{tr('comp-pattern')}</option>
+              <option value="unseen-chart">{tr('unseen-chart')}</option>
+              <option value="improv">{tr('improv')}</option>
+              <option value="read-snippet">{tr('read-snippet')}</option>
             </select>
           </label>
           {(generator === 'progression-play' || generator === 'unseen-chart') && (
             <>
               {generator === 'progression-play' && (
                 <label>
-                  Voice leading
+                  {tr('Voice leading')}
                   <select
                     value={voiceLead}
                     onChange={(e) => setVoiceLead(e.target.value as 'free' | 'smooth')}
                   >
-                    <option value="free">free</option>
-                    <option value="smooth">smooth</option>
+                    <option value="free">{tr('free')}</option>
+                    <option value="smooth">{tr('smooth')}</option>
                   </select>
                 </label>
               )}
               <label>
-                Style
+                {tr('Style')}
                 <select value={style} onChange={(e) => setStyle(e.target.value as 'block' | 'brokenLH')}>
-                  <option value="block">block</option>
-                  <option value="brokenLH">brokenLH</option>
+                  <option value="block">{tr('block')}</option>
+                  <option value="brokenLH">{tr('brokenLH')}</option>
                 </select>
               </label>
             </>
           )}
           {(generator === 'comp-pattern' || generator === 'unseen-chart') && (
             <label>
-              Voicing
+              {tr('Voicing')}
               <select value={voicing} onChange={(e) => setVoicing(e.target.value as typeof voicing)}>
-                <option value="triad">triad</option>
-                <option value="shell17">shell 1-7</option>
-                <option value="shell13">shell 1-3</option>
-                <option value="guidetones">guide tones</option>
+                <option value="triad">{tr('triad')}</option>
+                <option value="shell17">{tr('shell 1-7')}</option>
+                <option value="shell13">{tr('shell 1-3')}</option>
+                <option value="guidetones">{tr('guide tones')}</option>
               </select>
             </label>
           )}
           {generator === 'comp-pattern' && (
             <label>
-              Pattern
+              {tr('Pattern')}
               <select
                 value={compPattern}
                 onChange={(e) => setCompPattern(e.target.value as typeof compPattern)}
               >
-                <option value="straight8">straight 8ths</option>
-                <option value="ballad">ballad</option>
-                <option value="boomchuck">boom-chuck</option>
-                <option value="swing">swing</option>
+                <option value="straight8">{tr('straight 8ths')}</option>
+                <option value="ballad">{tr('ballad')}</option>
+                <option value="boomchuck">{tr('boom-chuck')}</option>
+                <option value="swing">{tr('swing')}</option>
               </select>
             </label>
           )}
           <label>
-            Tonic/root
+            {tr('Tonic/root')}
             <select value={tonic} onChange={(e) => setTonic(e.target.value)}>
               {TONICS.map((t) => (
                 <option key={t}>{t}</option>
@@ -320,7 +322,7 @@ export function LabScreen() {
           {generator === 'chord-grip' && (
             <>
               <label>
-                Quality
+                {tr('Quality')}
                 <select value={quality} onChange={(e) => setQuality(e.target.value)}>
                   {QUALITIES.map((q) => (
                     <option key={q}>{q}</option>
@@ -328,7 +330,7 @@ export function LabScreen() {
                 </select>
               </label>
               <label>
-                Inversion
+                {tr('Inversion')}
                 <select value={inversion} onChange={(e) => setInversion(Number(e.target.value))}>
                   {[0, 1, 2, 3].map((i) => (
                     <option key={i} value={i}>
@@ -341,7 +343,7 @@ export function LabScreen() {
           )}
           {(generator === 'grip-interleave' || generator === 'flashcard') && (
             <label>
-              Count
+              {tr('Count')}
               <input
                 type="number"
                 min={2}
@@ -352,23 +354,23 @@ export function LabScreen() {
             </label>
           )}
           <label>
-            Hand
+            {tr('Hand')}
             <select value={hand} onChange={(e) => setHand(e.target.value as 'rh' | 'lh')}>
-              <option value="rh">RH</option>
-              <option value="lh">LH</option>
+              <option value="rh">{tr('RH')}</option>
+              <option value="lh">{tr('LH')}</option>
             </select>
           </label>
           <label>
-            Mode
+            {tr('Mode')}
             <select value={mode} onChange={(e) => setMode(e.target.value as MatchMode)}>
-              <option value="wait">wait</option>
-              <option value="tempo">tempo</option>
+              <option value="wait">{tr('wait')}</option>
+              <option value="tempo">{tr('tempo')}</option>
             </select>
           </label>
           {mode === 'tempo' && (
             <>
               <label>
-                BPM
+                {tr('BPM')}
                 <input
                   type="number"
                   min={40}
@@ -378,51 +380,56 @@ export function LabScreen() {
                 />
               </label>
               <label>
-                Tier
+                {tr('Tier')}
                 <select value={tier} onChange={(e) => setTier(e.target.value as TimingTier)}>
-                  <option value="relaxed">relaxed</option>
-                  <option value="standard">standard</option>
-                  <option value="strict">strict</option>
+                  <option value="relaxed">{tr('relaxed')}</option>
+                  <option value="standard">{tr('standard')}</option>
+                  <option value="strict">{tr('strict')}</option>
                 </select>
               </label>
             </>
           )}
           <label>
-            Labels
+            {tr('Labels')}
             <select value={labels} onChange={(e) => setLabels(e.target.value as KeyLabels)}>
-              <option value="none">none</option>
-              <option value="names">names</option>
-              <option value="fingers">fingers</option>
+              <option value="none">{tr('none')}</option>
+              <option value="names">{tr('names')}</option>
+              <option value="fingers">{tr('fingers')}</option>
             </select>
           </label>
         </div>
         <div className={styles['actions']}>
           <Button variant="primary" onClick={start}>
-            Start
+            {tr('Start')}
           </Button>
-          <Button onClick={abortRun}>Abort</Button>
-          <Button onClick={playPerfect} disabled={!window.__fakeMidi} title="Requires ?midi=fake">
-            Play perfectly (fake)
+          <Button onClick={abortRun}>{tr('Abort')}</Button>
+          <Button onClick={playPerfect} disabled={!window.__fakeMidi} title={tr('Requires ?midi=fake')}>
+            {tr('Play perfectly (fake)')}
           </Button>
-          <Button onClick={stress} disabled={!window.__fakeMidi} title="Requires ?midi=fake">
-            Stress 30n/s
+          <Button onClick={stress} disabled={!window.__fakeMidi} title={tr('Requires ?midi=fake')}>
+            {tr('Stress 30n/s')}
           </Button>
         </div>
       </Card>
 
       <div className={styles['status']}>
         <span>
-          phase: <strong>{phase}</strong>
+          {tr('phase: ')}
+          <strong>{phase}</strong>
         </span>
         <span>
-          target: <strong className="tabular">{targetIndex + 1}</strong>/{instance?.targets.length ?? '-'}
+          {tr('target: ')}
+          <strong className="tabular">{targetIndex + 1}</strong>/{instance?.targets.length ?? '-'}
         </span>
         <span>
-          beat: <strong className="tabular">{beatIndex ?? '-'}</strong>
+          {tr('beat: ')}
+          <strong className="tabular">{beatIndex ?? '-'}</strong>
         </span>
         {mode === 'tempo' && (
           <span>
-            windows ±{windows.perfect}/{windows.good}/{windows.outer}ms
+            {tr('windows ±')}
+            {windows.perfect}/{windows.good}/{windows.outer}
+            {tr('ms')}
           </span>
         )}
         {instance && (
@@ -447,8 +454,9 @@ export function LabScreen() {
       {result && (
         <Card>
           <h3>
-            Result: score {(result.score * 100).toFixed(0)}% {'★'.repeat(result.stars)}{' '}
-            {result.passed ? '· passed' : '· not yet'}
+            {tr('Result: score ')}
+            {(result.score * 100).toFixed(0)}% {'★'.repeat(result.stars)}{' '}
+            {result.passed ? tr('· passed') : tr('· not yet')}
           </h3>
           <pre className={styles['dump']}>
             {JSON.stringify(

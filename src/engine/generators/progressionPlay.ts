@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { buildChord, chordSymbol, slashChordSymbol, type ChordQuality } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
@@ -271,20 +272,25 @@ export function generateProgressionPlay(def: ExerciseDef, seed: number): Exercis
   const styleNote = isCompPattern(p.style)
     ? `${COMP_PATTERNS[p.style].label} · ${VOICING_LABEL[p.voicing]}`
     : p.style === 'rootchord' && def.hand === 'both'
-      ? 'LH root, RH chord'
+      ? tr('LH root, RH chord')
       : p.style === 'brokenLH'
-        ? 'LH broken pattern'
+        ? tr('LH broken pattern')
         : p.voicing !== 'triad'
           ? VOICING_LABEL[p.voicing]
-          : 'block chords';
-  const leadNote = p.voiceLead === 'smooth' ? ' · smallest possible moves' : '';
+          : tr('block chords');
+  const leadNote = p.voiceLead === 'smooth' ? tr(' · smallest possible moves') : '';
   return {
     def,
     seed,
     targets,
     prompt: {
-      title: `${p.roman.join(' – ')} in ${p.key.tonic} ${p.key.mode}`,
-      detail: `${styleNote} · one chord every ${p.beatsPerChord} beats · ${p.loops}× around${leadNote}`,
+      title: tr('{v0} in {v1} {v2}', { v0: p.roman.join(' – '), v1: p.key.tonic, v2: p.key.mode }),
+      detail: tr('{v0} · one chord every {v1} beats · {v2}× around{v3}', {
+        v0: styleNote,
+        v1: p.beatsPerChord,
+        v2: p.loops,
+        v3: leadNote,
+      }),
       key: p.key,
       perTarget: labels.map((label) => ({ label })),
     },
@@ -335,12 +341,12 @@ function generateHarmonize(def: ExerciseDef, seed: number): ExerciseInstance {
     targets.push({
       kind: 'chord-any',
       accept,
-      label: `Harmonize ${melodyDegreeLabel(melodyDegree)}`,
+      label: tr('Harmonize {v0}', { v0: melodyDegreeLabel(melodyDegree) }),
     });
     previews.push({ notes: [{ midi: melodyMidi, atBeat: 0, durBeats: 2 }], bpm: 80 });
     perTarget.push({
-      label: `Melody: ${melodyDegreeLabel(melodyDegree)}`,
-      detail: 'Play any chord that fits — there are several right answers',
+      label: tr('Melody: {v0}', { v0: melodyDegreeLabel(melodyDegree) }),
+      detail: tr('Play any chord that fits — there are several right answers'),
     });
   }
 
@@ -351,8 +357,8 @@ function generateHarmonize(def: ExerciseDef, seed: number): ExerciseInstance {
     beatsPerTarget: 2,
     perTargetPreview: previews,
     prompt: {
-      title: `Harmonize a melody in ${p.key.tonic} ${p.key.mode}`,
-      detail: 'Each melody note wants a chord — pick one that contains it or does the same job',
+      title: tr('Harmonize a melody in {v0} {v1}', { v0: p.key.tonic, v1: p.key.mode }),
+      detail: tr('Each melody note wants a chord — pick one that contains it or does the same job'),
       key: p.key,
       perTarget,
     },
@@ -360,5 +366,5 @@ function generateHarmonize(def: ExerciseDef, seed: number): ExerciseInstance {
 }
 
 function melodyDegreeLabel(degree: number): string {
-  return degree >= 1 && degree <= 7 ? `degree ${degree}` : 'this note';
+  return degree >= 1 && degree <= 7 ? tr('degree {v0}', { v0: degree }) : tr('this note');
 }

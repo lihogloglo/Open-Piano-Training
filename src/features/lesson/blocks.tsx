@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useCallback, useEffect, useMemo, useRef, useState, type ReactNode } from 'react';
 import type { ExplainBlock } from '@/curriculum/schema';
 import { Keyboard } from '@/ui/Keyboard';
@@ -73,7 +74,7 @@ function KeyboardDemoBlock({ block }: { block: Extract<ExplainBlock, { kind: 'ke
       <div className={styles['demoRow']}>
         <Button onClick={() => void play()} disabled={playing}>
           <Icon name={playing ? 'listen' : 'play'} size={16} />
-          {playing ? 'Playing…' : 'Hear it'}
+          {playing ? tr('Playing…') : tr('Hear it')}
         </Button>
         {block.caption && <span className={styles['caption']}>{block.caption}</span>}
       </div>
@@ -112,7 +113,9 @@ function ProgressionCardBlock({ block }: { block: Extract<ExplainBlock, { kind: 
         ))}
       </div>
       <p className={styles['caption']}>
-        in {block.key.tonic} {block.key.mode}. Tap a chord to hear it
+        {tr('in ')}
+        {block.key.tonic} {tr(block.key.mode)}
+        {tr('. Tap a chord to hear it')}
       </p>
     </div>
   );
@@ -121,7 +124,7 @@ function ProgressionCardBlock({ block }: { block: Extract<ExplainBlock, { kind: 
 function CircleOfFifthsBlock({ block }: { block: Extract<ExplainBlock, { kind: 'circleOfFifths' }> }) {
   const R = 92;
   return (
-    <svg viewBox="0 0 240 240" className={styles['circle']} role="img" aria-label="Circle of fifths">
+    <svg viewBox="0 0 240 240" className={styles['circle']} role="img" aria-label={tr('Circle of fifths')}>
       <circle cx="120" cy="120" r={R + 22} fill="none" stroke="var(--border)" />
       {CIRCLE_OF_FIFTHS.map((name, i) => {
         const angle = (i / 12) * Math.PI * 2 - Math.PI / 2;
@@ -179,7 +182,7 @@ function EarCheckBlock({ block }: { block: Extract<ExplainBlock, { kind: 'earChe
       <div className={styles['demoRow']}>
         <Button onClick={play}>
           <Icon name="play" size={16} />
-          Listen
+          {tr('Listen')}
         </Button>
         {block.options.map((opt, i) => (
           <Button
@@ -188,7 +191,7 @@ function EarCheckBlock({ block }: { block: Extract<ExplainBlock, { kind: 'earChe
             onClick={() => setPicked(i)}
           >
             {opt}
-            {picked === i && (i === block.correctIndex ? ' ✓' : ', listen again')}
+            {picked === i && (i === block.correctIndex ? ' ✓' : tr(', listen again'))}
           </Button>
         ))}
       </div>
@@ -260,13 +263,13 @@ function PlayCheckBlock({
 
   const status = done
     ? block.count > 1
-      ? `All ${block.count} — that's the pattern.`
-      : 'That’s it.'
+      ? tr("All {v0} — that's the pattern.", { v0: block.count })
+      : tr('That’s it.')
     : !active
-      ? 'Finish the step above first.'
+      ? tr('Finish the step above first.')
       : missed
-        ? `That’s ${missed}. Try again.`
-        : (block.hint ?? 'Play it on your keyboard, or click the keys below.');
+        ? tr('That’s {v0}. Try again.', { v0: missed })
+        : (block.hint ?? tr('Play it on your keyboard, or click the keys below.'));
 
   return (
     <div className={styles['playCheck']} data-done={done || undefined} data-waiting={!active || undefined}>

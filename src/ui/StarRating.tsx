@@ -1,8 +1,9 @@
+import { tr } from '@/i18n';
 import { Star } from '@phosphor-icons/react/Star';
 
 export function StarRating({ stars, size = 22 }: { stars: 0 | 1 | 2 | 3; size?: number }) {
   return (
-    <span aria-label={`${stars} of 3 stars`} style={{ display: 'inline-flex', gap: 3 }}>
+    <span aria-label={tr('{v0} of 3 stars', { v0: stars })} style={{ display: 'inline-flex', gap: 3 }}>
       {[1, 2, 3].map((i) => (
         <Star
           key={i}

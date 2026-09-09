@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { namePc } from '@/theory/notes';
 import { createRng } from '../rng';
@@ -28,7 +29,7 @@ export function generateNoteFind(def: ExerciseDef, seed: number): ExerciseInstan
       const midi = pc + 12 * (p.referenceOctave + 1);
       const display = name.replace(/#/g, '♯').replace(/(?<=.)b/g, '♭');
       targets.push({ kind: 'set', midis: [midi], label: display, octaveFlexible: true });
-      perTarget.push({ label: `Play any ${display}`, detail: 'Any octave counts' });
+      perTarget.push({ label: tr('Play any {v0}', { v0: display }), detail: tr('Any octave counts') });
       break;
     }
   }
@@ -37,6 +38,6 @@ export function generateNoteFind(def: ExerciseDef, seed: number): ExerciseInstan
     seed,
     targets,
     beatsPerTarget: 2,
-    prompt: { title: 'Find the notes', detail: 'Any octave counts', perTarget },
+    prompt: { title: tr('Find the notes'), detail: tr('Any octave counts'), perTarget },
   };
 }

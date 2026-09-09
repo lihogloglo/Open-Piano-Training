@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { keyScaleNotes, type KeyContext } from './keys';
 import type { ChordQuality } from './chords';
 
@@ -60,16 +61,16 @@ export interface NamedProgression {
 
 /** The catalog the curriculum draws from (see 06-curriculum-content). */
 export const PROGRESSION_CATALOG: NamedProgression[] = [
-  { id: 'i-iv-v', name: 'The three chords', romans: ['I', 'IV', 'V'], mode: 'major' },
-  { id: 'i-v-vi-iv', name: 'The Axis', romans: ['I', 'V', 'vi', 'IV'], mode: 'major' },
-  { id: 'i-vi-iv-v', name: 'The 50s', romans: ['I', 'vi', 'IV', 'V'], mode: 'major' },
-  { id: 'vi-iv-i-v', name: 'Axis, rotated', romans: ['vi', 'IV', 'I', 'V'], mode: 'major' },
-  { id: 'i-ii-v', name: 'Two-five turnaround', romans: ['I', 'ii', 'V'], mode: 'major' },
+  { id: 'i-iv-v', name: tr('The three chords'), romans: ['I', 'IV', 'V'], mode: 'major' },
+  { id: 'i-v-vi-iv', name: tr('The Axis'), romans: ['I', 'V', 'vi', 'IV'], mode: 'major' },
+  { id: 'i-vi-iv-v', name: tr('The 50s'), romans: ['I', 'vi', 'IV', 'V'], mode: 'major' },
+  { id: 'vi-iv-i-v', name: tr('Axis, rotated'), romans: ['vi', 'IV', 'I', 'V'], mode: 'major' },
+  { id: 'i-ii-v', name: tr('Two-five turnaround'), romans: ['I', 'ii', 'V'], mode: 'major' },
   { id: 'ii-v-i', name: 'ii–V–I', romans: ['ii7', 'V7', 'Imaj7'], mode: 'major' },
-  { id: 'i-iii-iv-v', name: 'Climbing ballad', romans: ['I', 'iii', 'IV', 'V'], mode: 'major' },
-  { id: 'min-i-vi-iii-vii', name: 'Minor anthem', romans: ['i', 'VI', 'III', 'VII'], mode: 'minor' },
+  { id: 'i-iii-iv-v', name: tr('Climbing ballad'), romans: ['I', 'iii', 'IV', 'V'], mode: 'major' },
+  { id: 'min-i-vi-iii-vii', name: tr('Minor anthem'), romans: ['i', 'VI', 'III', 'VII'], mode: 'minor' },
   // V, not v: s5.u4 teaches the raised 7th of harmonic minor precisely so a
   // minor key gets a dominant with a leading tone in it. A natural-minor v is
   // limp, and the curriculum never teaches it.
-  { id: 'min-i-iv-v', name: 'Minor three chords', romans: ['i', 'iv', 'V'], mode: 'minor' },
+  { id: 'min-i-iv-v', name: tr('Minor three chords'), romans: ['i', 'iv', 'V'], mode: 'minor' },
 ];

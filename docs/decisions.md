@@ -150,3 +150,25 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - The ballad instructions now describe the implemented chord rhythm. Boom-chuck uses the taught alternating root and fifth bass. Misleading explanations of chord roots, sixth chords, transposition and timing were corrected.
 - Vite development and preview servers serve sharp-note sample filenames explicitly. The local audio probe checks an Ogg header before treating an HTTP 200 response as a sample.
 - Validation and remaining human checks are recorded in docs/tester-feedback-audit.md.
+
+## French and Linux releases — 2026-09-09
+
+- English source messages are translation keys. French catalogs cover the interface, accessibility labels, lesson text, songs, and generated exercise feedback.
+- The language preference uses the existing settings and backup schema. Startup loads the catalog before curriculum modules initialize.
+- Switching language reloads the page. This keeps static content and generated exercise labels in the same language.
+- Musical identifiers and form values stay language-independent. French lessons explain letter notation without changing MIDI targets.
+- Recordings retain source titles. Creative sessions retain source prompts and review skill IDs for later localization.
+- Release builds now use Windows and Ubuntu jobs. One publishing job waits for both and attaches Windows executables, a Linux AppImage, and a Debian package.
+- Linux launch arguments preserve the Electron sandbox. The release workflow includes a packaged Linux startup check.
+- Contributor instructions are in `docs/localization.md` and `docs/releases.md`.
+
+## Optional repetitions and skipping — 2026-09-09
+
+- Learners can skip explanation, guided, tempo ladder, and creative steps in normal mode. Checkpoint rehearsal is optional too.
+- Ordinary lesson assessments can be skipped immediately. An unpassed assessment queues its exact task for later review and flags the lesson.
+- Skipping does not invent a recording or a passing score. An unattempted assessment contributes zero to the lesson score.
+- Checkpoint assessments still require a pass to unlock a stage. The exit control remains available.
+- Learners can choose any ladder tempo. Passing the final tempo is enough to continue, including after a reload.
+- Successful slower tempos remain recorded. Skipped tempos remain unmarked.
+- Warmup and review exercises have a skip control. Skips advance the session without grading skills, clearing retests, or adding practice minutes.
+- Tourist mode retains unrestricted navigation and writes no progress.

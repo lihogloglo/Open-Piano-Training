@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 /** Small deterministic PRNG (mulberry32). */
 export interface Rng {
   /** [0, 1) */
@@ -19,7 +20,7 @@ export function createRng(seed: number): Rng {
     next,
     int: (maxExclusive) => Math.floor(next() * maxExclusive),
     pick: (arr) => {
-      if (arr.length === 0) throw new Error('pick from empty array');
+      if (arr.length === 0) throw new Error(tr('pick from empty array'));
       return arr[Math.floor(next() * arr.length)] as never;
     },
   };

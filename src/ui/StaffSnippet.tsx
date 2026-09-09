@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useEffect, useRef, useState } from 'react';
 import type { KeyContext } from '@/theory/keys';
 import { midiToName } from '@/theory/notes';
@@ -99,7 +100,10 @@ export function StaffSnippet({
 
   if (failed) {
     return (
-      <p role="img" aria-label={`Phrase: ${midis.map((m) => midiToName(m, keyContext)).join(', ')}`}>
+      <p
+        role="img"
+        aria-label={tr('Phrase: {v0}', { v0: midis.map((m) => midiToName(m, keyContext)).join(', ') })}
+      >
         {midis.map((m) => midiToName(m, keyContext)).join(' · ')}
       </p>
     );
@@ -109,7 +113,7 @@ export function StaffSnippet({
     <div
       ref={host}
       role="img"
-      aria-label={`Notation: ${midis.map((m) => midiToName(m, keyContext)).join(', ')}`}
+      aria-label={tr('Notation: {v0}', { v0: midis.map((m) => midiToName(m, keyContext)).join(', ') })}
       style={{ color: 'var(--text)', overflowX: 'auto' }}
     />
   );

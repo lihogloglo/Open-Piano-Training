@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { create } from 'zustand';
 import { createMidiAdapter, type PrimaryKind } from '@/midi';
 import type { MidiDeviceInfo, MidiEvent, MidiNumber } from '@/midi/types';
@@ -81,7 +82,7 @@ export const useMidiStore = create<MidiState>((set, get) => ({
         releaseAllInput();
         set({ selectedId: null });
         useSettingsStore.getState().setDeviceId(null);
-        toast('Keyboard disconnected. Listening to all devices', 'warn');
+        toast(tr('Keyboard disconnected. Listening to all devices'), 'warn');
       }
       set({ devices });
       if (status === 'connected' || status === 'no-device') {

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { degreeToMidi, type Degree } from '@/theory/degrees';
 import { buildChord, chordSymbol, QUALITY_INTERVALS, type ChordQuality } from '@/theory/chords';
@@ -63,10 +64,10 @@ export function generateEarDegree(def: ExerciseDef, seed: number): ExerciseInsta
     audioPreview: { notes: cadenceNotes(p.key.tonic, p.key.mode), bpm: 90 },
     perTargetPreview: previews,
     prompt: {
-      title: `Ear: scale degrees in ${p.key.tonic} ${p.key.mode}`,
-      detail: 'Listen, then play the degree you heard — any octave',
+      title: tr('Ear: scale degrees in {v0} {v1}', { v0: p.key.tonic, v1: p.key.mode }),
+      detail: tr('Listen, then play the degree you heard — any octave'),
       key: p.key,
-      perTarget: targets.map(() => ({ label: 'Which degree was that?', detail: 'Play it anywhere' })),
+      perTarget: targets.map(() => ({ label: tr('Which degree was that?'), detail: tr('Play it anywhere') })),
     },
   };
 }
@@ -107,8 +108,8 @@ export function generateEarQuality(def: ExerciseDef, seed: number): ExerciseInst
       previews.push({ notes: midis.map((midi) => ({ midi, atBeat: 0, durBeats: 2 })), bpm: 80 });
       const displayRoot = root.replace('#', '♯').replace(/(?<=.)b/, '♭');
       perTarget.push({
-        label: `${displayRoot} — but which ${displayRoot}?`,
-        detail: 'Play the chord you heard on that root',
+        label: tr('{v0} — but which {v1}?', { v0: displayRoot, v1: displayRoot }),
+        detail: tr('Play the chord you heard on that root'),
       });
       break;
     }
@@ -119,7 +120,7 @@ export function generateEarQuality(def: ExerciseDef, seed: number): ExerciseInst
     targets,
     beatsPerTarget: 2,
     perTargetPreview: previews,
-    prompt: { title: 'Ear: chord quality', detail: 'Listen, then rebuild the chord', perTarget },
+    prompt: { title: tr('Ear: chord quality'), detail: tr('Listen, then rebuild the chord'), perTarget },
   };
 }
 
@@ -165,12 +166,12 @@ export function generateEarProgression(def: ExerciseDef, seed: number): Exercise
         kind: 'chord-any',
         accept: [{ root: c.root, quality: c.quality }],
         ...(p.bassRootsOk ? { bassRootOk: true } : {}),
-        label: `Chord ${bar + 1} of ${chords.length}`,
+        label: tr('Chord {v0} of {v1}', { v0: bar + 1, v1: chords.length }),
       });
       previews.push(bar === 0 ? { notes, bpm: 76 } : undefined);
       perTarget.push({
-        label: `Chord ${bar + 1} of ${chords.length} — what was it?`,
-        detail: p.bassRootsOk ? 'Play the chord, or just its bass note' : 'Play the chord you heard',
+        label: tr('Chord {v0} of {v1} — what was it?', { v0: bar + 1, v1: chords.length }),
+        detail: p.bassRootsOk ? tr('Play the chord, or just its bass note') : tr('Play the chord you heard'),
       });
     });
   }
@@ -182,8 +183,8 @@ export function generateEarProgression(def: ExerciseDef, seed: number): Exercise
     beatsPerTarget: 2,
     perTargetPreview: previews,
     prompt: {
-      title: `Ear: name the progression (${p.key.tonic} ${p.key.mode})`,
-      detail: 'A progression plays — answer it back, chord by chord',
+      title: tr('Ear: name the progression ({v0} {v1})', { v0: p.key.tonic, v1: p.key.mode }),
+      detail: tr('A progression plays — answer it back, chord by chord'),
       key: p.key,
       perTarget,
     },

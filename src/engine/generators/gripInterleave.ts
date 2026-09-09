@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { QUALITY_INTERVALS, type ChordQuality, type Inversion } from '@/theory/chords';
 import { createRng } from '../rng';
@@ -43,8 +44,8 @@ export function generateGripInterleave(def: ExerciseDef, seed: number): Exercise
     targets,
     beatsPerTarget: 2,
     prompt: {
-      title: 'Chord drill',
-      detail: `${targets.length} grips — play each as it appears`,
+      title: tr('Chord drill'),
+      detail: tr('{v0} grips — play each as it appears', { v0: targets.length }),
       perTarget: targets.map((t) => ({ label: t.label })),
     },
   };

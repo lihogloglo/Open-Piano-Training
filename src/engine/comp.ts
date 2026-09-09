@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { QUALITY_INTERVALS, type ChordQuality } from '@/theory/chords';
 import { namePc, type MidiNumber } from '@/theory/notes';
 
@@ -12,10 +13,10 @@ import { namePc, type MidiNumber } from '@/theory/notes';
 export type VoicingStyle = 'triad' | 'shell17' | 'shell13' | 'guidetones';
 
 export const VOICING_LABEL: Record<VoicingStyle, string> = {
-  triad: 'full chord',
-  shell17: 'shell — root & 7th',
-  shell13: 'shell — root & 3rd',
-  guidetones: 'guide tones over roots',
+  triad: tr('full chord'),
+  shell17: tr('shell — root & 7th'),
+  shell13: tr('shell — root & 3rd'),
+  guidetones: tr('guide tones over roots'),
 };
 
 function pcAt(root: string, semitones: number): number {
@@ -90,7 +91,7 @@ export interface PatternHit {
 export const COMP_PATTERNS: Record<CompPattern, { label: string; hits: PatternHit[] }> = {
   // Pop: bass on 1 and 3, chord stabs on the "and" of 2 and on 4.
   straight8: {
-    label: 'Straight eighths',
+    label: tr('Straight eighths'),
     hits: [
       { beat: 0, hand: 'lh' },
       { beat: 1, hand: 'rh' },
@@ -101,7 +102,7 @@ export const COMP_PATTERNS: Record<CompPattern, { label: string; hits: PatternHi
   },
   // Ballad: a broken chord unfolding across the bar, one note per beat.
   ballad: {
-    label: 'Ballad accompaniment',
+    label: tr('Ballad accompaniment'),
     hits: [
       { beat: 0, hand: 'lh' },
       { beat: 1, hand: 'rh' },
@@ -111,7 +112,7 @@ export const COMP_PATTERNS: Record<CompPattern, { label: string; hits: PatternHi
   },
   // Boom-chuck: bass on the downbeats, chord on the backbeats.
   boomchuck: {
-    label: 'Boom-chuck',
+    label: tr('Boom-chuck'),
     hits: [
       { beat: 0, hand: 'lh' },
       { beat: 1, hand: 'rh' },
@@ -121,7 +122,7 @@ export const COMP_PATTERNS: Record<CompPattern, { label: string; hits: PatternHi
   },
   // Swing comping: the classic Charleston figure — 1 and the "and" of 2.
   swing: {
-    label: 'Swing Charleston',
+    label: tr('Swing Charleston'),
     hits: [
       { beat: 0, hand: 'lh' },
       { beat: 0, hand: 'rh' },

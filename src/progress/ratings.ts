@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { ExerciseDef } from '@/engine/types';
 import { createRng } from '@/engine/rng';
 import { ATOMS, type SkillAtom } from './atoms';
@@ -38,10 +39,10 @@ const MIN_BAND_ATOMS = 2;
 export const CHALLENGE_COOLDOWN_DAYS = 7;
 
 export const STRAND_LABEL: Record<RatingStrand, string> = {
-  keys: 'Keys',
-  theory: 'Theory',
-  ear: 'Ear',
-  read: 'Read',
+  keys: tr('Keys'),
+  theory: tr('Theory'),
+  ear: tr('Ear'),
+  read: tr('Read'),
 };
 
 /** Label for a strand id that may come from stored data (recap rows, exports). */

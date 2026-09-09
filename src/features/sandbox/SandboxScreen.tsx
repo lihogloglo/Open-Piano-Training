@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { detectChord, buildChord, type DetectedChord } from '@/theory/chords';
@@ -16,7 +17,7 @@ import { Card } from '@/ui/Card';
 import styles from './SandboxScreen.module.css';
 
 const TONICS = ['C', 'G', 'D', 'A', 'E', 'B', 'F#', 'Db', 'Ab', 'Eb', 'Bb', 'F'];
-const INVERSION_LABEL = ['root position', '1st inversion', '2nd inversion', '3rd inversion'];
+const INVERSION_LABEL = [tr('root position'), tr('1st inversion'), tr('2nd inversion'), tr('3rd inversion')];
 
 type Tab = 'explorer' | 'drone' | 'looper';
 
@@ -24,13 +25,13 @@ export function SandboxScreen() {
   const [tab, setTab] = useState<Tab>('explorer');
   return (
     <div className={styles['wrap']}>
-      <h1>Sandbox</h1>
+      <h1>{tr('Sandbox')}</h1>
       <div className={styles['tabs']} role="tablist">
         {(
           [
-            ['explorer', 'Chord explorer'],
-            ['drone', 'Drone improv'],
-            ['looper', 'Progression looper'],
+            ['explorer', tr('Chord explorer')],
+            ['drone', tr('Drone improv')],
+            ['looper', tr('Progression looper')],
           ] as const
         ).map(([id, label]) => (
           <button
@@ -113,7 +114,7 @@ function ChordExplorer() {
         <div className={styles['readout']}>
           <div>
             <div className={styles['bigSymbol']}>
-              {detected ? detected.symbol : activeNotes.size > 0 ? '…' : 'Play something'}
+              {detected ? detected.symbol : activeNotes.size > 0 ? '…' : tr('Play something')}
             </div>
             {detected && (
               <div className={styles['detail']}>
@@ -121,15 +122,17 @@ function ChordExplorer() {
                 {roman && (
                   <>
                     {' · '}
-                    <strong>{roman}</strong> in {keyTonic}
+                    <strong>{roman}</strong>
+                    {tr(' in ')}
+                    {keyTonic}
                   </>
                 )}
               </div>
             )}
           </div>
           <label className={styles['keyPick']}>
-            Key lens
-            <select value={keyTonic} onChange={(e) => setKeyTonic(e.target.value)} aria-label="Key">
+            {tr('Key lens')}
+            <select value={keyTonic} onChange={(e) => setKeyTonic(e.target.value)} aria-label={tr('Key')}>
               {TONICS.map((t) => (
                 <option key={t}>{t}</option>
               ))}
@@ -137,9 +140,14 @@ function ChordExplorer() {
           </label>
         </div>
         {history.length > 0 && (
-          <div className={styles['history']} aria-label="Last chords">
+          <div className={styles['history']} aria-label={tr('Last chords')}>
             {history.map((h, i) => (
-              <button key={i} className={styles['historyChip']} onClick={() => replay(h)} title="Replay">
+              <button
+                key={i}
+                className={styles['historyChip']}
+                onClick={() => replay(h)}
+                title={tr('Replay')}
+              >
                 {h.chord.symbol}
                 {h.chord.inversion > 0 && <span className={styles['inv']}> ·{h.chord.inversion}</span>}
               </button>
@@ -204,14 +212,14 @@ function DroneImprov() {
       <Card>
         <div className={styles['controlsRow']}>
           <label>
-            Key
-            <select value={tonic} onChange={(e) => setTonic(e.target.value)} aria-label="Drone key">
+            {tr('Key')}
+            <select value={tonic} onChange={(e) => setTonic(e.target.value)} aria-label={tr('Drone key')}>
               {TONICS.map((t) => (
                 <option key={t}>{t}</option>
               ))}
             </select>
           </label>
-          <div className={styles['palette']} aria-label="Degree palette">
+          <div className={styles['palette']} aria-label={tr('Degree palette')}>
             {[1, 2, 3, 4, 5, 6, 7].map((d) => (
               <button
                 key={d}
@@ -226,12 +234,13 @@ function DroneImprov() {
           </div>
           <Button variant={droneOn ? 'primary' : 'secondary'} onClick={() => setDroneOn((v) => !v)}>
             <Icon name={droneOn ? 'stop' : 'play'} size={16} />
-            {droneOn ? 'Stop drone' : 'Start drone'}
+            {droneOn ? tr('Stop drone') : tr('Start drone')}
           </Button>
         </div>
         <p className={styles['hint']}>
-          The pad holds home for you. Wander the tinted notes, come back to 1, leave again. No wrong notes,
-          only stories.
+          {tr(
+            'The pad holds home for you. Wander the tinted notes, come back to 1, leave again. No wrong notes, only stories.',
+          )}
         </p>
       </Card>
       <Keyboard
@@ -334,24 +343,24 @@ function ProgressionLooper() {
       <Card>
         <div className={styles['controlsRow']}>
           <label>
-            Key
-            <select value={tonic} onChange={(e) => setTonic(e.target.value)} aria-label="Looper key">
+            {tr('Key')}
+            <select value={tonic} onChange={(e) => setTonic(e.target.value)} aria-label={tr('Looper key')}>
               {TONICS.map((t) => (
                 <option key={t}>{t}</option>
               ))}
             </select>
           </label>
           <label>
-            Preset
+            {tr('Preset')}
             <select
-              aria-label="Progression preset"
+              aria-label={tr('Progression preset')}
               value=""
               onChange={(e) => {
                 const p = PROGRESSION_CATALOG.find((x) => x.id === e.target.value);
                 if (p) setRomans(p.romans);
               }}
             >
-              <option value="">choose…</option>
+              <option value="">{tr('choose…')}</option>
               {PROGRESSION_CATALOG.filter((p) => p.mode === 'major').map((p) => (
                 <option key={p.id} value={p.id}>
                   {p.name}: {p.romans.join('-')}
@@ -360,46 +369,48 @@ function ProgressionLooper() {
             </select>
           </label>
           <label>
-            Pattern
+            {tr('Pattern')}
             <select
               value={pattern}
               onChange={(e) => setPattern(e.target.value as 'block' | 'broken')}
-              aria-label="Comp pattern"
+              aria-label={tr('Comp pattern')}
             >
-              <option value="block">block</option>
-              <option value="broken">broken</option>
+              <option value="block">{tr('block')}</option>
+              <option value="broken">{tr('broken')}</option>
             </select>
           </label>
           <label>
-            BPM
+            {tr('BPM')}
             <input
               type="number"
               min={50}
               max={140}
               value={bpm}
               onChange={(e) => setBpm(Number(e.target.value))}
-              aria-label="Tempo"
+              aria-label={tr('Tempo')}
             />
           </label>
           <Button variant={running ? 'primary' : 'secondary'} onClick={running ? stopLoop : startLoop}>
             <Icon name={running ? 'stop' : 'play'} size={16} />
-            {running ? 'Stop' : 'Loop it'}
+            {running ? tr('Stop') : tr('Loop it')}
           </Button>
         </div>
         <div className={styles['builder']}>
-          <div className={styles['loopBar']} aria-label="Current loop">
+          <div className={styles['loopBar']} aria-label={tr('Current loop')}>
             {romans.map((r, i) => (
               <button
                 key={i}
                 className={styles['loopChip']}
                 data-current={i === barIdx}
                 onClick={() => setRomans((cur) => cur.filter((_, j) => j !== i))}
-                title="Remove"
+                title={tr('Remove')}
               >
                 {r}
               </button>
             ))}
-            {romans.length === 0 && <span className={styles['hint']}>Build a loop from the chips below</span>}
+            {romans.length === 0 && (
+              <span className={styles['hint']}>{tr('Build a loop from the chips below')}</span>
+            )}
           </div>
           <div className={styles['chips']}>
             {ROMAN_CHIPS.map((r) => (
@@ -412,7 +423,7 @@ function ProgressionLooper() {
               </button>
             ))}
             <Button variant="ghost" onClick={() => setRomans([])}>
-              Clear
+              {tr('Clear')}
             </Button>
           </div>
         </div>

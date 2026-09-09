@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { levelDisplay, MAX_LEVEL } from '@/progress/ratings';
 
 /**
@@ -24,7 +25,11 @@ export function RatingDial({
       height={size}
       viewBox="0 0 100 100"
       role="img"
-      aria-label={pending ? `${label}: not rated yet` : `${label} rating ${levelDisplay(level)}`}
+      aria-label={
+        pending
+          ? tr('{v0}: not rated yet', { v0: label })
+          : tr('{v0} rating {v1}', { v0: label, v1: levelDisplay(level) })
+      }
     >
       <circle cx="50" cy="50" r={r} fill="none" stroke="var(--surface-2)" strokeWidth="8" />
       {!pending && (
@@ -52,7 +57,7 @@ export function RatingDial({
           fontVariantNumeric: 'tabular-nums',
         }}
       >
-        {pending ? 'unrated' : levelDisplay(level)}
+        {pending ? tr('unrated') : levelDisplay(level)}
       </text>
       <text x="50" y="70" textAnchor="middle" style={{ fontSize: 11, fill: 'var(--text-2)' }}>
         {label}

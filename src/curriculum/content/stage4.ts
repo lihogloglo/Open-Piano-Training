@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
@@ -47,10 +48,11 @@ const F = { tonic: 'F', mode: 'major' } as const;
 export const stage4: Stage = {
   id: 's4',
   ordinal: 4,
-  title: 'Smooth hands',
-  tagline: 'Inversions & voice leading',
-  summary:
+  title: tr('Smooth hands'),
+  tagline: tr('Inversions & voice leading'),
+  summary: tr(
     'Stop leaping between root positions. Inversions put every chord change under your hand, and voice leading — moving each finger as little as possible — is what makes chords sound like music.',
+  ),
   unitIds: ['s4.u1', 's4.u2', 's4.u3', 's4.u4', 's4.u5', 's4.u6', 's4.u7', 's4.cp'],
 };
 
@@ -59,7 +61,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u1',
     stageId: 's4',
     ordinal: 0,
-    title: 'The same chord, three grips',
+    title: tr('The same chord, three grips'),
     strandWeights: { keys: 4, theory: 2, create: 1 },
     concepts: [
       'chord:c:maj:inv1',
@@ -79,11 +81,13 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Any triad has three grips: root on the bottom, or **rotated** so the 3rd or the 5th sits lowest. Same notes, same chord — a different handful.',
+            md: tr(
+              'Any triad has three grips: root on the bottom, or **rotated** so the 3rd or the 5th sits lowest. Same notes, same chord — a different handful.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C major three ways: C-E-G, then E-G-C (1st inversion), then G-C-E (2nd).',
+            caption: tr('C major three ways: C-E-G, then E-G-C (1st inversion), then G-C-E (2nd).'),
             demo: {
               bpm: 60,
               loop: false,
@@ -102,27 +106,31 @@ export const stage4Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Written as a **slash chord**: C/E means "C major, E in the bass". The letter before the slash is the chord; the letter after it is the note underneath.',
+            md: tr(
+              'Written as a **slash chord**: C/E means "C major, E in the bass". The letter before the slash is the chord; the letter after it is the note underneath.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'A chart says **C/E**. Play the note it wants in the bass.',
+            ask: tr('A chart says **C/E**. Play the note it wants in the bass.'),
             notes: ['E'],
             count: 1,
             distinct: 'octave',
-            hint: 'Not the root. The slash names the bottom note, and here it is the 3rd.',
+            hint: tr('Not the root. The slash names the bottom note, and here it is the 3rd.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Now **C/G** — play its bass note.',
+            ask: tr('Now **C/G** — play its bass note.'),
             notes: ['G'],
             count: 1,
             distinct: 'octave',
-            hint: 'The 5th on the bottom: second inversion.',
+            hint: tr('The 5th on the bottom: second inversion.'),
           },
           {
             kind: 'text',
-            md: 'Why bother? Because the bass line becomes yours to write. C → C/E → F walks downstairs under a still harmony, and that walk is most of what makes an accompaniment sound arranged.',
+            md: tr(
+              'Why bother? Because the bass line becomes yours to write. C → C/E → F walks downstairs under a still harmony, and that walk is most of what makes an accompaniment sound arranged.',
+            ),
           },
         ],
       },
@@ -170,8 +178,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u1.c1',
-        prompt:
+        prompt: tr(
           'Play along with the backing, but forbid yourself one thing: your right hand may not move more than a couple of keys between chords. That rule forces the inversions on you, and it is the entire lesson of this stage arriving early.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'IV', 'V', 'I'], loops: 3 }),
       },
     ],
@@ -180,7 +189,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u2',
     stageId: 's4',
     ordinal: 1,
-    title: 'The shortest way',
+    title: tr('The shortest way'),
     strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['theory:voiceleading'],
     prerequisites: ['s4.u1'],
@@ -193,11 +202,13 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "The voice-leading law: **keep common tones, move the rest as little as possible.** I→IV in C isn't a leap to F — it's C staying put while E and G slide up one step each.",
+            md: tr(
+              "The voice-leading law: **keep common tones, move the rest as little as possible.** I→IV in C isn't a leap to F — it's C staying put while E and G slide up one step each.",
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C to F the long way, then the short way. Hear the difference.',
+            caption: tr('C to F the long way, then the short way. Hear the difference.'),
             demo: {
               bpm: 70,
               loop: false,
@@ -219,27 +230,35 @@ export const stage4Units: Unit[] = [
           },
           {
             kind: 'playCheck',
-            ask: 'From C–E–G, take the short way to F: play **C, F, A**.',
+            ask: tr('From C–E–G, take the short way to F: play **C, F, A**.'),
             notes: ['C', 'F', 'A'],
             count: 3,
             distinct: 'name',
-            hint: 'Keep the C. The other two fingers move up one white key each. Your hand barely notices.',
+            hint: tr(
+              'Keep the C. The other two fingers move up one white key each. Your hand barely notices.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Now V. G major from that shape does not want to be G–B–D either: the nearest handful is **B–D–G**, which keeps your fingers where they already are.',
+            md: tr(
+              'Now V. G major from that shape does not want to be G–B–D either: the nearest handful is **B–D–G**, which keeps your fingers where they already are.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play the nearest G chord: **B, D, G**.',
+            ask: tr('Play the nearest G chord: **B, D, G**.'),
             notes: ['B', 'D', 'G'],
             count: 3,
             distinct: 'name',
-            hint: 'From C–F–A: the C drops to B, the F drops to D, the A moves up to G. Small moves only.',
+            hint: tr(
+              'From C–F–A: the C drops to B, the F drops to D, the A moves up to G. Small moves only.',
+            ),
           },
           {
             kind: 'text',
-            md: 'From here your take carries a **smoothness** score: how far your fingers travelled against the shortest path available. It is not a style points system — cheap motion is why a professional accompaniment sounds calm.',
+            md: tr(
+              'From here your take carries a **smoothness** score: how far your fingers travelled against the shortest path available. It is not a style points system — cheap motion is why a professional accompaniment sounds calm.',
+            ),
           },
         ],
       },
@@ -321,8 +340,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u2.c1',
-        prompt:
+        prompt: tr(
           'One rule over the backing: no finger may jump more than two keys between chords. When a change feels impossible under that rule, you have found a chord that needs a different inversion — go and find it.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'IV', 'V', 'I'], loops: 3 }),
       },
     ],
@@ -331,7 +351,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u3',
     stageId: 's4',
     ordinal: 2,
-    title: 'Smooth pop',
+    title: tr('Smooth pop'),
     strandWeights: { keys: 4, create: 1 },
     concepts: ['prog-smooth:i-v-vi-iv:c', 'prog-smooth:i-v-vi-iv:g'],
     prerequisites: ['s4.u2'],
@@ -344,27 +364,31 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The four-chord loop, minimum motion. Played smoothly, I–V–vi–IV stops sounding like four chords and starts sounding like one line moving.',
+            md: tr(
+              'The four-chord loop, minimum motion. Played smoothly, I–V–vi–IV stops sounding like four chords and starts sounding like one line moving.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Smooth I→V in C: from C–E–G, play the nearest G chord — **B, D, G**.',
+            ask: tr('Smooth I→V in C: from C–E–G, play the nearest G chord — **B, D, G**.'),
             notes: ['B', 'D', 'G'],
             count: 3,
             distinct: 'name',
-            hint: 'G is a leap; B–D–G is next door. Same chord either way.',
+            hint: tr('G is a leap; B–D–G is next door. Same chord either way.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Then vi, still nearby: play **A, C, E**.',
+            ask: tr('Then vi, still nearby: play **A, C, E**.'),
             notes: ['A', 'C', 'E'],
             count: 3,
             distinct: 'name',
-            hint: 'Two of those notes were already under your fingers.',
+            hint: tr('Two of those notes were already under your fingers.'),
           },
           {
             kind: 'text',
-            md: 'Your score now includes a **smoothness** number alongside accuracy and timing: how far your fingers travelled compared to the shortest legal path.',
+            md: tr(
+              'Your score now includes a **smoothness** number alongside accuracy and timing: how far your fingers travelled compared to the shortest legal path.',
+            ),
           },
         ],
       },
@@ -411,8 +435,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u3.c1',
-        prompt:
+        prompt: tr(
           'Play the loop with the right hand alone, smoothly, and listen for the top notes on their own. That top line is a melody you did not write on purpose — most pop hooks are exactly this, noticed and kept.',
+        ),
         exercise: play({ key: G, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3 }),
       },
     ],
@@ -421,7 +446,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u4',
     stageId: 's4',
     ordinal: 3,
-    title: 'All grips, all keys (part 1)',
+    title: tr('All grips, all keys (part 1)'),
     strandWeights: { keys: 4, create: 1 },
     concepts: ['spell:triad:inversions'],
     prerequisites: ['s4.u3'],
@@ -434,23 +459,25 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Interleaved grips again — now with inversions in the deck, across the triads of C, G, D and F. Mixed on purpose: recall under mild pressure is what makes it permanent.',
+            md: tr(
+              'Interleaved grips again — now with inversions in the deck, across the triads of C, G, D and F. Mixed on purpose: recall under mild pressure is what makes it permanent.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Warm up the naming: **Dm/F** — play its bass note.',
+            ask: tr('Warm up the naming: **Dm/F** — play its bass note.'),
             notes: ['F'],
             count: 1,
             distinct: 'octave',
-            hint: 'D minor with its 3rd underneath. The slash always names the bottom.',
+            hint: tr('D minor with its 3rd underneath. The slash always names the bottom.'),
           },
           {
             kind: 'playCheck',
-            ask: 'A minor, **second** inversion — play the note that ends up in the bass.',
+            ask: tr('A minor, **second** inversion — play the note that ends up in the bass.'),
             notes: ['E'],
             count: 1,
             distinct: 'octave',
-            hint: 'Second inversion puts the 5th on the bottom. A–C–E, so the 5th is E.',
+            hint: tr('Second inversion puts the 5th on the bottom. A–C–E, so the 5th is E.'),
           },
         ],
       },
@@ -497,8 +524,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u4.c1',
-        prompt:
+        prompt: tr(
           'Backing in D. Start the loop in root position, then play it again starting from a first inversion, then from a second. Three journeys, same four chords, and each one puts a different note on top.',
+        ),
         exercise: play({ key: D, palette: 'chordtones', roman: ['I', 'vi', 'IV', 'V'], loops: 3 }),
       },
     ],
@@ -507,7 +535,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u5',
     stageId: 's4',
     ordinal: 4,
-    title: 'Left hand grows up',
+    title: tr('Left hand grows up'),
     strandWeights: { keys: 4, create: 1 },
     concepts: ['pattern:lh:rootfifth', 'pattern:lh:broken'],
     prerequisites: ['s4.u4'],
@@ -520,11 +548,13 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "The left hand's real job isn't chords — it's **foundation**. The broken pattern *root · fifth · octave · fifth* outlines the harmony while the right hand does the talking.",
+            md: tr(
+              "The left hand's real job isn't chords — it's **foundation**. The broken pattern *root · fifth · octave · fifth* outlines the harmony while the right hand does the talking.",
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C bar, LH broken pattern: C2 · G2 · C3 · G2.',
+            caption: tr('C bar, LH broken pattern: C2 · G2 · C3 · G2.'),
             demo: {
               bpm: 80,
               loop: true,
@@ -538,23 +568,27 @@ export const stage4Units: Unit[] = [
           },
           {
             kind: 'playCheck',
-            ask: 'Left hand on a C bar: play the **fifth** the pattern keeps returning to.',
+            ask: tr('Left hand on a C bar: play the **fifth** the pattern keeps returning to.'),
             notes: ['G'],
             count: 1,
             distinct: 'octave',
-            hint: 'Five letters up from C. Little finger on the root, thumb on this.',
+            hint: tr('Five letters up from C. Little finger on the root, thumb on this.'),
           },
           {
             kind: 'playCheck',
-            ask: 'The bar changes to F. Play F and its fifth.',
+            ask: tr('The bar changes to F. Play F and its fifth.'),
             notes: ['F', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'The shape does not change — the hand just moves. That is why this pattern is worth owning.',
+            hint: tr(
+              'The shape does not change — the hand just moves. That is why this pattern is worth owning.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Two hands doing different jobs at once is the hardest thing in this stage, and the ladder below exists for exactly that. Play the left hand alone until it is boring, then add the right.',
+            md: tr(
+              'Two hands doing different jobs at once is the hardest thing in this stage, and the ladder below exists for exactly that. Play the left hand alone until it is boring, then add the right.',
+            ),
           },
         ],
       },
@@ -619,8 +653,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u5.c1',
-        prompt:
+        prompt: tr(
           'Left hand runs the pattern; right hand plays one note per bar and no more. One note is enough when the bass is moving — and holding back is a technique, not a limitation.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3 }),
       },
     ],
@@ -629,7 +664,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u6',
     stageId: 's4',
     ordinal: 5,
-    title: 'Cadences',
+    title: tr('Cadences'),
     strandWeights: { theory: 2, ear: 3, keys: 2, create: 1 },
     concepts: ['theory:cadence', 'ear:cadence'],
     prerequisites: ['s4.u5'],
@@ -642,11 +677,13 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'A **cadence** is how a phrase ends. **Authentic** (V→I): the full stop. **Plagal** (IV→I): the soft amen. **Half** (…→V): a comma — the music stops mid-sentence, waiting.',
+            md: tr(
+              'A **cadence** is how a phrase ends. **Authentic** (V→I): the full stop. **Plagal** (IV→I): the soft amen. **Half** (…→V): a comma — the music stops mid-sentence, waiting.',
+            ),
           },
           {
             kind: 'earCheck',
-            question: 'Full stop or comma?',
+            question: tr('Full stop or comma?'),
             demo: {
               bpm: 76,
               loop: false,
@@ -662,24 +699,26 @@ export const stage4Units: Unit[] = [
                 { midi: 62, atBeat: 2, durBeats: 2 },
               ],
             },
-            options: ['Full stop (lands home)', 'Comma (left hanging)'],
+            options: [tr('Full stop (lands home)'), tr('Comma (left hanging)')],
             correctIndex: 1,
           },
           {
             kind: 'playCheck',
-            ask: 'Play the two bass notes of a **plagal** cadence in C: F, then C.',
+            ask: tr('Play the two bass notes of a **plagal** cadence in C: F, then C.'),
             notes: ['F', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'The amen ending. It settles without ever building tension first.',
+            hint: tr('The amen ending. It settles without ever building tension first.'),
           },
           {
             kind: 'playCheck',
-            ask: 'And the **authentic** one: G, then C.',
+            ask: tr('And the **authentic** one: G, then C.'),
             notes: ['G', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'Down a fifth in the bass, and the leading tone resolving above it. This is the strong one.',
+            hint: tr(
+              'Down a fifth in the bass, and the leading tone resolving above it. This is the strong one.',
+            ),
           },
         ],
       },
@@ -758,8 +797,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u6.c1',
-        prompt:
+        prompt: tr(
           'Improvise a phrase and end it on the V — deliberately leave it hanging. Then play the same phrase again and land it on I. Ending badly on purpose teaches you more about cadences than ending well by accident.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'IV', 'V', 'I'], loops: 3 }),
       },
     ],
@@ -768,7 +808,7 @@ export const stage4Units: Unit[] = [
     id: 's4.u7',
     stageId: 's4',
     ordinal: 6,
-    title: 'Song lab: texture',
+    title: tr('Song lab: texture'),
     strandWeights: { keys: 4, create: 2 },
     concepts: ['song:northline:texture'],
     prerequisites: ['s4.u6'],
@@ -781,23 +821,27 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: '**Northline** again — but grown up: left hand plays the broken pattern, right hand takes the smoothest grip of each chord. Same chart, twice the music.',
+            md: tr(
+              '**Northline** again — but grown up: left hand plays the broken pattern, right hand takes the smoothest grip of each chord. Same chart, twice the music.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'The song is in G. On the I bar, play the two notes your left hand lives on: **G** and its fifth.',
+            ask: tr(
+              'The song is in G. On the I bar, play the two notes your left hand lives on: **G** and its fifth.',
+            ),
             notes: ['G', 'D'],
             count: 2,
             distinct: 'name',
-            hint: 'Root and fifth. The pattern rocks between them and adds the octave on beat 3.',
+            hint: tr('Root and fifth. The pattern rocks between them and adds the octave on beat 3.'),
           },
           {
             kind: 'playCheck',
-            ask: 'The vi bar is E minor. Play **E** and its fifth.',
+            ask: tr('The vi bar is E minor. Play **E** and its fifth.'),
             notes: ['E', 'B'],
             count: 2,
             distinct: 'name',
-            hint: 'Root and fifth again — the pattern never cares whether the chord is major or minor.',
+            hint: tr('Root and fifth again — the pattern never cares whether the chord is major or minor.'),
           },
         ],
       },
@@ -838,8 +882,9 @@ export const stage4Units: Unit[] = [
       {
         kind: 'create',
         id: 's4.u7.c1',
-        prompt:
+        prompt: tr(
           "Paper Sun's loop, and no texture handed to you. Invent the left hand: straight roots, root-fifth pulses, a broken shape of your own. Play each for a full loop before choosing — the groove decides, not the theory.",
+        ),
         exercise: play({ key: F, palette: 'chordtones', roman: ['I', 'vi', 'ii', 'V'], loops: 3, bpm: 84 }),
       },
     ],
@@ -848,7 +893,7 @@ export const stage4Units: Unit[] = [
     id: 's4.cp',
     stageId: 's4',
     ordinal: 7,
-    title: 'Checkpoint: Smooth hands',
+    title: tr('Checkpoint: Smooth hands'),
     strandWeights: { keys: 4, ear: 1 },
     concepts: [],
     prerequisites: ['s4.u7'],
@@ -861,7 +906,9 @@ export const stage4Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The smooth-hands test: voice-led progressions in two keys, inversion recall at speed, cadences by ear, and a full-texture take with both hands. Five takes, no hints.',
+            md: tr(
+              'The smooth-hands test: voice-led progressions in two keys, inversion recall at speed, cadences by ear, and a full-texture take with both hands. Five takes, no hints.',
+            ),
           },
         ],
       },

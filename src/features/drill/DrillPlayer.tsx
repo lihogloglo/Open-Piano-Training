@@ -1,7 +1,8 @@
+import { tr } from '@/i18n';
 import { useSettingsStore } from '@/store/settingsStore';
 import { exerciseRange } from '@/ui/Keyboard/utils';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useMemo, useEffect, useRef, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
@@ -28,21 +29,16 @@ interface DrillItem {
   def: ExerciseDef;
 }
 
-function itemsForBlock(block: SessionBlock): DrillItem[] {
+function itemsForBlock(block: SessionBlock, tourist: boolean, readStrandEnabled: boolean): DrillItem[] {
   if (block.kind === 'review') {
     return [
       ...(block.retests ?? []).map((r) => ({
         atomId: r.key,
-        label: 'Return to ' + r.stepId,
+        label: tr('Return to ') + r.stepId,
         def: { ...r.exercise, assessment: true },
       })),
       ...block.atomIds.flatMap((atomId) => {
-        if (
-          !useSettingsStore.getState().tourist &&
-          !useSettingsStore.getState().readStrandEnabled &&
-          atomId.startsWith('read:staff:')
-        )
-          return [];
+        if (!tourist && !readStrandEnabled && atomId.startsWith('read:staff:')) return [];
         const atom = ATOMS.get(atomId);
         return atom?.drill ? [{ atomId, label: atom.label, def: atom.drill }] : [];
       }),
@@ -99,7 +95,12 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
   const startRun = useRunStore((s) => s.startRun);
   const abortRun = useRunStore((s) => s.abortRun);
 
-  const items = itemsForBlock(block);
+  const tourist = useSettingsStore((s) => s.tourist);
+  const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
+  const items = useMemo(
+    () => itemsForBlock(block, tourist, readStrandEnabled),
+    [block, tourist, readStrandEnabled],
+  );
   const [itemIdx, setItemIdx] = useState(0);
   const busy = useRef(false);
   const advanceTimer = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -111,7 +112,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
       const nextIdx = plan.blocks.findIndex(
         (_, i) => i !== blockIdx && !plan.completedBlocks.includes(i) && i > blockIdx,
       );
-      toast(block.kind === 'create' ? 'Nice, session block done' : 'Block complete!', 'ok');
+      toast(block.kind === 'create' ? tr('Nice, session block done') : tr('Block complete!'), 'ok');
       if (nextIdx !== -1) {
         const next = plan.blocks[nextIdx];
         if (next?.kind === 'new') {
@@ -139,8 +140,18 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
     [items, startRun, block.kind],
   );
 
+  const skipItem = () => {
+    if (busy.current) return;
+    busy.current = true;
+    clearTimeout(advanceTimer.current);
+    abortRun();
+    if (itemIdx + 1 < items.length) setItemIdx(itemIdx + 1);
+    else finishBlock();
+  };
+
   // Auto-start wait-mode items; tempo items wait for Start.
   useEffect(() => {
+    busy.current = false;
     const it = items[itemIdx];
     const t = it && it.def.mode === 'wait' ? setTimeout(() => startItem(itemIdx), 50) : undefined;
     return () => clearTimeout(t);
@@ -186,12 +197,19 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
   if (block.kind === 'create') {
     return (
       <div className={styles['player']}>
-        <Header title={`Play: ${block.title}`} onExit={() => void navigate('/practice')} />
+        <Header title={tr('Play: {v0}', { v0: block.title })} onExit={() => void navigate('/practice')} />
         <div className={styles['promptZone']}>
           <div className={styles['createPrompt']}>
-            <h2>{block.title}</h2>
-            <p>{block.prompt}</p>
-            <p className={styles['sub']}>Learn one phrase at a time. There is no score or clock.</p>
+            <h2>{tr(block.title)}</h2>
+            <p>
+              {block.basePrompt && block.reviewAtomId
+                ? tr('{v0} Finish with one slow review of {v1}.', {
+                    v0: block.basePrompt,
+                    v1: ATOMS.get(block.reviewAtomId)?.label ?? block.reviewAtomId,
+                  })
+                : tr(block.basePrompt ?? block.prompt)}
+            </p>
+            <p className={styles['sub']}>{tr('Learn one phrase at a time. There is no score or clock.')}</p>
           </div>
         </div>
         <Keyboard
@@ -203,7 +221,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
         />
         <div className={styles['footer']}>
           <Button variant="primary" size="l" onClick={finishBlock}>
-            Done
+            {tr('Done')}
           </Button>
         </div>
       </div>
@@ -220,10 +238,16 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
   return (
     <div className={styles['player']}>
       <Header
-        title={block.kind === 'warmup' ? 'Warmup' : 'Review'}
-        subtitle={`${itemIdx + 1}/${items.length} · ${item.label}`}
+        title={block.kind === 'warmup' ? tr('Warmup') : tr('Review')}
+        subtitle={tr('{v0}/{v1} · {v2}', { v0: itemIdx + 1, v1: items.length, v2: item.label })}
         onExit={() => void navigate('/practice')}
       />
+      <div className={styles['skipBar']}>
+        <Button variant="ghost" onClick={skipItem} disabled={phase === 'done'}>
+          {tr('Skip this exercise')}
+          <Icon name="chevronRight" size={16} />
+        </Button>
+      </div>
       <PlayerNotices />
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
@@ -238,7 +262,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
           ) : (
             <h2 className={styles['promptMain']}>{perTarget?.label ?? instance?.prompt.detail ?? ''}</h2>
           )}
-          {phase === 'done' && <p className={styles['nextUp']}>Next up…</p>}
+          {phase === 'done' && <p className={styles['nextUp']}>{tr('Next up…')}</p>}
         </div>
       </div>
       <Keyboard
@@ -266,7 +290,7 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
 function Header({ title, subtitle, onExit }: { title: string; subtitle?: string; onExit: () => void }) {
   return (
     <header className={styles['topbar']}>
-      <button className={styles['close']} onClick={onExit} aria-label="Exit">
+      <button className={styles['close']} onClick={onExit} aria-label={tr('Exit')}>
         <Icon name="close" />
       </button>
       <span className={styles['title']}>{title}</span>

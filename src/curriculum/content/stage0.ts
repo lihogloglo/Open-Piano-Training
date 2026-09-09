@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
@@ -33,10 +34,11 @@ const tempo = (
 export const stage0: Stage = {
   id: 's0',
   ordinal: 0,
-  title: 'Bearings',
-  tagline: 'Find your way around',
-  summary:
+  title: tr('Bearings'),
+  tagline: tr('Find your way around'),
+  summary: tr(
     'The keyboard looks like 88 keys. It is really one pattern of 12, repeated. Learn to see the pattern, find any note instantly, and get both hands moving.',
+  ),
   unitIds: ['s0.u1', 's0.u2', 's0.u3', 's0.u4', 's0.u5', 's0.u6', 's0.cp'],
 };
 
@@ -45,7 +47,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u1',
     stageId: 's0',
     ordinal: 0,
-    title: 'Meet the keyboard',
+    title: tr('Meet the keyboard'),
     strandWeights: { keys: 3, theory: 1, create: 1 },
     concepts: ['note:find:c', 'note:find:f'],
     prerequisites: [],
@@ -58,27 +60,33 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Eighty-eight keys, but only **twelve** of them are different. Look at the black keys: they come in groups of **two** and **three**, over and over. One full repeat is an **octave**.',
+            md: tr(
+              'Eighty-eight keys, but only **twelve** of them are different. Look at the black keys: they come in groups of **two** and **three**, over and over. One full repeat is an **octave**.',
+            ),
           },
           {
             kind: 'text',
-            md: 'So you never learn the whole keyboard. You learn one pattern, then find it everywhere.',
+            md: tr('So you never learn the whole keyboard. You learn one pattern, then find it everywhere.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Before any names: put a finger on a group of **two** black keys, and play the **white key just to their left**.',
+            ask: tr(
+              'Before any names: put a finger on a group of **two** black keys, and play the **white key just to their left**.',
+            ),
             notes: ['C'],
             count: 1,
             distinct: 'octave',
-            hint: 'Any octave. Play it on your keyboard, or click the keys below.',
+            hint: tr('Any octave. Play it on your keyboard, or click the keys below.'),
           },
           {
             kind: 'text',
-            md: 'That note is **C** — and it is the same note in every one of those groups. Hear them stack up:',
+            md: tr(
+              'That note is **C** — and it is the same note in every one of those groups. Hear them stack up:',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Every C on the keyboard — same spot in every octave.',
+            caption: tr('Every C on the keyboard — same spot in every octave.'),
             demo: {
               bpm: 110,
               loop: false,
@@ -93,11 +101,11 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'playCheck',
-            ask: 'Your turn: play **three different Cs** — a low one, a middle one, a high one.',
+            ask: tr('Your turn: play **three different Cs** — a low one, a middle one, a high one.'),
             notes: ['C'],
             count: 3,
             distinct: 'octave',
-            hint: 'Same shape, different octave. Look for the two-black-key group each time.',
+            hint: tr('Same shape, different octave. Look for the two-black-key group each time.'),
           },
         ],
       },
@@ -108,27 +116,29 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Use a second landmark: **F** sits just left of every group of **three** black keys.',
+            md: tr('Use a second landmark: **F** sits just left of every group of **three** black keys.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Find an **F** — white key, left edge of a group of three.',
+            ask: tr('Find an **F** — white key, left edge of a group of three.'),
             notes: ['F'],
             count: 1,
             distinct: 'octave',
-            hint: 'Three blacks, not two. The nearest white key on their left.',
+            hint: tr('Three blacks, not two. The nearest white key on their left.'),
           },
           {
             kind: 'text',
-            md: 'Two landmarks, and the keyboard stops being a wall. Everything else is counted from C or from F — which is exactly what the next lesson does.',
+            md: tr(
+              'Two landmarks, and the keyboard stops being a wall. Everything else is counted from C or from F — which is exactly what the next lesson does.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Last check: play a **C**, then an **F**, then a **C** again.',
+            ask: tr('Last check: play a **C**, then an **F**, then a **C** again.'),
             notes: ['C', 'F'],
             count: 2,
             distinct: 'name',
-            hint: 'Two different letters. Any octave, either hand.',
+            hint: tr('Two different letters. Any octave, either hand.'),
           },
         ],
       },
@@ -142,8 +152,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u1.c1',
-        prompt:
+        prompt: tr(
           'Press Play backing: it rocks between two chords, one built on C and one built on F. Play only Cs and Fs over it — any octave, either hand, any rhythm. Land on C when the C chord comes round and hear it click into place.',
+        ),
         // Two chords rather than a drone: the landmarks the lesson just taught
         // are also the roots underneath, so "it fits" is audible, not asserted.
         exercise: {
@@ -169,7 +180,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u2',
     stageId: 's0',
     ordinal: 1,
-    title: 'Every note has a name',
+    title: tr('Every note has a name'),
     strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['note:find:d', 'note:find:e', 'note:find:g', 'note:find:a', 'note:find:b'],
     prerequisites: ['s0.u1'],
@@ -182,11 +193,13 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The white keys walk up the alphabet from C: **C D E F G A B** — then C again, forever. Seven letters, no eighth.',
+            md: tr(
+              'The white keys walk up the alphabet from C: **C D E F G A B** — then C again, forever. Seven letters, no eighth.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'C D E F G A B C — say the letters along with it.',
+            caption: tr('C D E F G A B C — say the letters along with it.'),
             demo: {
               bpm: 100,
               loop: false,
@@ -199,27 +212,31 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'You do not have to count from C every time. The black-key groups name the whites around them. **D is the one trapped between the two blacks** — dead centre of the pair.',
+            md: tr(
+              'You do not have to count from C every time. The black-key groups name the whites around them. **D is the one trapped between the two blacks** — dead centre of the pair.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play a **D**: the white key sitting between two black keys.',
+            ask: tr('Play a **D**: the white key sitting between two black keys.'),
             notes: ['D'],
             count: 1,
             distinct: 'octave',
-            hint: 'The group of two, not three. D is the filling in the sandwich.',
+            hint: tr('The group of two, not three. D is the filling in the sandwich.'),
           },
           {
             kind: 'text',
-            md: 'Inside the group of **three**, two whites are trapped the same way: **G** between the first and second black, **A** between the second and third.',
+            md: tr(
+              'Inside the group of **three**, two whites are trapped the same way: **G** between the first and second black, **A** between the second and third.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play **G**, then **A** — the two whites inside the group of three.',
+            ask: tr('Play **G**, then **A** — the two whites inside the group of three.'),
             notes: ['G', 'A'],
             count: 2,
             distinct: 'name',
-            hint: 'Left gap is G, right gap is A. Alphabet order still holds.',
+            hint: tr('Left gap is G, right gap is A. Alphabet order still holds.'),
           },
         ],
       },
@@ -234,19 +251,25 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'That leaves **E** and **B** — and they hide in plain sight. C and F sit on the **left** edge of their black-key group; E and B sit on the **right** edge of the same group.',
+            md: tr(
+              'That leaves **E** and **B** — and they hide in plain sight. C and F sit on the **left** edge of their black-key group; E and B sit on the **right** edge of the same group.',
+            ),
           },
           {
             kind: 'text',
-            md: 'So each group is bracketed: **C–[two blacks]–E**, and **F–[three blacks]–B**. E and B are the two whites with no black key above them.',
+            md: tr(
+              'So each group is bracketed: **C–[two blacks]–E**, and **F–[three blacks]–B**. E and B are the two whites with no black key above them.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play **E** (right of the two blacks), then **B** (right of the three).',
+            ask: tr('Play **E** (right of the two blacks), then **B** (right of the three).'),
             notes: ['E', 'B'],
             count: 2,
             distinct: 'name',
-            hint: 'Look for the two places where two white keys touch. E and B are the left one of each pair.',
+            hint: tr(
+              'Look for the two places where two white keys touch. E and B are the left one of each pair.',
+            ),
           },
         ],
       },
@@ -264,8 +287,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u2.c1',
-        prompt:
+        prompt: tr(
           'Learn the opening of **Hot Cross Buns**. Find E, D and C first. Then read the notes from left to right and repeat the first two phrases.',
+        ),
         exercise: {
           generator: 'improv',
           params: {
@@ -274,8 +298,8 @@ export const stage0Units: Unit[] = [
             roman: ['I'],
             beatsPerChord: 4,
             loops: 6,
-            songTitle: 'Hot Cross Buns',
-            songCredit: 'Traditional English nursery song',
+            songTitle: tr('Hot Cross Buns'),
+            songCredit: tr('Traditional English nursery song'),
             melody: ['E D C', 'E D C', 'C C C C', 'D D D D', 'E D C'],
           },
           mode: 'wait',
@@ -291,7 +315,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u3',
     stageId: 's0',
     ordinal: 2,
-    title: 'Half steps & the black keys',
+    title: tr('Half steps & the black keys'),
     strandWeights: { keys: 2, theory: 2, create: 1 },
     concepts: ['note:find:sharps', 'theory:halfwhole'],
     prerequisites: ['s0.u2'],
@@ -304,31 +328,39 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The smallest move on the keyboard is a **half step**: the very next key, whichever colour it happens to be. Nothing fits between them.',
+            md: tr(
+              'The smallest move on the keyboard is a **half step**: the very next key, whichever colour it happens to be. Nothing fits between them.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play a **C**, then the key a half step **above** it — the black key immediately to its right.',
+            ask: tr(
+              'Play a **C**, then the key a half step **above** it — the black key immediately to its right.',
+            ),
             notes: ['C#'],
             count: 1,
             distinct: 'octave',
-            hint: 'Not the next white key. The very next key of any colour.',
+            hint: tr('Not the next white key. The very next key of any colour.'),
           },
           {
             kind: 'text',
-            md: 'That black key has no letter of its own, so it borrows one and says which direction it came from. Up a half step from C is **C♯**. The same key, approached down from D, is **D♭**. One key, two names.',
+            md: tr(
+              'That black key has no letter of its own, so it borrows one and says which direction it came from. Up a half step from C is **C♯**. The same key, approached down from D, is **D♭**. One key, two names.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Find **E♭** — the black key a half step *below* E. (You could also call it D♯.)',
+            ask: tr('Find **E♭** — the black key a half step *below* E. (You could also call it D♯.)'),
             notes: ['Eb'],
             count: 1,
             distinct: 'octave',
-            hint: 'Start on E and move one key left. It is the right-hand black key of the group of two.',
+            hint: tr('Start on E and move one key left. It is the right-hand black key of the group of two.'),
           },
           {
             kind: 'text',
-            md: 'Two half steps make a **whole step** — C to D, or E to F♯. Careful: **E to F is only a half step**, and so is B to C. Those are the two places the pattern has no black key to spare.',
+            md: tr(
+              'Two half steps make a **whole step** — C to D, or E to F♯. Careful: **E to F is only a half step**, and so is B to C. Those are the two places the pattern has no black key to spare.',
+            ),
           },
         ],
       },
@@ -349,15 +381,17 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Sharp means *up one*, flat means *down one*. That is the whole rule — and it is why the same black key answers to two names depending on where you came from.',
+            md: tr(
+              'Sharp means *up one*, flat means *down one*. That is the whole rule — and it is why the same black key answers to two names depending on where you came from.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Prove it: play **A♯**, then **B♭**.',
+            ask: tr('Prove it: play **A♯**, then **B♭**.'),
             notes: ['A#'],
             count: 1,
             distinct: 'octave',
-            hint: 'They are the same key. Play it once and both names are true.',
+            hint: tr('They are the same key. Play it once and both names are true.'),
           },
         ],
       },
@@ -370,8 +404,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u3.c1',
-        prompt:
+        prompt: tr(
           'Learn the opening phrase of **Amazing Grace** on black keys. Start with the short D♭ pickup. Follow each group from left to right, then join the groups over the backing.',
+        ),
         // F♯ major pentatonic is exactly the five black keys, so the palette
         // tint lights the black keys and nothing else.
         exercise: {
@@ -382,8 +417,8 @@ export const stage0Units: Unit[] = [
             roman: ['I'],
             beatsPerChord: 4,
             loops: 6,
-            songTitle: 'Amazing Grace',
-            songCredit: 'NEW BRITAIN, traditional American melody',
+            songTitle: tr('Amazing Grace'),
+            songCredit: tr('NEW BRITAIN, traditional American melody'),
             melody: ['D♭', 'G♭ B♭ G♭', 'B♭ A♭', 'G♭ E♭', 'D♭'],
           },
           mode: 'wait',
@@ -399,7 +434,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u4',
     stageId: 's0',
     ordinal: 3,
-    title: 'Your right hand: the five-finger home',
+    title: tr('Your right hand: the five-finger home'),
     strandWeights: { keys: 4, create: 1 },
     concepts: ['fivefinger:c:maj:rh'],
     prerequisites: ['s0.u3'],
@@ -412,15 +447,19 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Until now you have been pointing at keys. From here you play them with a **hand shape** — five fingers already in place, so nothing has to travel.',
+            md: tr(
+              'Until now you have been pointing at keys. From here you play them with a **hand shape** — five fingers already in place, so nothing has to travel.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Rest your right hand so the **thumb sits on C** and one finger covers each of the next four white keys: C D E F G. Curved fingers, loose wrist — like holding a bubble. Nothing else moves.',
+            md: tr(
+              'Rest your right hand so the **thumb sits on C** and one finger covers each of the next four white keys: C D E F G. Curved fingers, loose wrist — like holding a bubble. Nothing else moves.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Up and back down, one finger per key. No hand movement at all.',
+            caption: tr('Up and back down, one finger per key. No hand movement at all.'),
             demo: {
               bpm: 92,
               loop: false,
@@ -433,15 +472,19 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Fingers are numbered **1 (thumb) to 5 (pinky)** — the same numbers in every method book you will ever open. The key labels in the next step show which finger takes which note.',
+            md: tr(
+              'Fingers are numbered **1 (thumb) to 5 (pinky)** — the same numbers in every method book you will ever open. The key labels in the next step show which finger takes which note.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Set the shape and play all five: **C D E F G**, one finger each, without sliding the hand.',
+            ask: tr(
+              'Set the shape and play all five: **C D E F G**, one finger each, without sliding the hand.',
+            ),
             notes: ['C', 'D', 'E', 'F', 'G'],
             count: 5,
             distinct: 'name',
-            hint: 'Thumb on C, pinky on G. If you have to reach, the hand is in the wrong place.',
+            hint: tr('Thumb on C, pinky on G. If you have to reach, the hand is in the wrong place.'),
           },
         ],
       },
@@ -467,8 +510,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u4.c1',
-        prompt:
+        prompt: tr(
           'Learn the opening phrase of **Ode to Joy**. Keep one finger on each key from C to G. Read one group at a time, then play the whole phrase.',
+        ),
         exercise: {
           generator: 'improv',
           params: {
@@ -478,8 +522,8 @@ export const stage0Units: Unit[] = [
             beatsPerChord: 4,
             loops: 6,
             tintDegrees: [1, 2, 3, 4, 5],
-            songTitle: 'Ode to Joy',
-            songCredit: 'Ludwig van Beethoven, 1824',
+            songTitle: tr('Ode to Joy'),
+            songCredit: tr('Ludwig van Beethoven, 1824'),
             melody: ['E E F G', 'G F E D', 'C C D E', 'E D D'],
           },
           mode: 'wait',
@@ -495,7 +539,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u5',
     stageId: 's0',
     ordinal: 4,
-    title: 'Your left hand joins',
+    title: tr('Your left hand joins'),
     strandWeights: { keys: 4, create: 1 },
     concepts: [
       'fivefinger:c:maj:lh',
@@ -514,11 +558,13 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Piano is a two-hand instrument, and the left hand does not get to arrive late. It learns the same shape, mirrored: **pinky (5)** on the low C, thumb (1) on the G above.',
+            md: tr(
+              'Piano is a two-hand instrument, and the left hand does not get to arrive late. It learns the same shape, mirrored: **pinky (5)** on the low C, thumb (1) on the G above.',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Left hand, an octave below middle C: 5 4 3 2 1 and back.',
+            caption: tr('Left hand, an octave below middle C: 5 4 3 2 1 and back.'),
             demo: {
               bpm: 88,
               loop: false,
@@ -531,17 +577,21 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'The numbers mirror too: 1 is the thumb in **both** hands, so the fingers count outwards from the middle of the keyboard.',
+            md: tr(
+              'The numbers mirror too: 1 is the thumb in **both** hands, so the fingers count outwards from the middle of the keyboard.',
+            ),
           },
           {
             kind: 'playCheck',
             // MIDI cannot see which hand played a note; the pitch is checked,
             // the hand is on trust. Saying so is better than pretending.
-            ask: 'With your **left** hand, play C D E F G below middle C. (The app hears the notes, not the hand — this one is on you.)',
+            ask: tr(
+              'With your **left** hand, play C D E F G below middle C. (The app hears the notes, not the hand — this one is on you.)',
+            ),
             notes: ['C', 'D', 'E', 'F', 'G'],
             count: 5,
             distinct: 'name',
-            hint: 'Pinky starts it. If your thumb started, you are playing it right-handed.',
+            hint: tr('Pinky starts it. If your thumb started, you are playing it right-handed.'),
           },
         ],
       },
@@ -556,19 +606,23 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Move your right thumb or left little finger to **G**. Place the other fingers on A, B, C and D. Play the same five-finger pattern from G.',
+            md: tr(
+              'Move your right thumb or left little finger to **G**. Place the other fingers on A, B, C and D. Play the same five-finger pattern from G.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Put the shape on **G** and play its two ends: **G** and **D**.',
+            ask: tr('Put the shape on **G** and play its two ends: **G** and **D**.'),
             notes: ['G', 'D'],
             count: 2,
             distinct: 'name',
-            hint: 'Thumb on G, five white keys up to D under the little finger. Same span as C to G was.',
+            hint: tr('Thumb on G, five white keys up to D under the little finger. Same span as C to G was.'),
           },
           {
             kind: 'text',
-            md: 'That portability is the point of learning shapes rather than notes. By Stage 2 you will move this one to all twelve starting keys without thinking about it.',
+            md: tr(
+              'That portability is the point of learning shapes rather than notes. By Stage 2 you will move this one to all twelve starting keys without thinking about it.',
+            ),
           },
         ],
       },
@@ -599,8 +653,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u5.c1',
-        prompt:
+        prompt: tr(
           'Learn the opening of **Frère Jacques**. Play it with the right hand first. Then place both hands on C homes and play the phrase one octave apart.',
+        ),
         exercise: {
           generator: 'improv',
           params: {
@@ -610,8 +665,8 @@ export const stage0Units: Unit[] = [
             beatsPerChord: 4,
             loops: 6,
             tintDegrees: [1, 2, 3, 4, 5],
-            songTitle: 'Frère Jacques',
-            songCredit: 'Traditional French round',
+            songTitle: tr('Frère Jacques'),
+            songCredit: tr('Traditional French round'),
             melody: ['C D E C', 'C D E C', 'E F G', 'E F G'],
           },
           mode: 'wait',
@@ -627,7 +682,7 @@ export const stage0Units: Unit[] = [
     id: 's0.u6',
     stageId: 's0',
     ordinal: 5,
-    title: 'Keeping time',
+    title: tr('Keeping time'),
     strandWeights: { keys: 3, theory: 2, create: 1 },
     concepts: ['rhythm:basic'],
     prerequisites: ['s0.u5'],
@@ -640,15 +695,19 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Music lives on a steady **pulse** — an even click underneath everything, whether or not anyone plays on it. The metronome makes it audible; your job is to place notes *on* it, not near it.',
+            md: tr(
+              'Music lives on a steady **pulse** — an even click underneath everything, whether or not anyone plays on it. The metronome makes it audible; your job is to place notes *on* it, not near it.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Notes are measured in beats. A **quarter note** takes one beat, a **half note** two, a **whole note** four. Same pitch, different amounts of time:',
+            md: tr(
+              'Notes are measured in beats. A **quarter note** takes one beat, a **half note** two, a **whole note** four. Same pitch, different amounts of time:',
+            ),
           },
           {
             kind: 'keyboardDemo',
-            caption: 'Four quarters, two halves, one whole — all C, all the same pulse underneath.',
+            caption: tr('Four quarters, two halves, one whole — all C, all the same pulse underneath.'),
             demo: {
               bpm: 80,
               loop: false,
@@ -665,19 +724,25 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'First watch and listen to the exact sequence. Then wait through the **count-in**: one bar of clicks before you play. In this exercise, count 1, 2, 3, 4 and play your first note on the next click.',
+            md: tr(
+              'First watch and listen to the exact sequence. Then wait through the **count-in**: one bar of clicks before you play. In this exercise, count 1, 2, 3, 4 and play your first note on the next click.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Try it dry: count four out loud at a walking pace, then play **C** exactly on the next one.',
+            ask: tr(
+              'Try it dry: count four out loud at a walking pace, then play **C** exactly on the next one.',
+            ),
             notes: ['C'],
             count: 1,
             distinct: 'octave',
-            hint: 'One note, but placed on purpose. Counting out loud is not optional — it is the skill.',
+            hint: tr('One note, but placed on purpose. Counting out loud is not optional — it is the skill.'),
           },
           {
             kind: 'text',
-            md: 'From here, timing is scored too. The score checks the note and how close it starts to the beat. Notes near the beat still count, with less timing credit. The result tells you whether you tend to play early or late.',
+            md: tr(
+              'From here, timing is scored too. The score checks the note and how close it starts to the beat. Notes near the beat still count, with less timing credit. The result tells you whether you tend to play early or late.',
+            ),
           },
         ],
       },
@@ -703,8 +768,9 @@ export const stage0Units: Unit[] = [
       {
         kind: 'create',
         id: 's0.u6.c1',
-        prompt:
+        prompt: tr(
           'Play the opening of **Jingle Bells** with a steady pulse. The repeated E notes must keep equal spaces. Count four beats before each phrase.',
+        ),
         exercise: {
           generator: 'improv',
           params: {
@@ -714,8 +780,8 @@ export const stage0Units: Unit[] = [
             beatsPerChord: 4,
             loops: 8,
             tintDegrees: [1, 2, 3, 5],
-            songTitle: 'Jingle Bells',
-            songCredit: 'James Lord Pierpont, 1857',
+            songTitle: tr('Jingle Bells'),
+            songCredit: tr('James Lord Pierpont, 1857'),
             melody: ['E E E', 'E E E', 'E G C D', 'E'],
           },
           mode: 'wait',
@@ -731,7 +797,7 @@ export const stage0Units: Unit[] = [
     id: 's0.cp',
     stageId: 's0',
     ordinal: 6,
-    title: 'Checkpoint: Bearings',
+    title: tr('Checkpoint: Bearings'),
     strandWeights: { keys: 2, theory: 1 },
     concepts: [],
     prerequisites: ['s0.u6'],
@@ -744,7 +810,9 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Show what you found: any white key on demand, the black keys by either name, and a steady five-finger shape in three keys with both hands. Pass this and Stage 1 opens.',
+            md: tr(
+              'Show what you found: any white key on demand, the black keys by either name, and a steady five-finger shape in three keys with both hands. Pass this and Stage 1 opens.',
+            ),
           },
         ],
       },

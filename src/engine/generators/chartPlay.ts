@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { chordSymbol } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
@@ -80,13 +81,13 @@ export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInsta
   });
   const styleNote =
     p.style === 'brokenLH'
-      ? 'LH broken pattern'
+      ? tr('LH broken pattern')
       : p.style === 'rootchord'
         ? def.hand === 'both'
-          ? 'LH root, RH chord — one per bar'
-          : 'one chord per bar'
+          ? tr('LH root, RH chord — one per bar')
+          : tr('one chord per bar')
         : p.style === 'block'
-          ? 'one chord per bar'
+          ? tr('one chord per bar')
           : COMP_PATTERNS[p.style].label;
   return {
     def,
@@ -94,8 +95,8 @@ export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInsta
     targets,
     beatsPerBar: song.timeSig[0],
     prompt: {
-      title: `${song.title} — in ${tonic}`,
-      detail: `${song.styleRef} · ${styleNote}`,
+      title: tr('{v0} — in {v1}', { v0: song.title, v1: tonic }),
+      detail: tr('{v0} · {v1}', { v0: song.styleRef, v1: styleNote }),
       key: { tonic, mode },
       perTarget: labels.map((label) => ({ label })),
     },

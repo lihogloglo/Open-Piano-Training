@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { buildChord, chordSymbol } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
@@ -30,10 +31,10 @@ const PALETTE_SCALE: Record<string, ScaleType> = {
 };
 
 export const PALETTE_LABEL: Record<string, string> = {
-  degrees123: 'degrees 1, 2 and 3',
-  pentatonic: 'the major pentatonic',
-  blues: 'the blues scale',
-  chordtones: 'the chord tones',
+  degrees123: tr('degrees 1, 2 and 3'),
+  pentatonic: tr('the major pentatonic'),
+  blues: tr('the blues scale'),
+  chordtones: tr('the chord tones'),
 };
 
 /** The pitch classes the palette offers, for keyboard tinting. */
@@ -82,8 +83,8 @@ export function generateImprov(def: ExerciseDef, seed: number): ExerciseInstance
           atBeat: beat,
         });
         perTarget.push({
-          label: `Land on ${chordSymbol(c.root, c.quality)}`,
-          detail: 'Any chord tone, any octave — then play freely until the next bar',
+          label: tr('Land on {v0}', { v0: chordSymbol(c.root, c.quality) }),
+          detail: tr('Any chord tone, any octave — then play freely until the next bar'),
         });
       }
       beat += p.beatsPerChord;
@@ -101,16 +102,16 @@ export function generateImprov(def: ExerciseDef, seed: number): ExerciseInstance
       label: chordSymbol(tonic.root, tonic.quality),
     });
     perTarget.push({
-      label: 'Play',
-      detail: `Use ${PALETTE_LABEL[p.palette] ?? 'the palette'} — no score, no wrong notes`,
+      label: tr('Play'),
+      detail: tr('Use {v0} — no score, no wrong notes', { v0: PALETTE_LABEL[p.palette] ?? 'the palette' }),
     });
   }
 
   // Vary the opening call slightly per seed so a repeat run does not feel canned.
   const opener = rng.pick([
-    'Start on a long note.',
-    'Start with a short phrase, then leave a gap.',
-    'Answer the backing, do not race it.',
+    tr('Start on a long note.'),
+    tr('Start with a short phrase, then leave a gap.'),
+    tr('Answer the backing, do not race it.'),
   ]);
 
   return {
@@ -119,8 +120,8 @@ export function generateImprov(def: ExerciseDef, seed: number): ExerciseInstance
     targets,
     beatsPerTarget: p.beatsPerChord,
     prompt: {
-      title: `Improvise in ${p.key.tonic} ${p.key.mode}`,
-      detail: `${PALETTE_LABEL[p.palette] ?? ''} · ${opener}`,
+      title: tr('Improvise in {v0} {v1}', { v0: p.key.tonic, v1: p.key.mode }),
+      detail: tr('{v0} · {v1}', { v0: PALETTE_LABEL[p.palette] ?? '', v1: opener }),
       key: p.key,
       perTarget,
     },

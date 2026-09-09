@@ -1,3 +1,4 @@
+import { plural, tr } from '@/i18n';
 import { useSettingsStore } from '@/store/settingsStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
@@ -30,11 +31,14 @@ const BLOCK_ICON: Record<SessionBlock['kind'], IconName> = {
 };
 
 function blockLabel(block: SessionBlock): string {
-  if (block.kind === 'warmup') return 'Warmup';
-  if (block.kind === 'new') return `Continue: ${block.title}`;
+  if (block.kind === 'warmup') return tr('Warmup');
+  if (block.kind === 'new') return tr('Continue: {v0}', { v0: block.title });
   if (block.kind === 'review')
-    return `Review: ${block.atomIds.length} skill${block.atomIds.length > 1 ? 's' : ''} due`;
-  return `Play: ${block.title}`;
+    return plural(
+      { one: 'Review: {count} skill due', other: 'Review: {count} skills due' },
+      block.atomIds.length,
+    );
+  return tr('Play: {v0}', { v0: block.title });
 }
 
 function blockRoute(plan: SessionPlan, idx: number): string {
@@ -78,7 +82,7 @@ export function TodayScreen() {
   const caughtUp =
     plan.blocks.length > 0 && !plan.blocks.some((b) => b.kind === 'new' || b.kind === 'review');
   const hour = new Date().getHours();
-  const greeting = hour < 12 ? 'Good morning' : hour < 18 ? 'Good afternoon' : 'Good evening';
+  const greeting = hour < 12 ? tr('Good morning') : hour < 18 ? tr('Good afternoon') : tr('Good evening');
 
   // A recap is worth showing only once the week actually contains something.
   const showRecap =
@@ -96,19 +100,25 @@ export function TodayScreen() {
       <header className={styles['header']}>
         <div>
           <h1>{greeting}</h1>
-          <p className={styles['sub']}>Small daily steps beat weekend marathons.</p>
+          <p className={styles['sub']}>{tr('Small daily steps beat weekend marathons.')}</p>
         </div>
         <div className={styles['streakBox']}>
           <span
             className={styles['flame']}
             data-active={streak.streak > 0}
-            aria-label={`${streak.streak} day streak`}
+            aria-label={plural({ one: '{count} day streak', other: '{count} days streak' }, streak.streak)}
           >
             <Icon name="streak" size={18} weight={streak.streak > 0 ? 'fill' : 'regular'} />
             <span className="tabular">{streak.streak}</span>
           </span>
           {streak.freezes > 0 && (
-            <span className={styles['freeze']} title={`${streak.freezes} rest-day freeze banked`}>
+            <span
+              className={styles['freeze']}
+              title={plural(
+                { one: '{count} rest-day freeze banked', other: '{count} rest-day freezes banked' },
+                streak.freezes,
+              )}
+            >
               <Icon name="freeze" size={14} />
               <span className="tabular">{streak.freezes}</span>
             </span>
@@ -128,36 +138,42 @@ export function TodayScreen() {
 
       {plan.catchUp && (
         <div className={styles['banner']}>
-          Big review day. Lots of skills are due. Want a catch-up workout instead?{' '}
+          {tr('Big review day. Lots of skills are due. Want a catch-up workout instead?')}{' '}
           <Button
             variant="ghost"
             onClick={() => {
               void startWorkout().then((w) => {
-                if (w.blocks.length === 0) toast('Nothing due right now. Nice!');
+                if (w.blocks.length === 0) toast(tr('Nothing due right now. Nice!'));
                 else void navigate(`/drill/${w.id}/0`);
               });
             }}
           >
-            Start catch-up
+            {tr('Start catch-up')}
           </Button>
         </div>
       )}
 
       <Card className={styles['sessionCard'] ?? ''}>
         <div className={styles['sessionHead']}>
-          <h2>Today's session</h2>
-          <span className={styles['minutes']}>~{plan.blocks.reduce((m, b) => m + b.minutes, 0)} min</span>
+          <h2>{tr("Today's session")}</h2>
+          <span className={styles['minutes']}>
+            ~{plan.blocks.reduce((m, b) => m + b.minutes, 0)}
+            {tr(' min')}
+          </span>
         </div>
         {plan.blocks.length === 0 ? (
-          <p className={styles['sub']}>All caught up. Nothing scheduled. Try a workout or the sandbox.</p>
+          <p className={styles['sub']}>
+            {tr('All caught up. Nothing scheduled. Try a workout or the sandbox.')}
+          </p>
         ) : (
           <>
             {caughtUp && (
               // 05: the caught-up state is about there being nothing *due*, not
               // an empty plan — a warmup and a create prompt are always offered.
               <p className={styles['sub']}>
-                All caught up. No new unit and nothing due for review. What&apos;s below is optional, and a
-                rating challenge is a good use of the time.
+                {tr(
+                  "All caught up. No new unit and nothing due for review. What's below is optional, and a rating challenge is a good use of the time.",
+                )}
               </p>
             )}
             <ul className={styles['blocks']}>
@@ -171,7 +187,10 @@ export function TodayScreen() {
                     )}
                   </span>
                   <span className={styles['blockLabel']}>{blockLabel(block)}</span>
-                  <span className={styles['blockMin']}>{block.minutes} min</span>
+                  <span className={styles['blockMin']}>
+                    {block.minutes}
+                    {tr(' min')}
+                  </span>
                 </li>
               ))}
             </ul>
@@ -179,13 +198,16 @@ export function TodayScreen() {
         )}
         {allDone ? (
           <p className={styles['doneLine']}>
-            Session complete: {plan.blocks.length} blocks, {plan.blocks.reduce((m, b) => m + b.minutes, 0)}{' '}
-            estimated minutes planned. Active practice time appears in your weekly recap.
+            {tr('Session complete: ')}
+            {plan.blocks.length}
+            {tr(' blocks, ')}
+            {plan.blocks.reduce((m, b) => m + b.minutes, 0)}{' '}
+            {tr('estimated minutes planned. Active practice time appears in your weekly recap.')}
           </p>
         ) : (
           plan.blocks.length > 0 && (
             <Button variant="primary" size="l" onClick={() => void navigate(blockRoute(plan, nextIdx))}>
-              {started ? 'Continue session' : 'Start session'}
+              {started ? tr('Continue session') : tr('Start session')}
             </Button>
           )
         )}
@@ -194,7 +216,7 @@ export function TodayScreen() {
       {showRecap && recap && (
         <Card className={styles['recapCard'] ?? ''}>
           <div className={styles['recapHead']}>
-            <h2>Your week</h2>
+            <h2>{tr('Your week')}</h2>
             <Button
               variant="ghost"
               onClick={() => {
@@ -202,25 +224,25 @@ export function TodayScreen() {
                 void dismissRecap();
               }}
             >
-              Dismiss
+              {tr('Dismiss')}
             </Button>
           </div>
           <div className={styles['recapStats']}>
             <div className={styles['stat']}>
               <span className={styles['statValue']}>{recap.minutes}</span>
-              <span className={styles['statLabel']}>minutes</span>
+              <span className={styles['statLabel']}>{tr('minutes')}</span>
             </div>
             <div className={styles['stat']}>
               <span className={styles['statValue']}>{recap.sessions}</span>
-              <span className={styles['statLabel']}>sessions</span>
+              <span className={styles['statLabel']}>{tr('sessions')}</span>
             </div>
             <div className={styles['stat']}>
               <span className={styles['statValue']}>{recap.newAtoms.length}</span>
-              <span className={styles['statLabel']}>new skills</span>
+              <span className={styles['statLabel']}>{tr('new skills')}</span>
             </div>
             <div className={styles['stat']}>
               <span className={styles['statValue']}>{recap.wentFluent.length}</span>
-              <span className={styles['statLabel']}>gone fluent</span>
+              <span className={styles['statLabel']}>{tr('gone fluent')}</span>
             </div>
           </div>
           {recap.ratingDeltas.length > 0 && (
@@ -232,9 +254,12 @@ export function TodayScreen() {
           )}
           {recap.highlight && (
             <p className={styles['sub']}>
-              {recap.highlight.label}, first played {recap.highlight.daysApart} days ago.{' '}
+              {recap.highlight.label}
+              {tr(', first played ')}
+              {recap.highlight.daysApart}
+              {tr(' days ago.')}{' '}
               <Button variant="ghost" onClick={() => void navigate('/progress')}>
-                Hear then vs now
+                {tr('Hear then vs now')}
               </Button>
             </p>
           )}
@@ -244,40 +269,42 @@ export function TodayScreen() {
       {suggestions.length > 0 && (
         <Card className={styles['promoCard'] ?? ''}>
           <div>
-            <h3>Rating challenge</h3>
+            <h3>{tr('Rating challenge')}</h3>
             <p className={styles['sub']}>
-              Optional, never required. Ten items at your level in{' '}
+              {tr('Optional, never required. Ten items at your level in')}{' '}
               {STRAND_LABEL[suggestions[0]!].toLowerCase()}.
             </p>
           </div>
-          <Button onClick={() => void navigate(`/rating/${suggestions[0]}`)}>Take the challenge</Button>
+          <Button onClick={() => void navigate(`/rating/${suggestions[0]}`)}>
+            {tr('Take the challenge')}
+          </Button>
         </Card>
       )}
 
       <div className={styles['secondary']}>
         <Card className={styles['smallCard'] ?? ''}>
-          <h3>At the piano</h3>
-          <p className={styles['sub']}>Rhythm, technique, listening, and complete beginner pieces.</p>
-          <Button onClick={() => void navigate('/studio')}>Practice music</Button>
+          <h3>{tr('At the piano')}</h3>
+          <p className={styles['sub']}>{tr('Rhythm, technique, listening, and complete beginner pieces.')}</p>
+          <Button onClick={() => void navigate('/studio')}>{tr('Practice music')}</Button>
         </Card>
         <Card className={styles['smallCard'] ?? ''}>
-          <h3>5-minute workout</h3>
-          <p className={styles['sub']}>Just the reviews that are due.</p>
+          <h3>{tr('5-minute workout')}</h3>
+          <p className={styles['sub']}>{tr('Just the reviews that are due.')}</p>
           <Button
             onClick={() => {
               void startWorkout().then((w) => {
-                if (w.blocks.length === 0) toast('Nothing due right now. Nice!');
+                if (w.blocks.length === 0) toast(tr('Nothing due right now. Nice!'));
                 else void navigate(`/drill/${w.id}/0`);
               });
             }}
           >
-            Start
+            {tr('Start')}
           </Button>
         </Card>
         <Card className={styles['smallCard'] ?? ''}>
-          <h3>Sandbox</h3>
-          <p className={styles['sub']}>Free play, no scores.</p>
-          <Button onClick={() => void navigate('/sandbox')}>Open</Button>
+          <h3>{tr('Sandbox')}</h3>
+          <p className={styles['sub']}>{tr('Free play, no scores.')}</p>
+          <Button onClick={() => void navigate('/sandbox')}>{tr('Open')}</Button>
         </Card>
       </div>
     </div>

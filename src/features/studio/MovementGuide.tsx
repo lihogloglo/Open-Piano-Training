@@ -1,12 +1,15 @@
+import { tr } from '@/i18n';
 /** A schematic observation aid, not a prescribed body shape or a motion score. */
 export function MovementGuide() {
   return (
     <details>
-      <summary>See the movement guide</summary>
+      <summary>{tr('See the movement guide')}</summary>
       <svg
         viewBox="0 0 640 210"
         role="img"
-        aria-label="Side view: feet supported, forearm near key height, and wrist following the hand sideways"
+        aria-label={tr(
+          'Side view: feet supported, forearm near key height, and wrist following the hand sideways',
+        )}
         style={{ maxWidth: 640, width: '100%', color: 'var(--text)' }}
       >
         <g fill="none" stroke="currentColor" strokeWidth="4" strokeLinecap="round" strokeLinejoin="round">
@@ -18,20 +21,20 @@ export function MovementGuide() {
         </g>
         <g fill="currentColor" fontSize="15" fontFamily="sans-serif">
           <text x="55" y="207">
-            Feet supported; shoulders easy
+            {tr('Feet supported; shoulders easy')}
           </text>
           <text x="352" y="179">
-            Move the arm with the hand
+            {tr('Move the arm with the hand')}
           </text>
           <text x="352" y="201">
-            Keep the wrist flexible
+            {tr('Keep the wrist flexible')}
           </text>
         </g>
       </svg>
       <p>
-        Adjust the seat so your forearm is close to key height. Let curved fingers rest on the keys without
-        squeezing. Move slowly across five keys and let the arm follow. Body proportions differ: seek an easy
-        movement, not an exact angle. Stop if movement hurts.
+        {tr(
+          'Adjust the seat so your forearm is close to key height. Let curved fingers rest on the keys without squeezing. Move slowly across five keys and let the arm follow. Body proportions differ: seek an easy movement, not an exact angle. Stop if movement hurts.',
+        )}
       </p>
     </details>
   );

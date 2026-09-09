@@ -8,6 +8,7 @@ export const fiveFingerParams = z.object({
   quality: z.enum(['maj', 'min']).default('maj'),
   hand: z.enum(['rh', 'lh']),
   pattern: z.enum(['asc', 'desc', 'updown']).default('asc'),
+  octaveFlexible: z.boolean().default(true),
   startOctave: z.number().int().min(1).max(6).default(4),
 });
 
@@ -29,7 +30,12 @@ export function generateFiveFinger(def: ExerciseDef, seed: number): ExerciseInst
   };
 
   const keyCtx = { tonic: p.tonic, mode: p.quality === 'maj' ? ('major' as const) : ('minor' as const) };
-  const targets: Target[] = midis.map((midi) => ({ kind: 'note', midi, finger: fingerOf(midi) }));
+  const targets: Target[] = midis.map((midi) => ({
+    kind: 'note',
+    octaveFlexible: p.octaveFlexible,
+    midi,
+    finger: fingerOf(midi),
+  }));
   return {
     def,
     seed,

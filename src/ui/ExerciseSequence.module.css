@@ -1,0 +1,34 @@
+.sequence {
+  width: 100%;
+  max-width: 900px;
+  text-align: left;
+  font-size: var(--fs-s);
+}
+.sequence p {
+  margin: 8px 0;
+}
+.notes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  padding: 4px;
+  list-style: none;
+  max-height: 180px;
+  overflow-y: auto;
+}
+.notes li {
+  display: grid;
+  gap: 4px;
+  padding: 8px 12px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--surface-2);
+}
+.notes li[data-active='true'] {
+  border-color: var(--accent);
+  background: var(--accent-soft);
+}
+.notes span,
+.notes small {
+  color: var(--text-2);
+}

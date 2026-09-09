@@ -1,3 +1,4 @@
+import { useSettingsStore } from '@/store/settingsStore';
 import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
@@ -45,13 +46,22 @@ function blockRoute(plan: SessionPlan, idx: number): string {
 export function TodayScreen() {
   const navigate = useNavigate();
   const today = localDateString(new Date());
+  const tourist = useSettingsStore((s) => s.tourist);
+  const [visitPlan, setVisitPlan] = useState<SessionPlan | null>(null);
   // Build today's plan and this week's recap once (liveQuery must stay
   // read-only), then observe them.
   useEffect(() => {
-    void getTodaySession();
+    let cancelled = false;
+    void getTodaySession().then((p) => {
+      if (tourist && !cancelled) setVisitPlan(p);
+    });
     void getRecap();
-  }, []);
-  const plan = useLiveQuery(() => readTodaySession(), [], null);
+    return () => {
+      cancelled = true;
+    };
+  }, [tourist]);
+  const storedPlan = useLiveQuery(() => readTodaySession(), [tourist], null);
+  const plan = tourist ? visitPlan : storedPlan;
   const practiced = useLiveQuery(() => getPracticedDates(), [], null);
   const recap = useLiveQuery(() => readRecap(), [], null);
   const ratingRows = useLiveQuery(() => db.ratings.toArray(), [], null);

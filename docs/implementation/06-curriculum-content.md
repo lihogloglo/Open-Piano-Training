@@ -2,6 +2,8 @@
 
 The complete unit map for Stages 0–7. Author as data in `src/curriculum/content/stageN.ts` following the schema in 02. This doc gives every unit's id, title, concepts (atoms introduced), and its distinctive steps; the standard lesson grammar (explain → guided → ladder → graded → create) applies unless noted. Explanatory text: write fresh, short (≤60 words/block), in the copy tone of 05; Open Music Theory (CC BY-SA) may be _adapted_ for explain blocks — if adapted, put the text in `content/omt-adapted/` with attribution headers and keep those files CC BY-SA.
 
+**Tester audit update (2026-09-09):** Timed exercises now demonstrate the exact generated take before its count-in. Lessons display the sequence, beat positions and octave requirements. Retries and tempo changes retain the lesson seed. Ordinary chord recognition accepts inversions; explicit inversion, interval and two-hand exercises keep their stated constraints. See [the audit](../tester-feedback-audit.md).
+
 **Global authoring rules**
 
 - Timing tier defaults: Stage 0–1 `relaxed`, 2–4 `standard`, 5+ `strict` (per-exercise override allowed).

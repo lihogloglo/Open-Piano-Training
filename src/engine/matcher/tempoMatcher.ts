@@ -1,6 +1,6 @@
 import type { ExerciseInstance, MatchEvent, MatcherNoteEvent, NoteJudgment, Target } from '../types';
 import { TIER_WINDOWS, bandOf, worseBand, type TimingWindows } from './timing';
-import { noteBelongsToTarget } from './setMatch';
+import { noteBelongsToTarget, setSatisfied, setMemberKey } from './setMatch';
 import { scoreTake } from '../scoring';
 import { applyVoiceLeading } from '../voiceLeading';
 
@@ -50,11 +50,7 @@ export class TempoMatcher {
       }
       const atBeat = target.atBeat ?? i * spacing;
       const wantedCount =
-        target.kind === 'set'
-          ? target.inversionOf
-            ? new Set(target.midis.map((m) => m % 12)).size
-            : target.midis.length
-          : 1;
+        target.kind === 'set' ? new Set(target.midis.map((m) => setMemberKey(m, target))).size : 1;
       return {
         target,
         tExpect: t0Perf + atBeat * this.beatMs,
@@ -98,6 +94,20 @@ export class TempoMatcher {
     }
 
     if (!best) {
+      // Octave doublings belong to the chord just completed, not an extra note.
+      if (
+        this.states.some(
+          (s) =>
+            s.consumed &&
+            s.target.kind === 'set' &&
+            s.target.octaveFlexible &&
+            !s.target.inversionOf &&
+            !s.target.transposeOnly &&
+            Math.abs(t - s.tExpect) <= this.windows.roll &&
+            noteBelongsToTarget(e.midi, s.target),
+        )
+      )
+        return [];
       // Pitch-wrong near some pending target → wrong; otherwise extra.
       const nearest = this.states
         .map((s, index) => ({ s, index }))
@@ -141,7 +151,7 @@ export class TempoMatcher {
     const target = state.target;
     if (target.kind !== 'set') return events;
 
-    const memberKey = target.octaveFlexible || target.inversionOf ? midi % 12 : midi;
+    const memberKey = setMemberKey(midi, target);
     if (state.membersHit.has(memberKey)) return events; // repeated member — ignore
 
     // First member opens the roll window.
@@ -159,7 +169,9 @@ export class TempoMatcher {
     if (state.membersHit.size >= state.wantedCount) {
       state.consumed = true;
       const meanDelta = state.memberDeltas.reduce((a, b) => a + b, 0) / state.memberDeltas.length;
-      const worst = state.memberBands.reduce(worseBand);
+      const worst = setSatisfied(new Set(state.playedMidis), target)
+        ? state.memberBands.reduce(worseBand)
+        : 'wrong';
       const judgment: NoteJudgment = {
         targetIndex: index,
         midi,

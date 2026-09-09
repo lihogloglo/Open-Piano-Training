@@ -1,4 +1,5 @@
-import type { RunPhase } from '@/store/runStore';
+import { useRunStore, type RunPhase } from '@/store/runStore';
+import { ExerciseSequence } from './ExerciseSequence';
 import { Button } from './Button';
 import { useSamplerLoading } from './PlayerNotices';
 import styles from './TransportBar.module.css';
@@ -20,6 +21,7 @@ interface TransportBarProps {
   onStart: () => void;
   pips?: LadderPips;
   startLabel?: string;
+  showSequence?: boolean;
 }
 
 export function TransportBar({
@@ -32,26 +34,37 @@ export function TransportBar({
   onStart,
   pips,
   startLabel,
+  showSequence = true,
 }: TransportBarProps) {
-  const running = phase === 'running' || phase === 'count-in';
-  const label = startLabel ?? (phase === 'done' ? 'Try again' : running ? 'Restart' : 'Start');
+  const instance = useRunStore((s) => s.instance);
+  const targetIndex = useRunStore((s) => s.targetIndex);
+  const preview = phase === 'preview';
+  const running = preview || phase === 'running' || phase === 'count-in';
+  const abortRun = useRunStore((s) => s.abortRun);
+  const label = preview
+    ? 'Stop demonstration'
+    : (startLabel ?? (phase === 'done' ? 'Try again' : running ? 'Restart' : 'Start'));
   const beatInBar = beatIndex === null ? null : ((beatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar;
   // Starting before the samples land would run the exercise in silence.
   const loading = useSamplerLoading();
 
   return (
     <div className={styles['bar']}>
+      {preview && showSequence && instance && (
+        <ExerciseSequence instance={instance} activeIndex={targetIndex} />
+      )}
       {!hideStart && (
         <Button
           variant="primary"
-          onClick={onStart}
-          disabled={!canStart || loading}
-          title={loading ? 'Waiting for the piano sounds to load' : 'Space'}
+          onClick={preview ? abortRun : onStart}
+          disabled={!preview && (!canStart || loading)}
+          title={loading ? 'Waiting for the piano sounds to load' : undefined}
         >
           {loading ? 'Loading sounds…' : label}
         </Button>
       )}
 
+      {preview && <span role="status">Watch and listen. Play after the count-in.</span>}
       {bpm !== null && (
         <span className={styles['bpm']}>
           <span className="tabular">{bpm}</span> BPM

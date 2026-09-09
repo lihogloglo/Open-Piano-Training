@@ -7,11 +7,12 @@ import { targetMidis } from '@/engine/matcher/setMatch';
 import { TakeRecorder, type Take } from '@/engine/replay';
 import { startMetronome, stopMetronome, onBeat, type BeatInfo } from '@/audio/metronome';
 import { unlockAudio } from '@/audio/clock';
-import { playNote, stopNote } from '@/audio/sampler';
+import { exerciseDemo } from '@/engine/preview';
+import { playNote, stopNote, ensureSamplerLoaded } from '@/audio/sampler';
 import { subscribeMidiEvents } from './midiStore';
 import { useSettingsStore } from './settingsStore';
 
-export type RunPhase = 'idle' | 'count-in' | 'running' | 'done';
+export type RunPhase = 'idle' | 'preview' | 'count-in' | 'running' | 'done';
 
 interface RunState {
   phase: RunPhase;
@@ -47,9 +48,12 @@ const flashTimers = new Map<number, ReturnType<typeof setTimeout>>();
 let previewTimers: ReturnType<typeof setTimeout>[] = [];
 let previewUntilPerf = 0;
 let runGeneration = 0;
+let finishDemo: (() => void) | null = null;
 const previewSounding = new Set<number>();
 
 function clearPreview(): void {
+  finishDemo?.();
+  finishDemo = null;
   for (const t of previewTimers) clearTimeout(t);
   previewTimers = [];
   previewUntilPerf = 0;
@@ -100,7 +104,11 @@ function computeHighlights(
   if (!target) return map;
   const lit = !instance.def.assessment && (instance.def.rung === 'keys-lit' || hint);
   if (!lit) return map;
-  for (const midi of targetMidis(target)) map.set(midi, hint ? 'hint' : 'target');
+  const beat = target.atBeat ?? index * (instance.beatsPerTarget ?? 1);
+  instance.targets.forEach((t, i) => {
+    if ((t.atBeat ?? i * (instance.beatsPerTarget ?? 1)) === beat)
+      for (const midi of targetMidis(t)) map.set(midi, hint ? 'hint' : 'target');
+  });
   return map;
 }
 
@@ -149,11 +157,12 @@ export const useRunStore = create<RunState>((set, get) => ({
         fingerMap,
         beatIndex: null,
         anchorT0Perf: null,
-        listening: false,
+        listening: !!(instance.audioPreview || instance.perTargetPreview),
         result: null,
       });
       if (instance.audioPreview || instance.perTargetPreview) {
         await unlockAudio();
+        await ensureSamplerLoaded();
         if (generation !== runGeneration) return;
         let lead = 150;
         if (instance.audioPreview) {
@@ -166,6 +175,58 @@ export const useRunStore = create<RunState>((set, get) => ({
       processEvents(waitMatcher.start(performance.now()), set, get);
       return;
     }
+
+    // Show and play this exact sequence before the count-in. Input during the
+    // demonstration never reaches a matcher or a recording.
+    set({
+      phase: 'preview',
+      instance,
+      bpm: instance.def.bpm ?? 80,
+      targetIndex: 0,
+      targets: new Map(),
+      judgments: new Map(),
+      fingerMap,
+      beatIndex: null,
+      beatsPerBar: instance.beatsPerBar ?? 4,
+      anchorT0Perf: null,
+      listening: true,
+      result: null,
+      lastTake: null,
+    });
+    await unlockAudio();
+    await ensureSamplerLoaded();
+    if (generation !== runGeneration) return;
+    const demo = exerciseDemo(instance);
+    const demoBeatMs = 60_000 / (instance.def.bpm ?? 80);
+    schedulePreview({ notes: demo, bpm: instance.def.bpm ?? 80 }, set);
+    instance.targets.forEach((target, index) => {
+      previewTimers.push(
+        setTimeout(
+          () => {
+            set({
+              targetIndex: index,
+              beatIndex: Math.floor(target.atBeat ?? index * (instance.beatsPerTarget ?? 1)),
+              targets: new Map(
+                instance.targets.flatMap((t, i) =>
+                  (t.atBeat ?? i * (instance.beatsPerTarget ?? 1)) ===
+                  (target.atBeat ?? index * (instance.beatsPerTarget ?? 1))
+                    ? targetMidis(t).map((m) => [m, 'target' as const] as const)
+                    : [],
+                ),
+              ),
+            });
+          },
+          150 + (target.atBeat ?? index * (instance.beatsPerTarget ?? 1)) * demoBeatMs,
+        ),
+      );
+    });
+    await new Promise<void>((resolve) => {
+      finishDemo = resolve;
+      previewTimers.push(setTimeout(resolve, Math.max(0, previewUntilPerf - performance.now()) + 350));
+    });
+    if (generation !== runGeneration) return;
+    clearPreview();
+    recorder = new TakeRecorder(performance.now());
 
     // Tempo mode: metronome + count-in.
     const bpm = instance.def.bpm ?? 80;
@@ -317,7 +378,7 @@ subscribeMidiEvents((e) => {
   if (waitMatcher && !waitMatcher.isDone) {
     // Ear exercises: ignore presses while a preview is sounding — but releases
     // must always reach the matcher or its held-note set goes stale.
-    if (e.kind === 'noteon' && e.tPerf < previewUntilPerf) return;
+    if (e.kind === 'noteon' && (get().listening || e.tPerf < previewUntilPerf)) return;
     processEvents(waitMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);
   } else if (tempoMatcher && !tempoMatcher.isDone && e.tPerf >= tempoStartGate) {
     processEvents(tempoMatcher.feed({ kind: e.kind, midi: e.midi, tPerf: e.tPerf }), set, get);

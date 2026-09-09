@@ -1,3 +1,5 @@
+import { ATOMS } from '@/progress/atoms';
+import { useSettingsStore } from '@/store/settingsStore';
 import { exerciseRange } from '@/ui/Keyboard/utils';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useRef, useState } from 'react';
@@ -34,7 +36,7 @@ import { toast } from '@/ui/Toast';
 import styles from './RatingChallenge.module.css';
 
 function isRatingStrand(value: string | undefined): value is RatingStrand {
-  return RATED_STRANDS.includes(value as RatingStrand);
+  return value === 'read' || RATED_STRANDS.includes(value as RatingStrand);
 }
 
 interface Loaded {
@@ -44,6 +46,7 @@ interface Loaded {
 
 export function RatingChallenge() {
   const { strand } = useParams();
+  const tourist = useSettingsStore((s) => s.tourist);
   const navigate = useNavigate();
   const [loaded, setLoaded] = useState<Loaded | null | 'loading'>('loading');
   const [tracked, setTracked] = useState<Set<string>>(new Set());
@@ -56,7 +59,7 @@ export function RatingChallenge() {
     }
     void (async () => {
       const rows = await db.atomProgress.toArray();
-      const trackedIds = new Set(rows.map((r) => r.atomId));
+      const trackedIds = new Set(tourist ? ATOMS.keys() : rows.map((r) => r.atomId));
       const stored = await db.ratings.get(strand);
       const level = stored?.level ?? initialLevel(strand, trackedIds);
       const items = buildChallenge(strand, level, trackedIds, resolveSeed('random'));
@@ -67,7 +70,7 @@ export function RatingChallenge() {
     return () => {
       cancelled = true;
     };
-  }, [strand, navigate]);
+  }, [strand, navigate, tourist]);
 
   if (!isRatingStrand(strand) || loaded === 'loading') return null;
 

@@ -103,7 +103,6 @@ export function generateEarQuality(def: ExerciseDef, seed: number): ExerciseInst
         midis,
         label: chordSymbol(root, quality),
         octaveFlexible: true,
-        inversionOf: { root, quality, inversion: 0 },
       });
       previews.push({ notes: midis.map((midi) => ({ midi, atBeat: 0, durBeats: 2 })), bpm: 80 });
       const displayRoot = root.replace('#', '♯').replace(/(?<=.)b/, '♭');

@@ -257,7 +257,7 @@ export const stage2Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Nothing here is a new shape. It is the same two rulers, applied twice. That is why this stage costs one lesson and buys you all twenty-four triads.',
+            md: 'Use the same interval rule from each root. Major triads use 4 then 3 half steps. Minor triads use 3 then 4. Practice both in each new key.',
           },
         ],
       },

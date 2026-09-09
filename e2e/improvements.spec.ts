@@ -59,7 +59,7 @@ test('a perfect slower practice does not satisfy the target tempo', async ({ pag
   await page.goto('/path?midi=fake');
   await seedFailedStep(page, 's0.u4');
   await page.getByRole('button', { name: 'Practice slower' }).click();
-  await expect.poll(async () => (await snap(page)).phase).toBe('count-in');
+  await expect.poll(async () => (await snap(page)).phase, { timeout: 60000 }).toBe('count-in');
   const slow = await snap(page);
   await scheduleTempoRun(page, slow);
   await expect(page.getByRole('heading', { name: 'Practice complete' })).toBeVisible({ timeout: 60000 });
@@ -154,7 +154,7 @@ test('piece practice supports phrases, hands, unaided performance, and saved tak
   await page.getByLabel('Practice tempo').fill('160');
   await page.getByRole('button', { name: 'Perform without hints' }).click();
   await expect(page.getByLabel('Phrase notes and durations')).toHaveCount(0);
-  await expect.poll(async () => (await snap(page)).phase).toBe('count-in');
+  await expect.poll(async () => (await snap(page)).phase, { timeout: 60000 }).toBe('count-in');
   await scheduleTempoRun(page, await snap(page));
   await expect(page.getByText(/100%.*Performance at 160 BPM/)).toBeVisible({ timeout: 20000 });
   await expect

@@ -101,7 +101,7 @@ export const COMP_PATTERNS: Record<CompPattern, { label: string; hits: PatternHi
   },
   // Ballad: a broken chord unfolding across the bar, one note per beat.
   ballad: {
-    label: 'Ballad broken chord',
+    label: 'Ballad accompaniment',
     hits: [
       { beat: 0, hand: 'lh' },
       { beat: 1, hand: 'rh' },

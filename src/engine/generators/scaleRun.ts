@@ -17,6 +17,7 @@ export const scaleRunParams = z.object({
   hand: z.enum(['rh', 'lh']),
   octaves: z.union([z.literal(1), z.literal(2)]).default(1),
   direction: z.enum(['up', 'down', 'updown']).default('up'),
+  octaveFlexible: z.boolean().default(true),
   startOctave: z.number().int().min(1).max(6).default(4),
 });
 export type ScaleRunParams = z.infer<typeof scaleRunParams>;
@@ -55,7 +56,9 @@ export function generateScaleRun(def: ExerciseDef, _seed: number): ExerciseInsta
 
   const targets: Target[] = midis.map((midi, i) => {
     const finger = fingers[i];
-    return finger !== undefined ? { kind: 'note', midi, finger } : { kind: 'note', midi };
+    return finger !== undefined
+      ? { kind: 'note', octaveFlexible: p.octaveFlexible, midi, finger }
+      : { kind: 'note', octaveFlexible: p.octaveFlexible, midi };
   });
 
   const mode = key(p);

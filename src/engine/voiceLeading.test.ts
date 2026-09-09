@@ -195,7 +195,7 @@ describe('progression-play style:brokenLH', () => {
     expect(midis.slice(4, 8)).toEqual([41, 48, 53, 48]); // F2 C3 F3 C3
   });
 
-  it('adds an exact RH chord on the bar line when hand is both', () => {
+  it('accepts RH inversions above middle C while keeping the LH pattern separate', () => {
     const inst = generate(
       {
         ...def(
@@ -216,7 +216,7 @@ describe('progression-play style:brokenLH', () => {
     expect(inst.targets).toHaveLength(10);
     const sets = inst.targets.filter((t) => t.kind === 'set');
     expect(sets).toHaveLength(2);
-    expect(sets.every((t) => t.kind === 'set' && !t.octaveFlexible)).toBe(true);
+    expect(sets.every((t) => t.kind === 'set' && t.octaveFlexible && t.midiRange?.[0] === 60)).toBe(true);
     expect(inst.targets[0]?.kind).toBe('set'); // chord leads its bar
   });
 });

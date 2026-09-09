@@ -37,7 +37,12 @@ function itemsForBlock(block: SessionBlock): DrillItem[] {
         def: { ...r.exercise, assessment: true },
       })),
       ...block.atomIds.flatMap((atomId) => {
-        if (!useSettingsStore.getState().readStrandEnabled && atomId.startsWith('read:staff:')) return [];
+        if (
+          !useSettingsStore.getState().tourist &&
+          !useSettingsStore.getState().readStrandEnabled &&
+          atomId.startsWith('read:staff:')
+        )
+          return [];
         const atom = ATOMS.get(atomId);
         return atom?.drill ? [{ atomId, label: atom.label, def: atom.drill }] : [];
       }),

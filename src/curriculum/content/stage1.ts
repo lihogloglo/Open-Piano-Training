@@ -388,7 +388,7 @@ export const stage1Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Take degrees **1, 3 and 5** — C, E and G — and sound them together. That is a **triad**: the smallest chord that still has an opinion. This one is **C major**, and its opinion is *home*.\n\nThe bottom note of the three is the **root**. It is the note the chord is built on and the note the chord is named after — C, here.',
+            md: 'Take degrees **1, 3 and 5** — C, E and G — and sound them together. That is a **triad**: a chord with three different notes. These notes make **C major**.\n\nThe **root** is the note the chord is built on and named after: C, here. It is the lowest note in this example, but it does not have to stay lowest.',
           },
           {
             kind: 'keyboardDemo',
@@ -504,7 +504,7 @@ export const stage1Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'I–IV–V is most of folk, blues and early rock. Three shapes in your hands, and hundreds of songs already within reach.',
+            md: 'Many folk, blues and rock songs use I, IV and V. Practice changing between these three chords without stopping.',
           },
         ],
       },
@@ -635,7 +635,7 @@ export const stage1Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: '**I–V–vi–IV** is the most-played progression in modern pop, and you now have all four shapes. The vi is what stops it sounding like a nursery rhyme.',
+            md: '**I–V–vi–IV** is a common pop progression. In C, play C major, G major, A minor and F major. Listen for the change to a minor chord on vi.',
           },
         ],
       },

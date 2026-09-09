@@ -85,7 +85,8 @@ export function PathScreen() {
             </div>
             <div className={styles['spine']}>
               {nodes.map((node, i) => {
-                const status: NodeStatus = statuses.get(node.id) ?? 'locked';
+                const realStatus = statuses.get(node.id) ?? 'locked';
+                const status: NodeStatus = tourist && realStatus === 'locked' ? 'available' : realStatus;
                 const row = progress.get(node.id);
                 const isHere = node.id === hereId;
                 return (
@@ -100,8 +101,6 @@ export function PathScreen() {
                     data-status={status}
                     data-kind={node.kind}
                     data-flagged={row?.flagged ? 'true' : undefined}
-                    // Tourist mode opens a locked node. The lock stays drawn,
-                    // because the unit is still locked for the real path.
                     disabled={status === 'locked' && !tourist}
                     onClick={() => {
                       if (node.kind === 'review') {
@@ -150,9 +149,6 @@ export function PathScreen() {
           </section>
         );
       })}
-      <p className={styles['moreSoon']}>
-        “The whole map”, Stage 5, is being written. The path grows from here.
-      </p>
 
       {selected?.unit && (
         <Modal onClose={() => setSelected(null)}>

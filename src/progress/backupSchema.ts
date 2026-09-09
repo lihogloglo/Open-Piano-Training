@@ -186,6 +186,7 @@ export function validateBackup(json: string): z.infer<typeof backupSchema> {
       const resume = z
         .object({
           stepId: id,
+          seed: z.number().int().nonnegative().optional(),
           scores: z.array(score),
           flagged: z.boolean(),
           ladders: z.record(z.string(), z.array(z.boolean())),

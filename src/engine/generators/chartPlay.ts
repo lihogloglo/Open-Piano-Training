@@ -92,6 +92,7 @@ export function generateChartPlay(def: ExerciseDef, seed: number): ExerciseInsta
     def,
     seed,
     targets,
+    beatsPerBar: song.timeSig[0],
     prompt: {
       title: `${song.title} — in ${tonic}`,
       detail: `${song.styleRef} · ${styleNote}`,

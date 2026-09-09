@@ -43,7 +43,9 @@ export interface SmoothVoicing {
 export function smoothVoicings(
   chords: readonly { root: string; quality: ChordQuality }[],
   anchorBass: MidiNumber = 55,
+  minimumBass: MidiNumber = 21,
 ): SmoothVoicing[] {
+  anchorBass = Math.max(anchorBass, minimumBass);
   const out: SmoothVoicing[] = [];
   let prev: MidiNumber[] | null = null;
   for (const chord of chords) {
@@ -63,6 +65,7 @@ export function smoothVoicings(
           { root: chord.root, quality: chord.quality, inversion: inv as Inversion },
           bass,
         );
+        if (Math.min(...midis) < minimumBass) continue;
         const cost = movementCost(prev, midis);
         if (cost < bestCost) {
           bestCost = cost;

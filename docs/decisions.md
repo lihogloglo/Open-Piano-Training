@@ -137,3 +137,16 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - **2026-09-07** — The flag lives as a module-level boolean in `src/progress/tourist.ts`, not read from the settings store, because `src/progress/` may not import a store (01 §Module boundaries) and a write needs the value at call time, outside a React render. `initTouristMode()` in the settings store keeps the two in step and turns the mode on for a `?tourist=1` link.
 - **2026-09-07** — A tourist finishing a unit gets a plain "nothing was recorded" toast and returns to the Path. The placement chain, the session-block tick and the Stage 7 epilogue are all skipped, because each of them is a reward for real progress.
 - **2026-09-07** — The mode announces itself on every screen: a banner in the app shell, and a notice in every player through `PlayerNotices`. Reason: the worst outcome of this feature is an hour of real practice that counted for nothing.
+
+## Tester feedback audit — 2026-09-09
+
+- Ordinary chord recognition accepts inversions, spread voicings and doubled chord tones. Inversion exercises still require the named bass member. Both matchers use the same rule.
+- Interval exercises preserve the distance and direction between notes while allowing octave transposition. Two-hand accompaniment keeps the bass separate from the right-hand chord.
+- Five-finger and scale exercises accept other octaves by default. Authored notation and phrase exercises retain their exact register. The sequence view states the requirement.
+- Every timed take demonstrates its actual generated targets before the count-in. MIDI input during the demonstration is not scored or recorded. Cancellation removes the pending count-in.
+- Lesson retries and tempo ladders retain a seed. The resume record saves that seed so returning to the lesson does not change its random sequence.
+- Tourist mode opens songs, reviews and challenges as well as lessons. Locked path nodes look available during the visit. This supersedes the September 7 decision to keep drawing locks.
+- Tourist session plans stay in memory. Recaps, badge snapshots, notation enrollment and Studio self-checks do not write progress during a visit. This extends the September 7 write guards.
+- The ballad instructions now describe the implemented chord rhythm. Boom-chuck uses the taught alternating root and fifth bass. Misleading explanations of chord roots, sixth chords, transposition and timing were corrected.
+- Vite development and preview servers serve sharp-note sample filenames explicitly. The local audio probe checks an Ogg header before treating an HTTP 200 response as a sample.
+- Validation and remaining human checks are recorded in docs/tester-feedback-audit.md.

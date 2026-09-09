@@ -6,6 +6,7 @@ import { SONGS } from '@/curriculum/content/songs';
 import { STAGES, getUnit } from '@/curriculum/content';
 import { nodeStatuses } from '@/curriculum/path';
 import { getUnitProgressMap } from '@/progress/db';
+import { useSettingsStore } from '@/store/settingsStore';
 import { Card } from '@/ui/Card';
 import { Icon } from '@/ui/Icon';
 import styles from './SongsScreen.module.css';
@@ -23,6 +24,7 @@ function highestReachedStage(statuses: Map<string, string>): number {
 
 export function SongsScreen() {
   const navigate = useNavigate();
+  const tourist = useSettingsStore((s) => s.tourist);
   const progress = useLiveQuery(getUnitProgressMap, [], null);
   if (progress === null) return null;
   const statuses = nodeStatuses(progress) as Map<string, string>;
@@ -44,7 +46,7 @@ export function SongsScreen() {
       </p>
       <div className={styles['grid']}>
         {SONGS.map((song) => {
-          const locked = song.stage > reached;
+          const locked = !tourist && song.stage > reached;
           const bars = song.romanized.length;
           return (
             <Card key={song.id} className={styles['card'] ?? ''}>
@@ -82,7 +84,7 @@ export function SongsScreen() {
           );
         })}
       </div>
-      {getUnit('s1.u7') && reached < 1 && (
+      {!tourist && getUnit('s1.u7') && reached < 1 && (
         <p className={styles['sub']}>Your first song opens with Stage 1, a few units away.</p>
       )}
     </div>

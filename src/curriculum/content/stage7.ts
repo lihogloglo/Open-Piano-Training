@@ -339,7 +339,7 @@ export const stage7Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'The shape: four bars of I, two of IV, two of I, then V-IV-I-V to turn it around. And the **blues scale** — minor pentatonic plus the flat 5, the "blue note" — is deliberately out of tune with the chords. That friction is the point.',
+            md: 'The shape: four bars of I, two of IV, two of I, then V-IV-I-V to turn it around. And the **blues scale** — minor pentatonic plus the flat 5, the "blue note" — includes notes outside the accompanying chords. Listen to how those notes create tension, then return to a chord note.',
           },
           {
             kind: 'keyboardDemo',
@@ -787,7 +787,7 @@ export const stage7Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The last set of tools is about **flavour**, not function. `sus4` swaps the 3rd for the 4th — the chord loses its major/minor identity and hangs, waiting. `6` swaps the 7th for the 6th: brighter, older, less pull. `add9` keeps the triad and adds the 9th on top — open and modern.',
+            md: 'These symbols change the notes in a chord. `sus4` replaces the 3rd with the 4th: Csus4 is C–F–G. `6` adds a 6th to a major triad: C6 is C–E–G–A. `add9` adds the 9th: Cadd9 is C–E–G–D.',
           },
           {
             kind: 'text',

@@ -49,7 +49,10 @@ export function generateChordGrip(def: ExerciseDef, seed: number): ExerciseInsta
     beatsPerTarget: 2,
     prompt: {
       title: target.label,
-      detail: p.voicing === 'rootOnly' ? 'Play just the root' : 'Play the chord — any octave works',
+      detail:
+        p.voicing === 'rootOnly'
+          ? 'Play just the root, in any octave'
+          : `Play ${INVERSION_LABEL[p.inversion]}. ${p.octaveFlexible ? 'Any octave works.' : 'Use the shown octave.'}`,
       perTarget: [{ label: target.label }],
     },
   };

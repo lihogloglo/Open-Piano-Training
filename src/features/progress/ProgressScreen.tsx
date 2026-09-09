@@ -44,18 +44,19 @@ export function ProgressScreen() {
   const studies = useLiveQuery(() => db.meta.where('key').startsWith('study:').toArray(), [], []);
   const units = useLiveQuery(() => db.unitProgress.where('status').equals('passed').toArray(), [], []);
   const badges = useLiveQuery(() => loadBadges(), [], null);
+  const tourist = useSettingsStore((s) => s.tourist);
   const readStrandEnabled = useSettingsStore((s) => s.readStrandEnabled);
   const [openPair, setOpenPair] = useState<ReplayPair | null>(null);
 
   if (atomRows === null || ratingRows === null || takes === null || badges === null) return null;
 
-  const tracked = new Set(atomRows.map((r) => r.atomId));
+  const tracked = new Set(tourist ? ATOMS.keys() : atomRows.map((r) => r.atomId));
   const ratingByStrand = new Map(ratingRows.map((r) => [r.strand, r]));
   const cells = buildHeatmap(atomRows);
   const pairs = findThenVsNowPairs(takes);
   const starred = takes.filter((t) => t.result.stars === 3).slice(0, 6);
 
-  if (atomRows.length === 0 && takes.length === 0 && studies.length === 0 && units.length === 0) {
+  if (!tourist && atomRows.length === 0 && takes.length === 0 && studies.length === 0 && units.length === 0) {
     return (
       <div className={styles['wrap']}>
         <h1>Progress</h1>
@@ -125,7 +126,7 @@ export function ProgressScreen() {
           </p>
         </div>
         <div className={styles['dials']}>
-          {ratedStrands(readStrandEnabled).map((strand: RatingStrand) => {
+          {ratedStrands(readStrandEnabled || tourist).map((strand: RatingStrand) => {
             const row = ratingByStrand.get(strand);
             const challengeable = supportedLevelRange(strand, tracked) !== null;
             const level = row ? clampLevel(row.level, strand, tracked) : initialLevel(strand, tracked);

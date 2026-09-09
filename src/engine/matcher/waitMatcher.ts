@@ -74,7 +74,7 @@ export class WaitMatcher {
       const relevantHeld = new Set([...this.held].filter((midi) => noteBelongsToTarget(midi, target)));
       const satisfied =
         target.kind === 'set' ? setSatisfied(relevantHeld, target) : chordAnySatisfied(relevantHeld, target);
-      if (satisfied) {
+      if (satisfied && noteBelongsToTarget(e.midi, target)) {
         const members = [...relevantHeld];
         this.playedVoicings[this.index] = members;
         for (const m of members) events.push(this.judge(m, 'perfect'));

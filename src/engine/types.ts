@@ -24,13 +24,19 @@ export interface ExerciseDef {
 }
 
 export type Target =
-  | { kind: 'note'; midi: MidiNumber; atBeat?: number; finger?: number }
+  | { kind: 'note'; midi: MidiNumber; atBeat?: number; finger?: number; octaveFlexible?: boolean }
   | {
       kind: 'set';
       midis: MidiNumber[];
       atBeat?: number;
       label: string;
       octaveFlexible: boolean;
+      /** Intervals move together by octaves; their spacing and order stay fixed. */
+      transposeOnly?: boolean;
+      /** Separate simultaneous hands without requiring one exact upper voicing. */
+      midiRange?: [number, number];
+      /** A two-hand bass-and-chord exercise also requires this separate bass key. */
+      requiredBass?: number;
       inversionOf?: { root: string; quality: ChordQuality; inversion: Inversion };
     }
   | { kind: 'any-of-degree'; degree: Degree; key: KeyContext; atBeat?: number }

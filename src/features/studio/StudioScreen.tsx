@@ -8,6 +8,7 @@ import { useMidiStore, inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useRunStore } from '@/store/runStore';
 import { getSamplerStatus, ensureSamplerLoaded, playNote, stopNote } from '@/audio/sampler';
 import { unlockAudio } from '@/audio/clock';
+import { isTourist } from '@/progress/tourist';
 import { db, saveTake } from '@/progress/db';
 import { Keyboard } from '@/ui/Keyboard';
 import { exerciseRange } from '@/ui/Keyboard/utils';
@@ -178,7 +179,7 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
     setHeard(false);
     setSaved(false);
   };
-  const busy = playingDemo || run.phase === 'running' || run.phase === 'count-in';
+  const busy = playingDemo || run.phase === 'preview' || run.phase === 'running' || run.phase === 'count-in';
   const activeTarget = run.instance?.prompt.perTarget?.[run.targetIndex];
   return (
     <main className={styles['player']}>
@@ -353,6 +354,10 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
           <Button
             disabled={checked.length !== study.selfChecks.length}
             onClick={() => {
+              if (isTourist()) {
+                toast('Self-check complete. Tourist mode keeps it unsaved.');
+                return;
+              }
               void db.meta
                 .put({ key: `study:${study.id}`, value: { title: study.title, completedAt: Date.now() } })
                 .then(() => setSaved(true));

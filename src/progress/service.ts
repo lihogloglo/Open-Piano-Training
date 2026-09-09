@@ -17,6 +17,8 @@ import { STAGES, getUnit } from '@/curriculum/content';
 import { earnedBadges, newlyEarned, type BadgeDef, type BadgeInputs } from './badges';
 import { computeRecap, weekEndingSunday, type WeeklyRecap } from './stats';
 
+const touristSessions = new Map<string, SessionPlan>();
+
 /**
  * Start tracking a unit's concept atoms. Idempotent per atom, so it is safe to
  * call for a unit that is already passed — which keeps the invariant "a passed
@@ -85,6 +87,16 @@ export async function gradeAtom(atomId: string, score: number, now = new Date())
 }
 
 export async function loadAtomStates(): Promise<AtomState[]> {
+  if (isTourist())
+    return [...ATOMS.values()]
+      .filter((a) => a.drill)
+      .map((a) => ({
+        atomId: a.id,
+        fsrs: newCard(new Date(0)),
+        bestScore: 0,
+        lastScore: 0,
+        fluent: false,
+      }));
   const rows = await db.atomProgress.toArray();
   const reading = readPreferences().readStrandEnabled === true;
   return rows
@@ -100,6 +112,7 @@ export async function loadAtomStates(): Promise<AtomState[]> {
 
 /** Read-only view of today's plan (safe inside Dexie liveQuery). */
 export async function readTodaySession(now = new Date()): Promise<SessionPlan | null> {
+  if (isTourist()) return touristSessions.get(`tourist-session-${localDateString(now)}`) ?? null;
   const stored = await db.sessions.get(`session-${localDateString(now)}`);
   return stored ? (stored.plan as SessionPlan) : null;
 }
@@ -107,7 +120,9 @@ export async function readTodaySession(now = new Date()): Promise<SessionPlan | 
 /** Today's session: load the stored plan or build (and persist) a fresh one. NOT liveQuery-safe. */
 export async function getTodaySession(now = new Date()): Promise<SessionPlan> {
   const date = localDateString(now);
-  const stored = await db.sessions.get(`session-${date}`);
+  const stored = isTourist() ? undefined : await db.sessions.get(`session-${date}`);
+  const visit = isTourist() ? touristSessions.get(`tourist-session-${date}`) : undefined;
+  if (visit) return visit;
   if (stored) return stored.plan as SessionPlan;
 
   const progress = await getUnitProgressMap();
@@ -130,7 +145,10 @@ export async function getTodaySession(now = new Date()): Promise<SessionPlan> {
       ? next.steps.findIndex((s) => s.id === (resume?.value as { stepId?: string } | undefined)?.stepId)
       : 0,
   });
-  await db.sessions.put({ id: plan.id, date, plan, state: 'fresh' });
+  if (isTourist()) {
+    plan.id = `tourist-session-${date}`;
+    touristSessions.set(plan.id, plan);
+  } else await db.sessions.put({ id: plan.id, date, plan, state: 'fresh' });
   return plan;
 }
 
@@ -141,11 +159,15 @@ export async function startWorkout(now = new Date()): Promise<SessionPlan> {
     atomStates: await loadAtomStates(),
     now,
   });
-  await db.sessions.put({ id: plan.id, date: plan.date, plan, state: 'fresh' });
+  if (isTourist()) {
+    plan.id = `tourist-${plan.id}`;
+    touristSessions.set(plan.id, plan);
+  } else await db.sessions.put({ id: plan.id, date: plan.date, plan, state: 'fresh' });
   return plan;
 }
 
 export async function getSession(sessionId: string): Promise<SessionPlan | null> {
+  if (isTourist() && touristSessions.has(sessionId)) return touristSessions.get(sessionId)!;
   const row = await db.sessions.get(sessionId);
   return row ? (row.plan as SessionPlan) : null;
 }
@@ -200,7 +222,7 @@ export function resolveUnit(unitId: string): Unit | undefined {
  * does not reset anyone — it only removes them from the review queue.
  */
 export async function syncReadStrand(enabled: boolean): Promise<void> {
-  if (!enabled) {
+  if (isTourist() || !enabled) {
     return;
   }
   const now = new Date();
@@ -246,6 +268,7 @@ export async function loadBadges(): Promise<Set<string>> {
  * celebrated" snapshot is stored.
  */
 export async function refreshBadges(): Promise<BadgeDef[]> {
+  if (isTourist()) return [];
   const earned = await loadBadges();
   const seenRow = await db.meta.get(BADGE_SNAPSHOT_KEY);
   const seen = new Set((seenRow?.value as string[] | undefined) ?? []);
@@ -256,6 +279,7 @@ export async function refreshBadges(): Promise<BadgeDef[]> {
 }
 
 export async function markThenVsNowViewed(): Promise<void> {
+  if (isTourist()) return;
   await db.meta.put({ key: THEN_VS_NOW_KEY, value: true });
 }
 
@@ -291,11 +315,12 @@ export async function getRecap(now = new Date()): Promise<WeeklyRecap> {
     ratings,
     takes,
   });
-  await db.meta.put({ key: RECAP_KEY, value: recap });
+  if (!isTourist()) await db.meta.put({ key: RECAP_KEY, value: recap });
   return recap;
 }
 
 export async function dismissRecap(): Promise<void> {
+  if (isTourist()) return;
   const stored = (await db.meta.get(RECAP_KEY))?.value as WeeklyRecap | undefined;
   if (stored) await db.meta.put({ key: RECAP_KEY, value: { ...stored, dismissed: true } });
 }

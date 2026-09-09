@@ -90,7 +90,7 @@ function compTargets(
       hit.hand === 'lh'
         ? voiced.lh.length > 0
           ? voiced.lh
-          : [lowRoot(event.root)]
+          : [lowRoot(event.root) + (opts.style === 'boomchuck' && hit.beat === 2 ? 7 : 0)]
         : voiced.rh.length > 0
           ? voiced.rh
           : buildChord({ root: event.root, quality: event.quality, inversion: 0 }, 60);
@@ -98,7 +98,18 @@ function compTargets(
     if (midis.length === 1) {
       targets.push({ kind: 'note', midi: midis[0]!, atBeat });
     } else {
-      targets.push({ kind: 'set', midis, atBeat, label: symbol, octaveFlexible: false });
+      targets.push({
+        kind: 'set',
+        midis,
+        atBeat,
+        label: symbol,
+        octaveFlexible: true,
+        ...(opts.hand === 'both'
+          ? {
+              midiRange: hit.hand === 'rh' ? ([60, 108] as [number, number]) : ([21, 59] as [number, number]),
+            }
+          : {}),
+      });
     }
     labels.push(symbol);
   }
@@ -120,6 +131,7 @@ export function progressionTargets(
       ? smoothVoicings(
           events.map((e) => ({ root: e.root, quality: e.quality })),
           55,
+          opts.hand === 'both' && (opts.style === 'rootchord' || opts.style === 'brokenLH') ? 60 : 21,
         )
       : null;
 
@@ -131,7 +143,11 @@ export function progressionTargets(
     if (!e) continue;
     const voicing = smooth?.[i];
     const symbol =
-      voicing && voicing.inversion > 0 ? slashChordSymbol(e.root, e.quality, voicing.inversion) : e.symbol;
+      voicing &&
+      voicing.inversion > 0 &&
+      !(opts.hand === 'both' && (opts.style === 'rootchord' || opts.style === 'brokenLH'))
+        ? slashChordSymbol(e.root, e.quality, voicing.inversion)
+        : e.symbol;
 
     if (isCompPattern(opts.style)) {
       const comp = compTargets(e, opts, symbol);
@@ -150,7 +166,9 @@ export function progressionTargets(
         midis: [lowRoot(e.root), ...midis],
         atBeat: e.atBeat,
         label: symbol,
-        octaveFlexible: false,
+        octaveFlexible: true,
+        requiredBass: lowRoot(e.root),
+        midiRange: [60, 108],
       });
       ideal.push([]);
       labels.push(symbol);
@@ -164,9 +182,16 @@ export function progressionTargets(
         labels.push(symbol);
       }
       if (opts.hand === 'both') {
-        // RH chord on the bar line, exact voicing so LH notes can't cross-match.
+        // RH chord above middle C so LH pattern notes cannot satisfy it.
         const midis = voicing?.midis ?? buildChord({ root: e.root, quality: e.quality, inversion: 0 }, 60);
-        targets.push({ kind: 'set', midis, atBeat: e.atBeat, label: symbol, octaveFlexible: false });
+        targets.push({
+          kind: 'set',
+          midis,
+          atBeat: e.atBeat,
+          label: symbol,
+          octaveFlexible: true,
+          midiRange: [60, 108],
+        });
         ideal.push(midis);
         labels.push(symbol);
       }
@@ -195,7 +220,6 @@ export function progressionTargets(
         atBeat: e.atBeat,
         label: symbol,
         octaveFlexible: true,
-        inversionOf: { root: e.root, quality: e.quality, inversion: 0 },
       });
       ideal.push([]);
       labels.push(symbol);
@@ -213,7 +237,7 @@ export function progressionTargets(
   };
 }
 
-/** Play a roman-numeral progression on the beat grid, any voicing with the root in the bass. */
+/** Play a roman-numeral progression on the beat grid, any inversion unless a specific voice-leading exercise requests one. */
 export function generateProgressionPlay(def: ExerciseDef, seed: number): ExerciseInstance {
   const p = progressionPlayParams.parse(def.params);
   if (p.acceptAlternatives) return generateHarmonize(def, seed);

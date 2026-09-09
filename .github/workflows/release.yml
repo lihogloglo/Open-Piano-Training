@@ -1,6 +1,6 @@
 name: Release (Windows)
 
-# Builds the portable Windows .exe and attaches it to a GitHub release, so the
+# Builds the Windows installer and portable app for a GitHub release, so the
 # app can be downloaded on any machine. Push a version tag to start it:
 #
 #   git tag v0.1.1 && git push origin v0.1.1
@@ -71,9 +71,8 @@ jobs:
       - run: npm run build
       - run: npm run check:bundle
 
-      # Only the portable target. The NSIS installer would double the build time.
-      - name: Package portable .exe
-        run: npx electron-builder --win portable --publish never
+      - name: Package Windows installer and portable app
+        run: npx electron-builder --win --publish never
 
       - name: Publish to the release
         env:
@@ -82,4 +81,4 @@ jobs:
         run: |
           TAG="$RELEASE_TAG"
           gh release view "$TAG" >/dev/null 2>&1 || gh release create "$TAG" --target "$GITHUB_SHA" --title "Keysense ${TAG#v}" --generate-notes
-          gh release upload "$TAG" release/*-portable.exe --clobber
+          gh release upload "$TAG" release/*.exe --clobber

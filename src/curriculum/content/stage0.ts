@@ -108,7 +108,7 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'One landmark is enough to get lost with. Take a second: **F** sits just left of every group of **three** black keys.',
+            md: 'Use a second landmark: **F** sits just left of every group of **three** black keys.',
           },
           {
             kind: 'playCheck',
@@ -556,7 +556,7 @@ export const stage0Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The shape is portable. Move the whole hand so the thumb (or pinky) lands on **G** instead, and every finger keeps its job — new home, same hand, no new information.',
+            md: 'Move your right thumb or left little finger to **G**. Place the other fingers on A, B, C and D. Play the same five-finger pattern from G.',
           },
           {
             kind: 'playCheck',
@@ -665,7 +665,7 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Every timed exercise starts with a **count-in**: four clicks, nothing played. Use them. Breathe on click three and start moving on four, so the first note lands instead of arriving.',
+            md: 'First watch and listen to the exact sequence. Then wait through the **count-in**: one bar of clicks before you play. In this exercise, count 1, 2, 3, 4 and play your first note on the next click.',
           },
           {
             kind: 'playCheck',
@@ -677,7 +677,7 @@ export const stage0Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'From here, timing is scored too. Colours after each note: **green** = on the beat, **amber** = early, **blue** = late. Early and late still count — they only tell you which way you lean.',
+            md: 'From here, timing is scored too. The score checks the note and how close it starts to the beat. Notes near the beat still count, with less timing credit. The result tells you whether you tend to play early or late.',
           },
         ],
       },

@@ -25,6 +25,7 @@ import { getSession, completeUnit, markBlockComplete } from '@/progress/service'
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { ExerciseSequence } from '@/ui/ExerciseSequence';
 import { TransportBar } from '@/ui/TransportBar';
 import { StaffSnippet } from '@/ui/StaffSnippet';
 import { PlayerNotices } from '@/ui/PlayerNotices';
@@ -46,6 +47,7 @@ const STEP_CHIP: Record<LessonStep['kind'], string> = {
 
 export function LessonPlayer() {
   const { unitId } = useParams();
+  const tourist = useSettingsStore((s) => s.tourist);
   const navigate = useNavigate();
   const unit = unitId ? getUnit(unitId) : undefined;
   const resume = useLiveQuery(
@@ -59,7 +61,7 @@ export function LessonPlayer() {
   }, [unit, navigate]);
 
   if (!unit || resume === undefined) return null;
-  return <LessonPlayerInner key={unit.id} unit={unit} resume={resume} />;
+  return <LessonPlayerInner key={`${unit.id}:${tourist}`} unit={unit} resume={tourist ? null : resume} />;
 }
 
 /** Onboarding placement: checkpoints taken back-to-back until one fails (05 §Welcome). */
@@ -93,6 +95,7 @@ function improvTint(
 function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume | null }) {
   const navigate = useNavigate();
   const tourist = useSettingsStore((s) => s.tourist);
+  const [lessonSeed] = useState(() => resume?.seed ?? resolveSeed('random'));
   const [searchParams] = useSearchParams();
   const sessionId = searchParams.get('session');
   const sessionBlock = searchParams.get('block');
@@ -172,6 +175,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     } else {
       void (async () => {
         await saveResume(unit.id, {
+          seed: lessonSeed,
           stepId: unit.steps[stepIdx + 1]!.id,
           scores: gradedScores.current,
           flagged: flaggedRef.current,
@@ -191,7 +195,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
         setStepIdx(stepIdx + 1);
       })();
     }
-  }, [stepIdx, unit, finishUnit, sessionId, sessionBlock, navigate]);
+  }, [stepIdx, unit, finishUnit, sessionId, sessionBlock, navigate, lessonSeed]);
 
   /** Tourist mode: go straight to any step of the unit. */
   const jumpTo = useCallback(
@@ -289,6 +293,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
           key={step.id}
           step={step}
           unitId={unit.id}
+          lessonSeed={lessonSeed}
           allowSkip={unit.kind !== 'checkpoint'}
           placement={placement}
           savedLadder={resume?.ladders[step.id]}
@@ -296,6 +301,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
           onAssessment={(outcome) => {
             assessments.current[step.id] = outcome;
             void saveResume(unit.id, {
+              seed: lessonSeed,
               stepId: step.id,
               scores: gradedScores.current,
               flagged: flaggedRef.current,
@@ -306,6 +312,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
           onLadder={(lit) => {
             ladders.current[step.id] = lit;
             void saveResume(unit.id, {
+              seed: lessonSeed,
               stepId: step.id,
               scores: gradedScores.current,
               flagged: flaggedRef.current,
@@ -546,6 +553,7 @@ function CreateStep({
 }
 
 interface ExerciseStepProps {
+  lessonSeed: number;
   step: Extract<LessonStep, { kind: 'guided' | 'ladder' | 'graded' }>;
   unitId: string;
   allowSkip: boolean;
@@ -558,6 +566,7 @@ interface ExerciseStepProps {
 }
 
 function ExerciseStep({
+  lessonSeed,
   step,
   unitId,
   allowSkip,
@@ -600,8 +609,15 @@ function ExerciseStep({
   const [failCount, setFailCount] = useState(savedAssessment?.failCount ?? 0);
   const [slowerPractice, setSlowerPractice] = useState(savedAssessment?.practiceOnly ?? false);
   const [showResults, setShowResults] = useState(!!savedAssessment);
-  const [instance, setInstance] = useState<ExerciseInstance | null>(() =>
-    savedAssessment ? generate(savedAssessment.exercise, savedAssessment.seed) : null,
+  const [seed] = useState(
+    () =>
+      savedAssessment?.seed ??
+      (step.exercise.seedPolicy === 'random' ? lessonSeed : resolveSeed(step.exercise.seedPolicy)),
+  );
+  const [instance, setInstance] = useState<ExerciseInstance>(() =>
+    savedAssessment
+      ? generate(savedAssessment.exercise, savedAssessment.seed)
+      : generate(step.exercise, seed),
   );
   const handledDone = useRef(false);
   const autoAdvance = useRef<ReturnType<typeof setTimeout>>(undefined);
@@ -630,11 +646,11 @@ function ExerciseStep({
       setShowResults(false);
       setRestoredResult(null);
       const def = defFor(pipIdx, slow);
-      const inst = generate(def, resolveSeed(def.seedPolicy));
+      const inst = generate(def, seed);
       setInstance(inst);
       void startRun(inst);
     },
-    [pip, defFor, startRun],
+    [pip, defFor, startRun, seed],
   );
 
   // Guided steps begin immediately (deferred a tick — effects must not set state
@@ -675,7 +691,7 @@ function ExerciseStep({
             toast('Full tempo, nailed it', 'ok');
           }
         } else {
-          toast('Almost. Same tempo again', 'info');
+          toast('Below 80%. Repeat this sequence at the same tempo.', 'info');
         }
         return;
       }
@@ -698,7 +714,9 @@ function ExerciseStep({
   const prompt = instance?.prompt;
   const perTarget = prompt?.perTarget?.[targetIndex];
   const isTempo = step.exercise.mode === 'tempo';
-  const currentBpm = bpmLive ?? (isTempo ? Math.round((step.exercise.bpm ?? 80) * (tempos[pip] ?? 1)) : null);
+  const currentBpm =
+    (phase === 'running' || phase === 'count-in' || phase === 'preview' ? bpmLive : null) ??
+    (isTempo ? Math.round((step.exercise.bpm ?? 80) * (tempos[pip] ?? 1)) : null);
 
   return (
     <>
@@ -725,6 +743,15 @@ function ExerciseStep({
                   (isLadder ? `Selected tempo: ${currentBpm ?? 0} BPM` : 'The count-in starts after Start'))}
             </h2>
           )}
+          <p className={styles['promptDetail']}>{perTarget?.detail ?? prompt?.detail}</p>
+          {isLadder && <p>Repeat the same sequence at each tempo. Reach 80% to complete a tempo.</p>}
+          {isTempo && (
+            <p>Watch the demonstration, then play after {instance.beatsPerBar ?? 4} count-in beats.</p>
+          )}
+          <ExerciseSequence
+            instance={instance}
+            activeIndex={phase === 'idle' || phase === 'done' ? undefined : targetIndex}
+          />
           {instance && (
             <p className={styles['targetCount']}>
               <span className="tabular">
@@ -794,10 +821,12 @@ function ExerciseStep({
         onKeyUp={inputNoteOff}
       />
       <TransportBar
+        showSequence={false}
         hideStart={showResults}
         phase={phase}
         bpm={currentBpm}
         beatIndex={beatIndex}
+        beatsPerBar={instance.beatsPerBar ?? 4}
         // Guided steps auto-start and auto-advance; a manual restart mid-advance
         // would race the pending step change.
         canStart={step.kind !== 'guided'}

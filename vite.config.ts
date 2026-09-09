@@ -1,11 +1,51 @@
 /// <reference types="vitest/config" />
-import { defineConfig } from 'vite';
+import { defineConfig, type Plugin, type Connect } from 'vite';
+import { createReadStream } from 'node:fs';
+import { join, resolve } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 
+/** Serve encoded sharp-note filenames before Vite treats # as a URL fragment. */
+function pianoSamples(): Plugin {
+  const serve =
+    (directory: string): Connect.NextHandleFunction =>
+    (req, res, next) => {
+      let pathname: string;
+      try {
+        pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname);
+      } catch {
+        next();
+        return;
+      }
+      const match = /^\/samples\/splendid-grand-piano\/([A-Za-z]{2} [A-G]#?-?\d+\.ogg)$/.exec(pathname);
+      if (!match) {
+        next();
+        return;
+      }
+      const file = join(directory, 'samples', 'splendid-grand-piano', match[1]!);
+      res.setHeader('Content-Type', 'audio/ogg');
+      createReadStream(file)
+        .on('error', () => {
+          res.statusCode = 404;
+          res.end();
+        })
+        .pipe(res);
+    };
+  return {
+    name: 'piano-samples',
+    configureServer(server) {
+      server.middlewares.use(serve(server.config.publicDir));
+    },
+    configurePreviewServer(server) {
+      server.middlewares.use(serve(resolve(server.config.root, server.config.build.outDir)));
+    },
+  };
+}
+
 export default defineConfig({
   plugins: [
+    pianoSamples(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',

@@ -59,7 +59,10 @@ async function localSampleBaseUrl(): Promise<string | undefined> {
   try {
     // GET also works through the offline sample cache. A HEAD probe would miss it.
     const res = await fetch(`${LOCAL_SAMPLES}/FF%20A0.ogg`);
-    return res.ok ? new URL(LOCAL_SAMPLES, location.href).href : undefined;
+    if (!res.ok) return undefined;
+    // SPA hosts can return index.html with status 200 for an absent sample.
+    const header = new Uint8Array(await res.arrayBuffer()).subarray(0, 4);
+    return String.fromCharCode(...header) === 'OggS' ? new URL(LOCAL_SAMPLES, location.href).href : undefined;
   } catch {
     return undefined;
   }

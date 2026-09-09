@@ -304,7 +304,7 @@ describe('setMatch helpers', () => {
     expect(setSatisfied(new Set([60, 64]), exact as never)).toBe(false);
     expect(setSatisfied(new Set([48, 52, 55]), exact as never)).toBe(false);
     expect(setSatisfied(new Set([48, 52, 55]), flexible as never)).toBe(true); // octave down, C in bass
-    expect(setSatisfied(new Set([52, 55, 60]), flexible as never)).toBe(false); // E in bass — wrong inversion
+    expect(setSatisfied(new Set([52, 55, 60]), flexible as never)).toBe(true); // ordinary chords accept inversions
   });
 
   it('noteBelongsToTarget', () => {
@@ -424,7 +424,7 @@ describe('generators', () => {
     }
   });
 
-  it('progression-play: I-V-vi-IV in G with root-in-bass voicings', () => {
+  it('progression-play: I-V-vi-IV in G with free voicings', () => {
     const inst = generate(
       def('progression-play', {
         key: { tonic: 'G', mode: 'major' },
@@ -439,7 +439,7 @@ describe('generators', () => {
     expect(labels).toEqual(['G', 'D', 'Em', 'C']);
     expect(inst.targets.map((t) => t.atBeat)).toEqual([0, 4, 8, 12]);
     const first = inst.targets[0];
-    if (first?.kind === 'set') expect(first.inversionOf).toEqual({ root: 'G', quality: 'maj', inversion: 0 });
+    if (first?.kind === 'set') expect(first.inversionOf).toBeUndefined();
   });
 
   it('chart-play: first-light transposes to G', () => {
@@ -519,7 +519,8 @@ describe('generators', () => {
     if (first?.kind === 'set') {
       expect(first.midis).toEqual([36, 60, 64, 67]); // C2 under C4-E4-G4
       // Exact octaves: the bass root must not be satisfied by a right-hand C.
-      expect(first.octaveFlexible).toBeFalsy();
+      expect(first.requiredBass).toBe(36);
+      expect(first.octaveFlexible).toBe(true);
       expect(noteBelongsToTarget(48, first)).toBe(false);
     }
     const fourth = inst.targets[2];

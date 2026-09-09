@@ -1,7 +1,7 @@
 import { saveTake } from '@/progress/db';
 import { exerciseRange } from '@/ui/Keyboard/utils';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useMemo, useState } from 'react';
 import { useNavigate, useParams } from 'react-router';
 import { getSong } from '@/curriculum/content/songs';
 import { generate } from '@/engine/generators';
@@ -13,6 +13,8 @@ import { useRunStore } from '@/store/runStore';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
+import { PlayerNotices } from '@/ui/PlayerNotices';
+import { ExerciseSequence } from '@/ui/ExerciseSequence';
 import { TransportBar } from '@/ui/TransportBar';
 import { toast } from '@/ui/Toast';
 import styles from './SongPlayer.module.css';
@@ -32,7 +34,7 @@ export function SongPlayer() {
   const judgments = useRunStore((s) => s.judgments);
   const targetIndex = useRunStore((s) => s.targetIndex);
   const beatIndex = useRunStore((s) => s.beatIndex);
-  const instance = useRunStore((s) => s.instance);
+  const liveInstance = useRunStore((s) => s.instance);
   const result = useRunStore((s) => s.result);
   const startRun = useRunStore((s) => s.startRun);
   const abortRun = useRunStore((s) => s.abortRun);
@@ -53,8 +55,8 @@ export function SongPlayer() {
     });
   }, []);
 
-  const start = useCallback(() => {
-    if (!song) return;
+  const prepared = useMemo(() => {
+    if (!song) return null;
     const def: ExerciseDef = {
       generator: 'chart-play',
       assessment: !practiceMode,
@@ -66,8 +68,13 @@ export function SongPlayer() {
       hand: 'both',
       seedPolicy: 'fixed',
     };
-    void startRun(generate(def, resolveSeed('fixed')));
-  }, [song, tonic, tempoPct, practiceMode, startRun]);
+    return generate(def, resolveSeed('fixed'));
+  }, [song, tonic, tempoPct, practiceMode]);
+  const start = useCallback(() => {
+    if (prepared) void startRun(prepared);
+  }, [prepared, startRun]);
+  const instance = liveInstance ?? prepared;
+  const active = phase === 'preview' || phase === 'running' || phase === 'count-in';
 
   if (!song) return null;
   const perTarget = instance?.prompt.perTarget ?? [];
@@ -88,7 +95,15 @@ export function SongPlayer() {
         <div className={styles['controls']}>
           <label>
             Key
-            <select aria-label="Key" value={tonic} onChange={(e) => setTonic(e.target.value)}>
+            <select
+              disabled={active}
+              aria-label="Key"
+              value={tonic}
+              onChange={(e) => {
+                abortRun();
+                setTonic(e.target.value);
+              }}
+            >
               {CIRCLE_OF_FIFTHS.map((k) => (
                 <option key={k}>{k}</option>
               ))}
@@ -96,7 +111,15 @@ export function SongPlayer() {
           </label>
           <label>
             Tempo
-            <select aria-label="Tempo" value={tempoPct} onChange={(e) => setTempoPct(Number(e.target.value))}>
+            <select
+              disabled={active}
+              aria-label="Tempo"
+              value={tempoPct}
+              onChange={(e) => {
+                abortRun();
+                setTempoPct(Number(e.target.value));
+              }}
+            >
               <option value={0.75}>75%</option>
               <option value={1}>100%</option>
             </select>
@@ -104,9 +127,13 @@ export function SongPlayer() {
           <label>
             Mode
             <select
+              disabled={active}
               aria-label="Mode"
               value={practiceMode ? 'practice' : 'intime'}
-              onChange={(e) => setPracticeMode(e.target.value === 'practice')}
+              onChange={(e) => {
+                abortRun();
+                setPracticeMode(e.target.value === 'practice');
+              }}
             >
               <option value="practice">Practice (waits for you)</option>
               <option value="intime">In time</option>
@@ -115,6 +142,11 @@ export function SongPlayer() {
         </div>
       </header>
 
+      <PlayerNotices />
+      <p>
+        Play one chord per bar. Any octave and inversion work. In time mode, watch first, then play after the
+        count-in.
+      </p>
       <div className={styles['chartZone']}>
         {instance ? (
           <div className={styles['chart']} style={{ gridTemplateColumns: `repeat(${beatsPerBar}, 1fr)` }}>
@@ -133,12 +165,13 @@ export function SongPlayer() {
           </div>
         ) : (
           <div className={styles['intro']}>
-            <p>One chord per bar, root at the bottom, any voicing. Pick a key and the chart follows you.</p>
+            <p>One chord per bar, any octave or inversion. Pick a key and the chart follows you.</p>
             {result && <p>Last take: {Math.round(result.score * 100)}%</p>}
           </div>
         )}
       </div>
 
+      {instance && phase === 'preview' && <ExerciseSequence instance={instance} activeIndex={targetIndex} />}
       <Keyboard
         range={exerciseRange(instance)}
         pressed={activeNotes}
@@ -149,6 +182,7 @@ export function SongPlayer() {
         onKeyUp={inputNoteOff}
       />
       <TransportBar
+        showSequence={false}
         phase={phase}
         bpm={practiceMode ? null : Math.round(song.bpm * tempoPct)}
         beatIndex={beatIndex}

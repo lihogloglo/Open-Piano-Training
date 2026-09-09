@@ -735,7 +735,7 @@ export const stage3Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Down a fifth, up a step, down a third: that shape is the fingerprint. Once you can follow the bass, naming the loop is bookkeeping.',
+            md: 'Listen to the bass notes first. Compare their order with the chord chart, then play the chords in that order.',
           },
         ],
       },

@@ -2,10 +2,17 @@ import { z } from 'zod';
 import { keySignature, type KeyContext } from '@/theory/keys';
 import { namePc } from '@/theory/notes';
 import { parseRoman } from '@/theory/progressions';
-import { QUALITY_INTERVALS, type ChordQuality, chordSymbol } from '@/theory/chords';
+import { QUALITY_INTERVALS, type ChordQuality, chordSymbol, buildChord } from '@/theory/chords';
 import { createRng } from '../rng';
 import type { ExerciseDef, ExerciseInstance, Target } from '../types';
-import { gripTarget } from './chordGrip';
+function freeChord(root: string, quality: ChordQuality): Target {
+  return {
+    kind: 'set',
+    midis: buildChord({ root, quality, inversion: 0 }, 48),
+    label: chordSymbol(root, quality),
+    octaveFlexible: true,
+  };
+}
 
 const qualityEnum = z.enum(Object.keys(QUALITY_INTERVALS) as [ChordQuality, ...ChordQuality[]]);
 
@@ -81,7 +88,7 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         const cardKey = `${root}:${quality}`;
         if (cardKey === prev && (p.roots.length > 1 || p.qualities.length > 1)) continue;
         prev = cardKey;
-        targets.push(gripTarget(root, quality, 0, true));
+        targets.push(freeChord(root, quality));
         perTarget.push({ label: `Spell ${chordSymbol(root, quality)}`, detail: 'Play it in any octave' });
       } else if (p.kind === 'roman') {
         const key = rng.pick(p.keys);
@@ -90,7 +97,7 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
         if (cardKey === prev && (p.keys.length > 1 || p.romans.length > 1)) continue;
         prev = cardKey;
         const chord = parseRoman(roman, key);
-        targets.push(gripTarget(chord.root, chord.quality, 0, true));
+        targets.push(freeChord(chord.root, chord.quality));
         perTarget.push({
           label: `${roman} in ${key.tonic} ${key.mode} is…?`,
           detail: 'Play the chord — any octave',
@@ -109,6 +116,7 @@ export function generateFlashcard(def: ExerciseDef, seed: number): ExerciseInsta
           midis,
           label: `${INTERVAL_NAMES[interval]} above ${display}`,
           octaveFlexible: true,
+          transposeOnly: true,
         });
         perTarget.push({
           label: `Play a ${INTERVAL_NAMES[interval]} above ${display}`,

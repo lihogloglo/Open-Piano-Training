@@ -11,6 +11,7 @@ export interface SavedAssessment {
 }
 
 export interface LessonResume {
+  seed?: number;
   stepId: string;
   scores: number[];
   flagged: boolean;

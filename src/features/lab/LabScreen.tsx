@@ -8,6 +8,7 @@ import { targetMidis } from '@/engine/matcher/setMatch';
 import { useMidiStore } from '@/store/midiStore';
 import { useRunStore } from '@/store/runStore';
 import { Keyboard, type KeyLabels } from '@/ui/Keyboard';
+import { ExerciseSequence } from '@/ui/ExerciseSequence';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
 import styles from './LabScreen.module.css';
@@ -431,6 +432,7 @@ export function LabScreen() {
         )}
       </div>
 
+      {instance && phase === 'preview' && <ExerciseSequence instance={instance} activeIndex={targetIndex} />}
       <Keyboard
         range={[36, 96]}
         pressed={activeNotes}

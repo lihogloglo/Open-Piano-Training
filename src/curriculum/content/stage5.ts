@@ -1174,7 +1174,7 @@ export const stage5Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'This is the unit that turns twelve keys into one skill. **ii-V-I is a shape, not a set of notes.** Once your hand knows the shape, moving it to a new key is a transposition, not a new lesson.',
+            md: 'This is the unit that turns twelve keys into one skill. **ii-V-I keeps the same chord roles in every key.** The notes and finger positions change. Find ii, V and I in the new key, then practice the changes slowly.',
           },
           {
             kind: 'text',

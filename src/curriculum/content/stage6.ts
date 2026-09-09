@@ -424,7 +424,7 @@ export const stage6Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Your score here is mostly **timing**. Play fewer notes and land them exactly — that is what makes a groove.',
+            md: 'Play every note in the shown voicing at the shown beat. The score checks both the chord notes and their timing.',
           },
           {
             kind: 'playCheck',
@@ -517,7 +517,7 @@ export const stage6Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Two more grooves for the toolkit. **Ballad**: the bass lands on 1, then the chord unfolds one note per beat — patient, and it fills a slow bar without crowding a singer.',
+            md: 'Two more grooves for the toolkit. **Ballad accompaniment**: play the bass on beat 1, then the right-hand chord on beats 2, 3 and 4. Repeat that rhythm for each bar.',
           },
           {
             kind: 'text',

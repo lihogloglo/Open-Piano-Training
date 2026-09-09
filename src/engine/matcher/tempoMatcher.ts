@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { ExerciseInstance, MatchEvent, MatcherNoteEvent, NoteJudgment, Target } from '../types';
 import { TIER_WINDOWS, bandOf, worseBand, type TimingWindows } from './timing';
 import { noteBelongsToTarget, setSatisfied, setMemberKey } from './setMatch';
@@ -46,7 +47,7 @@ export class TempoMatcher {
     const spacing = instance.beatsPerTarget ?? 1;
     this.states = instance.targets.map((target, i) => {
       if (target.kind === 'chord-any') {
-        throw new Error('chord-any targets are wait-mode only');
+        throw new Error(tr('chord-any targets are wait-mode only'));
       }
       const atBeat = target.atBeat ?? i * spacing;
       const wantedCount =

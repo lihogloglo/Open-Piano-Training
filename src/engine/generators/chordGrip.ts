@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import {
   buildChord,
@@ -19,7 +20,12 @@ export const chordGripParams = z.object({
   octaveFlexible: z.boolean().default(true),
 });
 
-const INVERSION_LABEL = ['root position', '1st inversion', '2nd inversion', '3rd inversion'] as const;
+const INVERSION_LABEL = [
+  tr('root position'),
+  tr('1st inversion'),
+  tr('2nd inversion'),
+  tr('3rd inversion'),
+] as const;
 
 export function gripTarget(
   root: string,
@@ -51,8 +57,11 @@ export function generateChordGrip(def: ExerciseDef, seed: number): ExerciseInsta
       title: target.label,
       detail:
         p.voicing === 'rootOnly'
-          ? 'Play just the root, in any octave'
-          : `Play ${INVERSION_LABEL[p.inversion]}. ${p.octaveFlexible ? 'Any octave works.' : 'Use the shown octave.'}`,
+          ? tr('Play just the root, in any octave')
+          : tr('Play {v0}. {v1}', {
+              v0: INVERSION_LABEL[p.inversion],
+              v1: p.octaveFlexible ? 'Any octave works.' : 'Use the shown octave.',
+            }),
       perTarget: [{ label: target.label }],
     },
   };
@@ -63,7 +72,7 @@ function rootOnlyTarget(root: string, quality: ChordQuality): Extract<Target, { 
   return {
     kind: 'set',
     midis: [rootMidi ?? 48],
-    label: `${chordSymbol(root, quality)} — root`,
+    label: tr('{v0} — root', { v0: chordSymbol(root, quality) }),
     octaveFlexible: true,
   };
 }

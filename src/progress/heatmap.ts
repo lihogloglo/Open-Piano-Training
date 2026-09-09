@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { CIRCLE_OF_FIFTHS } from '@/theory/keys';
 import { ATOMS, type SkillAtom } from './atoms';
 import type { AtomProgressRow } from './db';
@@ -10,11 +11,11 @@ import type { AtomProgressRow } from './db';
 export type SkillFamily = 'scales' | 'triads' | 'inversions' | 'sevenths' | 'progressions';
 
 export const FAMILIES: readonly { id: SkillFamily; label: string }[] = [
-  { id: 'scales', label: 'Scales' },
-  { id: 'triads', label: 'Triads' },
-  { id: 'inversions', label: 'Inversions' },
-  { id: 'sevenths', label: 'Sevenths' },
-  { id: 'progressions', label: 'Progressions' },
+  { id: 'scales', label: tr('Scales') },
+  { id: 'triads', label: tr('Triads') },
+  { id: 'inversions', label: tr('Inversions') },
+  { id: 'sevenths', label: tr('Sevenths') },
+  { id: 'progressions', label: tr('Progressions') },
 ];
 
 export const HEATMAP_KEYS: readonly string[] = CIRCLE_OF_FIFTHS;

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { scaleMidis, type ScaleType } from '@/theory/scales';
 import { midiToName } from '@/theory/notes';
@@ -60,8 +61,8 @@ export function generateReadSnippet(def: ExerciseDef, seed: number): ExerciseIns
     targets,
     beatsPerTarget: 1,
     prompt: {
-      title: `Read it — ${p.key.tonic} ${p.key.mode}`,
-      detail: `${p.bars} bars, ${p.clef} clef · play what you see`,
+      title: tr('Read it — {v0} {v1}', { v0: p.key.tonic, v1: p.key.mode }),
+      detail: tr('{v0} bars, {v1} clef · play what you see', { v0: p.bars, v1: p.clef }),
       key: p.key,
       perTarget,
     },

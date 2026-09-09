@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { unlockAudio } from '@/audio/clock';
 import { Button } from './Button';
 import { useSyncExternalStore } from 'react';
@@ -29,37 +30,45 @@ export function PlayerNotices() {
           role="status"
           data-testid="tourist-notice"
         >
-          <span>Tourist mode is on. Play as much as you like. Nothing here is recorded.</span>
+          <span>{tr('Tourist mode is on. Play as much as you like. Nothing here is recorded.')}</span>
           <Link to="/settings" className={styles['link']}>
-            Turn off
+            {tr('Turn off')}
           </Link>
         </div>
       )}
       {noDevice && (
         <div className={`${styles['notice']} ${styles['inputMode']}`} role="status">
           <span>
-            Computer keyboard active: <kbd>A</kbd> to <kbd>K</kbd> for white notes, <kbd>W</kbd>/<kbd>E</kbd>/
-            <kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> for black. Z/X shift octaves. A starts at C
+            {tr('Computer keyboard active: ')}
+            <kbd>{tr('A')}</kbd>
+            {tr(' to ')}
+            <kbd>{tr('K')}</kbd>
+            {tr(' for white notes, ')}
+            <kbd>{tr('W')}</kbd>/<kbd>{tr('E')}</kbd>/<kbd>{tr('T')}</kbd>/<kbd>{tr('Y')}</kbd>/
+            <kbd>{tr('U')}</kbd>
+            {tr(' for black. Z/X shift octaves. A starts at C')}
             {Math.floor(computerBase / 12) - 1}.
           </span>
           <Link to="/setup" className={styles['link']}>
-            Set up
+            {tr('Set up')}
           </Link>
         </div>
       )}
       {sampler.state === 'loading' && (
         <div className={styles['pill']} role="status">
           <span className={styles['spinner']} aria-hidden />
-          Loading piano sounds… {Math.round(sampler.progress * 100)}%
+          {tr('Loading piano sounds… ')}
+          {Math.round(sampler.progress * 100)}%
         </div>
       )}
       {sampler.state === 'error' && (
         <div className={styles['notice']} role="status">
           <span>
-            The piano sounds did not load. You can use your keyboard's own sound for note practice. Listening
-            tasks need the app sound.
+            {tr(
+              "The piano sounds did not load. You can use your keyboard's own sound for note practice. Listening tasks need the app sound.",
+            )}
           </span>
-          <Button onClick={() => void unlockAudio().then(ensureSamplerLoaded)}>Retry audio</Button>
+          <Button onClick={() => void unlockAudio().then(ensureSamplerLoaded)}>{tr('Retry audio')}</Button>
         </div>
       )}
     </>

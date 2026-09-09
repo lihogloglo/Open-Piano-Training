@@ -1,25 +1,8 @@
-import { StrictMode } from 'react';
-import { createRoot } from 'react-dom/client';
-import { RouterProvider } from 'react-router';
-import '@fontsource-variable/geist';
-import '@fontsource-variable/geist-mono';
-import '@/styles/global.css';
-import { router } from './router';
-import { Providers } from './providers';
-import { initTheme, initMotionPreference, initTouristMode } from '@/store/settingsStore';
-import { installRunTestBridge } from '@/store/runTestBridge';
-import { registerServiceWorker } from './registerSW';
+import { loadLanguage, resolveLocale } from '@/i18n';
+import { readPreferences } from '@/progress/preferences';
 
-initTheme();
-initMotionPreference();
-initTouristMode();
-installRunTestBridge();
-registerServiceWorker();
-
-createRoot(document.getElementById('root')!).render(
-  <StrictMode>
-    <Providers>
-      <RouterProvider router={router} />
-    </Providers>
-  </StrictMode>,
-);
+// Configure translations before evaluating modules with static curriculum text.
+const locale = resolveLocale(readPreferences().language, navigator.languages);
+await loadLanguage(locale);
+document.documentElement.lang = locale;
+await import('./bootstrap');

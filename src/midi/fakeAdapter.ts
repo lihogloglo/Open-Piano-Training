@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { MidiAdapter, MidiDeviceInfo, MidiEvent, MidiInitResult } from './types';
 
 export interface FakeScriptNote {
@@ -41,7 +42,7 @@ export class FakeAdapter implements MidiAdapter {
   }
 
   listInputs(): MidiDeviceInfo[] {
-    return [{ id: 'fake', name: 'Fake MIDI (test)', manufacturer: 'keysense' }];
+    return [{ id: 'fake', name: tr('Fake MIDI (test)'), manufacturer: 'keysense' }];
   }
 
   select(): void {

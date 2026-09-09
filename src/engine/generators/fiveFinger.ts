@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { scaleMidis } from '@/theory/scales';
 import { midiToPcName } from '@/theory/notes';
@@ -42,8 +43,11 @@ export function generateFiveFinger(def: ExerciseDef, seed: number): ExerciseInst
     targets,
     beatsPerTarget: 1,
     prompt: {
-      title: `${p.tonic} ${p.quality === 'maj' ? 'major' : 'minor'} five-finger pattern`,
-      detail: `${p.hand === 'rh' ? 'Right hand' : 'Left hand'} · fingers stay in position`,
+      title: tr('{v0} {v1} five-finger pattern', {
+        v0: p.tonic,
+        v1: p.quality === 'maj' ? 'major' : 'minor',
+      }),
+      detail: tr('{v0} · fingers stay in position', { v0: p.hand === 'rh' ? 'Right hand' : 'Left hand' }),
       key: keyCtx,
       perTarget: targets.map((t) => ({ label: t.kind === 'note' ? midiToPcName(t.midi, keyCtx) : '' })),
     },

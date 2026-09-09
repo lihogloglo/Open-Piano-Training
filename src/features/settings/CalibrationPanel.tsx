@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useEffect, useRef, useState } from 'react';
 import { startMetronome, stopMetronome, onBeat } from '@/audio/metronome';
 import { unlockAudio } from '@/audio/clock';
@@ -41,12 +42,12 @@ export function CalibrationPanel() {
         setTimeout(() => {
           stop();
           if (deltas.length < 4) {
-            toast('Not enough presses. Try again and hit every click', 'warn');
+            toast(tr('Not enough presses. Try again and hit every click'), 'warn');
             return;
           }
           const offset = calibrationOffset(deltas);
           setLatency(offset);
-          toast(`Calibrated: ${offset >= 0 ? '+' : ''}${offset}ms`, 'ok');
+          toast(tr('Calibrated: {v0}{v1}ms', { v0: offset >= 0 ? '+' : '', v1: offset }), 'ok');
         }, 400);
       }
     });
@@ -68,29 +69,34 @@ export function CalibrationPanel() {
   return (
     <div className={styles['panel']}>
       <p className={styles['note']}>
-        Play any key exactly on each click ({CLICKS} clicks at 90 BPM). We measure your setup's delay and
-        subtract it from every timing judgment. Current offset:{' '}
+        {tr('Play any key exactly on each click (')}
+        {CLICKS}
+        {tr(
+          " clicks at 90 BPM). We measure your setup's delay and subtract it from every timing judgment. Current offset:",
+        )}{' '}
         <strong className="tabular">
           {latency >= 0 ? '+' : ''}
-          {latency}ms
+          {latency}
+          {tr('ms')}
         </strong>
       </p>
       <div className={styles['row']}>
         {running ? (
           <>
             <span className={styles['live']}>
-              Listening… <span className="tabular">{hits}</span>/{CLICKS}
+              {tr('Listening… ')}
+              <span className="tabular">{hits}</span>/{CLICKS}
             </span>
-            <Button onClick={stop}>Cancel</Button>
+            <Button onClick={stop}>{tr('Cancel')}</Button>
           </>
         ) : (
           <>
             <Button variant="primary" onClick={() => void start()}>
-              Calibrate timing
+              {tr('Calibrate timing')}
             </Button>
             {latency !== 0 && (
               <Button variant="ghost" onClick={() => setLatency(0)}>
-                Reset to 0
+                {tr('Reset to 0')}
               </Button>
             )}
           </>

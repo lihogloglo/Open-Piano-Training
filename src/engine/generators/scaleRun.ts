@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { scaleFingering, scaleMidis, type ScaleType } from '@/theory/scales';
 import { midiToPcName } from '@/theory/notes';
@@ -24,10 +25,10 @@ export type ScaleRunParams = z.infer<typeof scaleRunParams>;
 
 const SCALE_LABEL: Record<ScaleType, string> = {
   major: 'major',
-  'natural-minor': 'natural minor',
-  'harmonic-minor': 'harmonic minor',
-  'major-pentatonic': 'major pentatonic',
-  'minor-pentatonic': 'minor pentatonic',
+  'natural-minor': tr('natural minor'),
+  'harmonic-minor': tr('harmonic minor'),
+  'major-pentatonic': tr('major pentatonic'),
+  'minor-pentatonic': tr('minor pentatonic'),
   blues: 'blues',
   chromatic: 'chromatic',
 };
@@ -68,10 +69,16 @@ export function generateScaleRun(def: ExerciseDef, _seed: number): ExerciseInsta
     targets,
     beatsPerTarget: 1,
     prompt: {
-      title: `${p.tonic.replace(/#/, '♯').replace(/(?<=.)b/, '♭')} ${SCALE_LABEL[p.scaleType]} scale`,
-      detail: `${p.hand === 'rh' ? 'Right hand' : 'Left hand'} · ${p.octaves} octave${p.octaves > 1 ? 's' : ''} · ${
-        p.direction === 'updown' ? 'up and down' : p.direction
-      }`,
+      title: tr('{v0} {v1} scale', {
+        v0: p.tonic.replace(/#/, '♯').replace(/(?<=.)b/, '♭'),
+        v1: SCALE_LABEL[p.scaleType],
+      }),
+      detail: tr('{v0} · {v1} octave{v2} · {v3}', {
+        v0: p.hand === 'rh' ? 'Right hand' : 'Left hand',
+        v1: p.octaves,
+        v2: p.octaves > 1 ? 's' : '',
+        v3: p.direction === 'updown' ? 'up and down' : p.direction,
+      }),
       key: mode,
       perTarget: targets.map((t) => ({
         label: t.kind === 'note' ? midiToPcName(t.midi, mode) : '',

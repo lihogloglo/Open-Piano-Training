@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { ExerciseDef } from '@/engine/types';
 import type { Strand, Unit } from '@/curriculum/schema';
 import { CURRICULUM } from '@/curriculum/content';
@@ -465,15 +466,24 @@ function scaleTypeOf(seg: string): string {
 function labelFor(id: string): string {
   const parts = id.split(':');
   const kind = parts[0];
-  if (kind === 'note') return parts[2] === 'sharps' ? 'Find black keys' : `Find ${pretty(parts[2] ?? '?')}`;
+  if (kind === 'note')
+    return parts[2] === 'sharps' ? tr('Find black keys') : tr('Find {v0}', { v0: pretty(parts[2] ?? '?') });
   if (kind === 'fivefinger') {
-    return `${pretty(parts[1] ?? '?')} ${parts[2] === 'min' ? 'minor' : 'major'} five-finger · ${(parts[3] ?? '').toUpperCase()}`;
+    return tr('{v0} {v1} five-finger · {v2}', {
+      v0: pretty(parts[1] ?? '?'),
+      v1: parts[2] === 'min' ? 'minor' : 'major',
+      v2: (parts[3] ?? '').toUpperCase(),
+    });
   }
   if (kind === 'scale')
-    return `${pretty(parts[1] ?? '?')} ${parts[2] ?? ''} scale · ${(parts[3] ?? '').toUpperCase()}`;
+    return tr('{v0} {v1} scale · {v2}', {
+      v0: pretty(parts[1] ?? '?'),
+      v1: parts[2] ?? '',
+      v2: (parts[3] ?? '').toUpperCase(),
+    });
   if (kind === 'chord') {
     const inv = parts[3]?.startsWith('inv')
-      ? ` · ${['root', '1st inv', '2nd inv', '3rd inv'][Number(parts[3].slice(3))]}`
+      ? ` · ${[tr('root'), tr('1st inv'), tr('2nd inv'), tr('3rd inv')][Number(parts[3].slice(3))]}`
       : '';
     return `${pretty(parts[1] ?? '?')} ${parts[2] ?? ''}${inv}`;
   }
@@ -481,33 +491,34 @@ function labelFor(id: string): string {
     if (parts[1] === 'triad') {
       const what =
         {
-          maj: 'major triads',
-          min: 'minor triads',
-          allroots: 'triads from any root',
-          inversions: 'triad inversions',
-        }[parts[2] ?? ''] ?? 'triads';
-      return `Spell ${what}`;
+          maj: tr('major triads'),
+          min: tr('minor triads'),
+          allroots: tr('triads from any root'),
+          inversions: tr('triad inversions'),
+        }[parts[2] ?? ''] ?? tr('triads');
+      return tr('Spell {v0}', { v0: what });
     }
-    return `Spell ${parts[1] ?? ''} chords`;
+    return tr('Spell {v0} chords', { v0: parts[1] ?? '' });
   }
-  if (kind === 'keysig') return `Key of ${pretty(parts[1] ?? '?')} ${parts[2] ?? 'major'}`;
+  if (kind === 'keysig')
+    return tr('Key of {v0} {v1}', { v0: pretty(parts[1] ?? '?'), v1: parts[2] ?? 'major' });
   if (kind === 'read') {
-    if (parts[1] === 'symbols') return 'Read chord symbols';
-    return `Read ${parts[2] ?? ''} clef in ${pretty(parts[3] ?? 'c')}`;
+    if (parts[1] === 'symbols') return tr('Read chord symbols');
+    return tr('Read {v0} clef in {v1}', { v0: parts[2] ?? '', v1: pretty(parts[3] ?? 'c') });
   }
   if (kind === 'ear') {
-    if (parts[1] === 'degree') return `Hear degrees ${parts[2] ?? ''}`;
-    if (parts[1] === 'quality') return `Hear chord quality (${parts[2] ?? ''})`;
-    if (parts[1] === 'cadence') return 'Hear cadences';
-    return `Hear ${parts.slice(1).join(' ')}`;
+    if (parts[1] === 'degree') return tr('Hear degrees {v0}', { v0: parts[2] ?? '' });
+    if (parts[1] === 'quality') return tr('Hear chord quality ({v0})', { v0: parts[2] ?? '' });
+    if (parts[1] === 'cadence') return tr('Hear cadences');
+    return tr('Hear {v0}', { v0: parts.slice(1).join(' ') });
   }
   if (kind === 'prog' || kind === 'prog-smooth') {
     const entry =
       PROGRESSION_CATALOG.find((p) => p.id === parts[1]) ??
       PROGRESSION_CATALOG.find((p) => p.id === `min-${parts[1]}`);
-    const where = parts[2] === 'all' ? 'all keys' : pretty(parts[2] ?? '');
-    const smooth = kind === 'prog-smooth' ? ' (smooth)' : '';
-    return `${entry?.name ?? parts[1]} in ${where}${smooth}`;
+    const where = parts[2] === 'all' ? tr('all keys') : pretty(parts[2] ?? '');
+    const smooth = kind === 'prog-smooth' ? tr(' (smooth)') : '';
+    return tr('{v0} in {v1}{v2}', { v0: entry?.name ?? parts[1], v1: where, v2: smooth });
   }
   return id.replace(/:/g, ' · ');
 }

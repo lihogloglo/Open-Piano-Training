@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { ATOMS } from '@/progress/atoms';
 import { useSettingsStore } from '@/store/settingsStore';
 import { exerciseRange } from '@/ui/Keyboard/utils';
@@ -80,13 +81,16 @@ export function RatingChallenge() {
       <div className={styles['player']}>
         <div className={styles['center']}>
           <div className={styles['card']}>
-            <h1>Not yet</h1>
+            <h1>{tr('Not yet')}</h1>
             <p>
-              A {STRAND_LABEL[strand].toLowerCase()} challenge draws only on what your path has already taught
-              you. Work through a few more units and it will open up.
+              {tr('A ')}
+              {STRAND_LABEL[strand].toLowerCase()}
+              {tr(
+                ' challenge draws only on what your path has already taught you. Work through a few more units and it will open up.',
+              )}
             </p>
             <Button variant="primary" onClick={() => void navigate('/path')}>
-              Back to the path
+              {tr('Back to the path')}
             </Button>
           </div>
         </div>
@@ -157,7 +161,7 @@ function Challenge({
       void recordChallenge(strand, passedCount, tracked).then(async (out) => {
         setOutcome(out);
         setStage('done');
-        for (const badge of await refreshBadges()) toast(`Badge earned: ${badge.title}`, 'ok');
+        for (const badge of await refreshBadges()) toast(tr('Badge earned: {v0}', { v0: badge.title }), 'ok');
       });
     },
     [abortRun, strand, tracked],
@@ -195,22 +199,29 @@ function Challenge({
             <div className={styles['dialWrap']}>
               <RatingDial level={level} label={STRAND_LABEL[strand]} />
             </div>
-            <h1>{STRAND_LABEL[strand]} challenge</h1>
+            <h1>
+              {STRAND_LABEL[strand]}
+              {tr(' challenge')}
+            </h1>
             <p>
-              {CHALLENGE_ITEMS} items at your current level. One shot each, no retries, no clock pressure
-              beyond the exercise itself. Pass 8 and you move up two.
+              {CHALLENGE_ITEMS}
+              {tr(
+                ' items at your current level. One shot each, no retries, no clock pressure beyond the exercise itself. Pass 8 and you move up two.',
+              )}
             </p>
             {range && level >= range.max && (
               <p className={styles['sub']}>
-                You&apos;re at the top of what your path has taught. Learn new material to raise the ceiling.
+                {tr(
+                  "You're at the top of what your path has taught. Learn new material to raise the ceiling.",
+                )}
               </p>
             )}
             <div className={styles['actions']}>
               <Button variant="primary" size="l" onClick={() => setStage('running')}>
-                Start
+                {tr('Start')}
               </Button>
               <Button variant="ghost" onClick={exit}>
-                Not now
+                {tr('Not now')}
               </Button>
             </div>
           </div>
@@ -227,7 +238,11 @@ function Challenge({
           ? styles['deltaDown']
           : styles['deltaHold'];
     const headline =
-      outcome.verdict === 'up' ? 'Level up' : outcome.verdict === 'down' ? 'Down a step' : 'Holding steady';
+      outcome.verdict === 'up'
+        ? tr('Level up')
+        : outcome.verdict === 'down'
+          ? tr('Down a step')
+          : tr('Holding steady');
     return (
       <div className={styles['player']}>
         <div className={styles['center']}>
@@ -238,22 +253,27 @@ function Challenge({
             <h1>{headline}</h1>
             <p className={deltaClass}>
               {outcome.delta > 0 ? '+' : ''}
-              {outcome.delta === 0 ? `${levelDisplay(outcome.after)}` : `${levelDisplay(outcome.delta)}`}
+              {outcome.delta === 0
+                ? tr('{v0}', { v0: levelDisplay(outcome.after) })
+                : tr('{v0}', { v0: levelDisplay(outcome.delta) })}
             </p>
             <p>
-              {outcome.passedCount} of {outcome.total} clean.{' '}
+              {outcome.passedCount}
+              {tr(' of ')}
+              {outcome.total}
+              {tr(' clean.')}{' '}
               {outcome.verdict === 'up'
-                ? 'That material is yours now.'
+                ? tr('That material is yours now.')
                 : outcome.verdict === 'down'
-                  ? 'It slipped a little. The reviews will bring it back.'
-                  : 'Solid ground. Another run will move it.'}
+                  ? tr('It slipped a little. The reviews will bring it back.')
+                  : tr('Solid ground. Another run will move it.')}
             </p>
             <div className={styles['actions']}>
               <Button variant="primary" onClick={() => void navigate('/progress')}>
-                See progress
+                {tr('See progress')}
               </Button>
               <Button variant="ghost" onClick={() => void navigate('/practice')}>
-                Back to today
+                {tr('Back to today')}
               </Button>
             </div>
           </div>
@@ -268,12 +288,19 @@ function Challenge({
   return (
     <div className={styles['player']}>
       <header className={styles['topbar']}>
-        <button className={styles['close']} onClick={exit} aria-label="Exit challenge">
+        <button className={styles['close']} onClick={exit} aria-label={tr('Exit challenge')}>
           <Icon name="close" />
         </button>
-        <span className={styles['title']}>{STRAND_LABEL[strand]} challenge</span>
+        <span className={styles['title']}>
+          {STRAND_LABEL[strand]}
+          {tr(' challenge')}
+        </span>
         <span className={styles['levelBadge']}>{levelDisplay(level)}</span>
-        <div className={styles['pips']} role="img" aria-label={`Item ${itemIdx + 1} of ${items.length}`}>
+        <div
+          className={styles['pips']}
+          role="img"
+          aria-label={tr('Item {v0} of {v1}', { v0: itemIdx + 1, v1: items.length })}
+        >
           {items.map((_, i) => {
             const cls =
               i < results.length
@@ -305,7 +332,7 @@ function Challenge({
               {perTarget?.label ?? instance?.prompt.detail ?? instance?.prompt.title ?? ''}
             </h2>
           )}
-          {phase === 'done' && <p className={styles['nextUp']}>Next…</p>}
+          {phase === 'done' && <p className={styles['nextUp']}>{tr('Next…')}</p>}
         </div>
       </div>
       <Keyboard

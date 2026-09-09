@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { NavLink, Outlet, Link } from 'react-router';
 import { APP_NAME } from './brand';
 import { Icon, type IconName } from '@/ui/Icon';
@@ -9,18 +10,18 @@ import { TouristBanner } from './TouristBanner';
 import styles from './AppShell.module.css';
 
 const DOT_STATUS: Partial<Record<MidiStatus, { dot: string; label: string }>> = {
-  connected: { dot: 'connected', label: 'Keyboard connected' },
-  'no-device': { dot: 'none', label: 'Computer keys' },
-  unsupported: { dot: 'unsupported', label: 'MIDI unsupported' },
-  denied: { dot: 'unsupported', label: 'Computer keys' },
+  connected: { dot: 'connected', label: tr('Keyboard connected') },
+  'no-device': { dot: 'none', label: tr('Computer keys') },
+  unsupported: { dot: 'unsupported', label: tr('MIDI unsupported') },
+  denied: { dot: 'unsupported', label: tr('Computer keys') },
 };
 
 const NAV: { to: string; label: string; icon: IconName }[] = [
-  { to: '/practice', label: 'Today', icon: 'today' },
-  { to: '/path', label: 'Path', icon: 'path' },
-  { to: '/songs', label: 'Songs', icon: 'songs' },
-  { to: '/sandbox', label: 'Sandbox', icon: 'sandbox' },
-  { to: '/progress', label: 'Progress', icon: 'progress' },
+  { to: '/practice', label: tr('Today'), icon: 'today' },
+  { to: '/path', label: tr('Path'), icon: 'path' },
+  { to: '/songs', label: tr('Songs'), icon: 'songs' },
+  { to: '/sandbox', label: tr('Sandbox'), icon: 'sandbox' },
+  { to: '/progress', label: tr('Progress'), icon: 'progress' },
 ];
 
 export function AppShell() {
@@ -28,11 +29,11 @@ export function AppShell() {
   const setExpanded = useSettingsStore((s) => s.setSidebarExpanded);
   const midiStatus = useMidiStore((s) => s.status);
 
-  const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: 'Computer keys' };
+  const dot = DOT_STATUS[midiStatus] ?? { dot: 'none', label: tr('Computer keys') };
 
   return (
     <div className={styles['shell']}>
-      <nav className={styles['sidebar']} data-expanded={expanded} aria-label="Main">
+      <nav className={styles['sidebar']} data-expanded={expanded} aria-label={tr('Main')}>
         <div className={styles['logo']}>
           <span className={styles['logoMark']}>
             <Icon name="keys" size={22} weight="fill" />
@@ -56,19 +57,19 @@ export function AppShell() {
           <NavLink
             to="/settings"
             className={({ isActive }) => `${styles['navItem']} ${isActive ? styles['active'] : ''}`}
-            title={expanded ? undefined : 'Settings'}
+            title={expanded ? undefined : tr('Settings')}
           >
             <Icon name="settings" />
-            {expanded && <span>Settings</span>}
+            {expanded && <span>{tr('Settings')}</span>}
           </NavLink>
-          <Link to="/setup" className={styles['midiStatus']} title="MIDI setup">
+          <Link to="/setup" className={styles['midiStatus']} title={tr('MIDI setup')}>
             <span className={styles['dot']} data-status={dot.dot} />
             {expanded && <span className={styles['midiLabel']}>{dot.label}</span>}
           </Link>
           <button
             className={styles['collapse']}
             onClick={() => setExpanded(!expanded)}
-            aria-label={expanded ? 'Collapse sidebar' : 'Expand sidebar'}
+            aria-label={expanded ? tr('Collapse sidebar') : tr('Expand sidebar')}
           >
             <Icon name={expanded ? 'chevronLeft' : 'chevronRight'} />
           </button>

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useLiveQuery } from 'dexie-react-hooks';
 import {
   clearResume,
@@ -38,11 +39,11 @@ import { ResultsOverlay } from './ResultsOverlay';
 import styles from './LessonPlayer.module.css';
 
 const STEP_CHIP: Record<LessonStep['kind'], string> = {
-  explain: 'Learn',
-  guided: 'Try it',
-  ladder: 'Bring it to tempo',
-  graded: 'Show it',
-  create: 'Make something',
+  explain: tr('Learn'),
+  guided: tr('Try it'),
+  ladder: tr('Bring it to tempo'),
+  graded: tr('Show it'),
+  create: tr('Make something'),
 };
 
 export function LessonPlayer() {
@@ -107,8 +108,10 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     ),
   );
   const advancing = useRef(false);
+  const skipping = useRef(false);
   useEffect(() => {
     advancing.current = false;
+    skipping.current = false;
   }, [stepIdx]);
   const gradedScores = useRef<number[]>(resume?.scores ?? []);
   const assessments = useRef(resume?.assessments ?? {});
@@ -133,7 +136,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     // A tourist reaches the end of the unit and leaves no trace: no pass, no
     // placement chain, no epilogue. The path is exactly where they left it.
     if (tourist) {
-      toast(`End of ${unit.title}. Nothing was recorded.`);
+      toast(tr('End of {v0}. Nothing was recorded.', { v0: unit.title }));
       void navigate('/path');
       return;
     }
@@ -144,11 +147,11 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     if (placement) {
       const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
       if (next) {
-        toast(`${unit.title} passed! Next checkpoint…`, 'ok');
+        toast(tr('{v0} passed! Next checkpoint…', { v0: unit.title }), 'ok');
         void navigate(`/lesson/${next}?placement=1`);
         return;
       }
-      toast('Placement complete. The path opens well ahead!', 'ok');
+      toast(tr('Placement complete. The path opens well ahead!'), 'ok');
       void navigate('/path');
       return;
     }
@@ -157,7 +160,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       void navigate('/epilogue');
       return;
     }
-    toast(`${unit.title} complete!`, 'ok');
+    toast(tr('{v0} complete!', { v0: unit.title }), 'ok');
     if (sessionId && sessionBlock !== null) {
       // Minutes already counted above; the block just gets ticked off.
       await markBlockComplete(sessionId, Number(sessionBlock), 0);
@@ -187,7 +190,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
           const block = plan?.blocks[Number(sessionBlock)];
           if (block?.kind === 'new' && block.endStep && stepIdx + 1 >= block.endStep) {
             await markBlockComplete(sessionId, Number(sessionBlock), 0);
-            toast('Section saved. Continue this lesson next time.', 'ok');
+            toast(tr('Section saved. Continue this lesson next time.'), 'ok');
             void navigate('/practice');
             return;
           }
@@ -208,17 +211,33 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     [unit.steps.length, stepIdx, abortRun],
   );
 
-  /** Tourist mode: leave the current step without finishing it. */
-  const skipStep = useCallback(() => {
+  /** Rehearsal is optional. An unpassed assessment stays on the review schedule. */
+  const skipStep = useCallback(async () => {
+    if (advancing.current || skipping.current || !step) return;
+    if (!tourist && unit.kind === 'checkpoint' && step.kind === 'graded') return;
+    skipping.current = true;
     abortRun();
+    if (!tourist && step.kind === 'graded') {
+      const outcome = assessments.current[step.id];
+      const result = outcome && !outcome.practiceOnly ? outcome.result : null;
+      gradedScores.current.push(result?.score ?? 0);
+      if (!result?.passed) {
+        flaggedRef.current = true;
+        await queueRetest(unit.id, step.id, {
+          ...step.exercise,
+          assessment: true,
+          passScore: step.passScore,
+        });
+      }
+    }
     advance();
-  }, [abortRun, advance]);
+  }, [abortRun, advance, step, tourist, unit]);
 
   const requestExit = useCallback(() => {
     const running = useRunStore.getState().phase !== 'idle' && useRunStore.getState().phase !== 'done';
     if (running && !exitArmed) {
       setExitArmed(true);
-      toast('Mid-exercise. Press Esc again to leave');
+      toast(tr('Mid-exercise. Press Esc again to leave'));
       setTimeout(() => setExitArmed(false), 3000);
       return;
     }
@@ -239,17 +258,20 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
   return (
     <div className={styles['player']}>
       <header className={styles['topbar']}>
-        <button className={styles['close']} onClick={requestExit} aria-label="Exit lesson">
+        <button className={styles['close']} onClick={requestExit} aria-label={tr('Exit lesson')}>
           <Icon name="close" />
         </button>
         <span className={styles['unitTitle']}>{unit.title}</span>
-        <span className={styles['stepCount']} aria-label={`Step ${stepIdx + 1} of ${unit.steps.length}`}>
+        <span
+          className={styles['stepCount']}
+          aria-label={tr('Step {v0} of {v1}', { v0: stepIdx + 1, v1: unit.steps.length })}
+        >
           <span className="tabular">
             {stepIdx + 1}/{unit.steps.length}
           </span>
         </span>
         <span className={styles['chip']} data-kind={step.kind}>
-          {songTitle ? 'Play a song' : STEP_CHIP[step.kind]}
+          {songTitle ? tr('Play a song') : STEP_CHIP[step.kind]}
         </span>
       </header>
       {/* The step counter says where you are; the rail shows how far that is. */}
@@ -257,26 +279,32 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
         <span style={{ width: `${((stepIdx + 1) / unit.steps.length) * 100}%` }} />
       </div>
 
-      {/* Tourist mode: leave any step, or go straight to another one. Every
-          gate in this player stays where it is — this bar walks past it. */}
-      {tourist && (
-        <div className={styles['touristBar']} data-testid="tourist-bar">
-          <label className={styles['jump']}>
-            Jump to
-            <select
-              value={stepIdx}
-              onChange={(e) => jumpTo(Number(e.target.value))}
-              aria-label="Jump to step"
-            >
-              {unit.steps.map((s, i) => (
-                <option key={s.id} value={i}>
-                  {i + 1}. {STEP_CHIP[s.kind]}
-                </option>
-              ))}
-            </select>
-          </label>
-          <Button variant="ghost" onClick={skipStep}>
-            Skip this step
+      {(tourist || unit.kind !== 'checkpoint' || step.kind !== 'graded') && (
+        <div className={styles['skipBar']} data-testid={tourist ? 'tourist-bar' : 'lesson-skip-bar'}>
+          {tourist ? (
+            <label className={styles['jump']}>
+              {tr('Jump to')}
+              <select
+                value={stepIdx}
+                onChange={(e) => jumpTo(Number(e.target.value))}
+                aria-label={tr('Jump to step')}
+              >
+                {unit.steps.map((s, i) => (
+                  <option key={s.id} value={i}>
+                    {i + 1}. {STEP_CHIP[s.kind]}
+                  </option>
+                ))}
+              </select>
+            </label>
+          ) : (
+            <span>
+              {step.kind === 'graded'
+                ? tr('Skip now and review this skill later.')
+                : tr('Already know this? You can skip this step.')}
+            </span>
+          )}
+          <Button variant="ghost" onClick={() => void skipStep()}>
+            {tr('Skip this step')}
             <Icon name="chevronRight" size={16} />
           </Button>
         </div>
@@ -320,17 +348,10 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
               assessments: assessments.current,
             });
           }}
-          onDone={async (score, flagged) => {
-            if (advancing.current) return;
+          onSkip={() => void skipStep()}
+          onDone={(score) => {
+            if (advancing.current || skipping.current) return;
             if (step.kind === 'graded') gradedScores.current.push(score);
-            if (flagged) {
-              flaggedRef.current = true;
-              await queueRetest(unit.id, step.id, {
-                ...step.exercise,
-                assessment: true,
-                passScore: step.kind === 'graded' ? step.passScore : 0.8,
-              });
-            }
             advance();
           }}
         />
@@ -390,11 +411,11 @@ function ExplainStep({
       />
       <div className={styles['footer']}>
         <label>
-          <input type="checkbox" checked={browse} onChange={(e) => setBrowse(e.target.checked)} /> Browse the
-          explanation
+          <input type="checkbox" checked={browse} onChange={(e) => setBrowse(e.target.checked)} />
+          {tr(' Browse the explanation')}
         </label>
         <Button variant="primary" size="l" onClick={onDone} disabled={!browse && pendingCheck !== -1}>
-          Continue
+          {tr('Continue')}
         </Button>
       </div>
     </>
@@ -507,24 +528,24 @@ function CreateStep({
     <>
       <div className={styles['promptZone']}>
         <div className={styles['createPrompt']}>
-          <h2>{improvParams?.songTitle ?? 'Make something'}</h2>
+          <h2>{improvParams?.songTitle ?? tr('Make something')}</h2>
           {improvParams?.songCredit && <p className={styles['songCredit']}>{improvParams.songCredit}</p>}
           <p>{renderMd(step.prompt)}</p>
           {improvParams?.melody && improvParams.melody.length > 0 && (
-            <p className={styles['melody']} aria-label="Melody notes">
+            <p className={styles['melody']} aria-label={tr('Melody notes')}>
               {improvParams.melody.join('  ')}
             </p>
           )}
           <p className={styles['hintText']}>
             {improvParams?.songTitle
-              ? 'Learn one phrase at a time. Your take lands in Replays.'
-              : "There's no score here. Just play. Your take lands in Replays."}
+              ? tr('Learn one phrase at a time. Your take lands in Replays.')
+              : tr("There's no score here. Just play. Your take lands in Replays.")}
           </p>
           {improvParams?.key && (
             <>
               <Button variant={backingOn ? 'primary' : 'secondary'} onClick={toggleBacking}>
                 <Icon name={backingOn ? 'stop' : 'play'} size={16} />
-                {backingOn ? 'Stop backing' : 'Play backing'}
+                {backingOn ? tr('Stop backing') : tr('Play backing')}
               </Button>
               {backingOn && barIdx >= 0 && improvParams.roman && improvParams.roman.length > 0 && (
                 <p className={styles['hintText']} aria-live="off">
@@ -545,7 +566,7 @@ function CreateStep({
       />
       <div className={styles['footer']}>
         <Button variant="primary" size="l" onClick={finish}>
-          Done
+          {tr('Done')}
         </Button>
       </div>
     </>
@@ -562,7 +583,8 @@ interface ExerciseStepProps {
   savedAssessment?: SavedAssessment | undefined;
   onAssessment: (outcome: SavedAssessment) => void;
   onLadder: (lit: boolean[]) => void;
-  onDone: (score: number, flagged?: boolean) => void;
+  onSkip: () => void;
+  onDone: (score: number) => void;
 }
 
 function ExerciseStep({
@@ -575,6 +597,7 @@ function ExerciseStep({
   savedAssessment,
   onAssessment,
   onLadder,
+  onSkip,
   onDone,
 }: ExerciseStepProps) {
   const navigate = useNavigate();
@@ -596,12 +619,14 @@ function ExerciseStep({
   const isLadder = step.kind === 'ladder';
   const tempos = useMemo(() => (step.kind === 'ladder' ? step.tempos : [1]), [step]);
   const [pip, setPip] = useState(() =>
-    savedLadder
-      ? Math.max(
-          0,
-          savedLadder.findIndex((lit) => !lit),
-        )
-      : 0,
+    savedLadder?.[tempos.length - 1]
+      ? tempos.length - 1
+      : savedLadder
+        ? Math.max(
+            0,
+            savedLadder.findIndex((lit) => !lit),
+          )
+        : 0,
   );
   const [lit, setLit] = useState<boolean[]>(() =>
     savedLadder?.length === tempos.length ? savedLadder : tempos.map(() => false),
@@ -686,12 +711,12 @@ function ExerciseStep({
           onLadder(nextLit);
           if (pip + 1 < tempos.length) {
             setPip(pip + 1);
-            toast(`Clean at ${Math.round((tempos[pip] ?? 1) * 100)}%, next tempo!`, 'ok');
+            toast(tr('Clean at {v0}%, next tempo!', { v0: Math.round((tempos[pip] ?? 1) * 100) }), 'ok');
           } else {
-            toast('Full tempo, nailed it', 'ok');
+            toast(tr('Full tempo, nailed it'), 'ok');
           }
         } else {
-          toast('Below 80%. Repeat this sequence at the same tempo.', 'info');
+          toast(tr('Below 80%. Repeat this sequence at the same tempo.'), 'info');
         }
         return;
       }
@@ -710,7 +735,8 @@ function ExerciseStep({
     });
   }, [step.kind, unitId, pip, tempos, onDone, lit, onLadder, failCount, slowerPractice, onAssessment]);
 
-  const allLit = lit.every(Boolean);
+  // Passing the final tempo is enough; slower repetitions are optional.
+  const fullTempoPassed = lit[tempos.length - 1] === true;
   const prompt = instance?.prompt;
   const perTarget = prompt?.perTarget?.[targetIndex];
   const isTempo = step.exercise.mode === 'tempo';
@@ -724,7 +750,7 @@ function ExerciseStep({
         <div className={styles['exercisePrompt']}>
           <p className={styles['promptDetail']}>
             {prompt?.title ??
-              (isLadder ? 'Choose a tempo, then press Start' : 'Press Start when you are ready')}
+              (isLadder ? tr('Choose a tempo, then press Start') : tr('Press Start when you are ready'))}
           </p>
           {instance?.def.generator === 'read-snippet' && prompt?.key ? (
             // Notation reading: the staff IS the prompt.
@@ -737,16 +763,24 @@ function ExerciseStep({
           ) : (
             <h2 className={styles['promptMain']}>
               {listening
-                ? 'Listen…'
+                ? tr('Listen…')
                 : (perTarget?.label ??
                   prompt?.detail ??
-                  (isLadder ? `Selected tempo: ${currentBpm ?? 0} BPM` : 'The count-in starts after Start'))}
+                  (isLadder
+                    ? tr('Selected tempo: {v0} BPM', { v0: currentBpm ?? 0 })
+                    : tr('The count-in starts after Start')))}
             </h2>
           )}
           <p className={styles['promptDetail']}>{perTarget?.detail ?? prompt?.detail}</p>
-          {isLadder && <p>Repeat the same sequence at each tempo. Reach 80% to complete a tempo.</p>}
+          {isLadder && (
+            <p>{tr('Choose any tempo below. Score 80% at full tempo to continue, or skip this step.')}</p>
+          )}
           {isTempo && (
-            <p>Watch the demonstration, then play after {instance.beatsPerBar ?? 4} count-in beats.</p>
+            <p>
+              {tr('Watch the demonstration, then play after ')}
+              {instance.beatsPerBar ?? 4}
+              {tr(' count-in beats.')}
+            </p>
           )}
           <ExerciseSequence
             instance={instance}
@@ -796,12 +830,12 @@ function ExerciseStep({
             }}
             onRetrySlower={isTempo ? () => start(pip, true) : undefined}
             onContinue={() => onDone(result.score)}
-            onSkip={() => onDone(result.score, true)}
+            onSkip={onSkip}
             onPlacementStop={
               placement
                 ? () => {
                     abortRun();
-                    toast('Good place to start. The path is yours from here', 'ok');
+                    toast(tr('Good place to start. The path is yours from here'), 'ok');
                     void navigate('/path');
                   }
                 : undefined
@@ -832,7 +866,7 @@ function ExerciseStep({
         canStart={step.kind !== 'guided'}
         onStart={() => start()}
         {...(isTempo && phase === 'idle'
-          ? { startLabel: `Start at ${currentBpm ?? step.exercise.bpm ?? 80} BPM` }
+          ? { startLabel: tr('Start at {v0} BPM', { v0: currentBpm ?? step.exercise.bpm ?? 80 }) }
           : {})}
         {...(isLadder
           ? {
@@ -848,10 +882,10 @@ function ExerciseStep({
             }
           : {})}
       />
-      {isLadder && allLit && (
+      {isLadder && fullTempoPassed && (
         <div className={styles['footer']}>
           <Button variant="primary" size="l" onClick={() => onDone(1)}>
-            Continue
+            {tr('Continue')}
           </Button>
         </div>
       )}

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { diagnose } from '@/engine/diagnosis';
 import type { ExerciseInstance } from '@/engine/types';
 import type { TakeResult, JudgeVerdict } from '@/engine/types';
@@ -55,55 +56,64 @@ export function ResultsOverlay(p: ResultsOverlayProps) {
             <StarRating stars={p.result.stars} />
             <h3>
               {p.practiceOnly
-                ? 'Practice complete'
+                ? tr('Practice complete')
                 : p.result.passed
-                  ? 'Passed!'
-                  : 'Let’s focus the next try'}
+                  ? tr('Passed!')
+                  : tr('Let’s focus the next try')}
             </h3>
             <p className={styles['split']}>
-              Notes {Math.round(p.result.pitchAccuracy * 100)}%
-              {p.isTempo && <> · Timing {Math.round(p.result.timingAccuracy * 100)}%</>}
+              {tr('Notes ')}
+              {Math.round(p.result.pitchAccuracy * 100)}%
+              {p.isTempo && (
+                <>
+                  {tr(' · Timing ')}
+                  {Math.round(p.result.timingAccuracy * 100)}%
+                </>
+              )}
             </p>
           </div>
         </div>
         <p>{diagnose(p.result, p.instance)}</p>
         {p.result.firstAnswerAccuracy !== undefined && (
-          <p>First answers: {Math.round(p.result.firstAnswerAccuracy * 100)}%</p>
+          <p>
+            {tr('First answers: ')}
+            {Math.round(p.result.firstAnswerAccuracy * 100)}%
+          </p>
         )}
-        {p.practiceOnly && <p>Try the full exercise at the target tempo to complete this step.</p>}
-        <div className={styles['strip']} aria-label="Per-note results">
+        {p.practiceOnly && <p>{tr('Try the full exercise at the target tempo to complete this step.')}</p>}
+        <div className={styles['strip']} aria-label={tr('Per-note results')}>
           {strip.map((v, i) => (
             <span
               key={i}
               className={styles['dot']}
               style={{ background: VERDICT_COLOR[v] }}
-              title={`${i + 1}: ${v}`}
+              title={tr('{v0}: {v1}', { v0: i + 1, v1: v })}
             />
           ))}
         </div>
         <div className={styles['actions']}>
-          <Button onClick={p.onRetry}>Try again</Button>
+          <Button onClick={p.onRetry}>{tr('Try again')}</Button>
           {p.onFocus && !p.practiceOnly && !p.result.passed && (
-            <Button onClick={p.onFocus}>Practice the trouble spot</Button>
+            <Button onClick={p.onFocus}>{tr('Practice the trouble spot')}</Button>
           )}
           {p.onRetrySlower && !p.result.passed && (
             <Button variant="ghost" onClick={p.onRetrySlower}>
-              Practice slower
+              {tr('Practice slower')}
             </Button>
           )}
           {p.result.passed && !p.practiceOnly && (
             <Button variant="primary" onClick={p.onContinue}>
-              Continue
+              {tr('Continue')}
             </Button>
           )}
-          {!p.result.passed && p.failCount >= 3 && p.allowSkip && (
-            <Button variant="ghost" onClick={p.onSkip} title="This skill gets extra review later">
-              Mark for extra review & move on
+          {!p.result.passed && p.allowSkip && (
+            <Button variant="ghost" onClick={p.onSkip} title={tr('This skill gets extra review later')}>
+              {tr('Mark for extra review & move on')}
             </Button>
           )}
           {!p.result.passed && p.onPlacementStop && (
             <Button variant="primary" onClick={p.onPlacementStop}>
-              Start my path here
+              {tr('Start my path here')}
             </Button>
           )}
         </div>

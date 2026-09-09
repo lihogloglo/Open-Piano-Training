@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useSyncExternalStore } from 'react';
 import { unlockAudio } from '@/audio/clock';
 import { ensureSamplerLoaded, getSamplerStatus, subscribeSampler, setMuted, playNote } from '@/audio/sampler';
@@ -29,18 +30,23 @@ export function SoundPanel() {
     <div className={styles['panel']}>
       <div className={styles['soundRow']}>
         <Button variant={audioEnabled ? 'primary' : 'secondary'} onClick={() => void enable()}>
-          {sampler.state === 'ready' && audioEnabled ? 'Sound is on ✓' : 'Enable sound'}
+          {sampler.state === 'ready' && audioEnabled ? tr('Sound is on ✓') : tr('Enable sound')}
         </Button>
         <Button variant={!audioEnabled ? 'primary' : 'ghost'} onClick={useOwnSound}>
-          My piano makes its own sound
+          {tr('My piano makes its own sound')}
         </Button>
       </div>
       {sampler.state === 'loading' && (
-        <p className={styles['hint']}>Loading piano… {Math.round(sampler.progress * 100)}%</p>
+        <p className={styles['hint']}>
+          {tr('Loading piano… ')}
+          {Math.round(sampler.progress * 100)}%
+        </p>
       )}
       {sampler.state === 'error' && (
         <p className={styles['hint']} data-tone="err">
-          The piano samples didn't load. Check your connection and try again. Everything else still works.
+          {tr(
+            "The piano samples didn't load. Check your connection and try again. Everything else still works.",
+          )}
         </p>
       )}
     </div>

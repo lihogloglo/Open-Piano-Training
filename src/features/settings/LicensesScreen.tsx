@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useNavigate } from 'react-router';
 import { Card } from '@/ui/Card';
 import { Button } from '@/ui/Button';
@@ -22,91 +23,91 @@ const CREDITS: readonly Credit[] = [
     version: '19.2',
     license: 'MIT',
     url: 'https://react.dev/',
-    what: 'The interface layer.',
+    what: tr('The interface layer.'),
   },
   {
-    name: 'React Router',
+    name: tr('React Router'),
     version: '8.3',
     license: 'MIT',
     url: 'https://reactrouter.com/',
-    what: 'Screen routing.',
+    what: tr('Screen routing.'),
   },
   {
     name: 'Zustand',
     version: '5.0',
     license: 'MIT',
     url: 'https://github.com/pmndrs/zustand',
-    what: 'MIDI and exercise-run state.',
+    what: tr('MIDI and exercise-run state.'),
   },
   {
     name: 'Tonal',
     version: '6.4',
     license: 'MIT',
     url: 'https://github.com/tonaljs/tonal',
-    what: 'Scale, chord and interval theory.',
+    what: tr('Scale, chord and interval theory.'),
   },
   {
     name: 'smplr',
     version: '1.0',
     license: 'MIT',
     url: 'https://github.com/danigb/smplr',
-    what: 'Sampled piano playback.',
+    what: tr('Sampled piano playback.'),
   },
   {
     name: 'WEBMIDI.js',
     version: '3.1',
     license: 'Apache-2.0',
     url: 'https://webmidijs.org',
-    what: 'Talking to your keyboard.',
+    what: tr('Talking to your keyboard.'),
   },
   {
     name: 'Dexie.js',
     version: '4.4',
     license: 'Apache-2.0',
     url: 'https://dexie.org',
-    what: 'On-device progress storage.',
+    what: tr('On-device progress storage.'),
   },
   {
     name: 'ts-fsrs',
     version: '5.4',
     license: 'MIT',
     url: 'https://github.com/open-spaced-repetition/ts-fsrs',
-    what: 'The spaced-repetition scheduler behind your reviews.',
+    what: tr('The spaced-repetition scheduler behind your reviews.'),
   },
   {
     name: 'Zod',
     version: '4.5',
     license: 'MIT',
     url: 'https://zod.dev',
-    what: 'Curriculum and exercise validation.',
+    what: tr('Curriculum and exercise validation.'),
   },
   {
     name: 'Geist',
     version: '1.5',
-    license: 'SIL Open Font License 1.1',
+    license: tr('SIL Open Font License 1.1'),
     url: 'https://fontsource.org/fonts/geist',
-    what: 'The typeface, by Vercel.',
+    what: tr('The typeface, by Vercel.'),
   },
   {
-    name: 'Geist Mono',
+    name: tr('Geist Mono'),
     version: '1.5',
-    license: 'SIL Open Font License 1.1',
+    license: tr('SIL Open Font License 1.1'),
     url: 'https://fontsource.org/fonts/geist-mono',
-    what: 'The monospace face, for tempos, counts and roman numerals.',
+    what: tr('The monospace face, for tempos, counts and roman numerals.'),
   },
   {
-    name: 'Phosphor Icons',
+    name: tr('Phosphor Icons'),
     version: '2.1',
     license: 'MIT',
     url: 'https://phosphoricons.com',
-    what: 'Every icon in the interface.',
+    what: tr('Every icon in the interface.'),
   },
   {
-    name: 'Splendid Grand Piano',
+    name: tr('Splendid Grand Piano'),
     version: '',
     license: 'CC-BY 3.0',
     url: 'https://github.com/sfzinstruments/SplendidGrandPiano',
-    what: 'The piano samples you hear, via smplr.',
+    what: tr('The piano samples you hear, via smplr.'),
   },
 ];
 
@@ -114,10 +115,12 @@ export function LicensesScreen() {
   const navigate = useNavigate();
   return (
     <div className={styles['wrap']}>
-      <h1>Licenses &amp; credits</h1>
+      <h1>{tr('Licenses & credits')}</h1>
       <p className={styles['note']}>
-        {APP_NAME} is built on open source. These are the projects it depends on, and the terms they are
-        offered under.
+        {APP_NAME}
+        {tr(
+          ' is built on open source. These are the projects it depends on, and the terms they are offered under.',
+        )}
       </p>
       <Card>
         <ul className={styles['creditList']}>
@@ -136,10 +139,13 @@ export function LicensesScreen() {
         </ul>
       </Card>
       <p className={styles['note']}>
-        Songs in {APP_NAME} are original charts written for this app. Style references name genres and eras,
-        never a specific artist&apos;s recording.
+        {tr('Songs in ')}
+        {APP_NAME}
+        {tr(
+          " are original charts written for this app. Style references name genres and eras, never a specific artist's recording.",
+        )}
       </p>
-      <Button onClick={() => void navigate('/settings')}>Back to settings</Button>
+      <Button onClick={() => void navigate('/settings')}>{tr('Back to settings')}</Button>
     </div>
   );
 }

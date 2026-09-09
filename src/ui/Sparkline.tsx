@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 /** Tiny trend line for rating history (05 §Progress). Flat when there's one point. */
 export function Sparkline({
   values,
@@ -12,7 +13,7 @@ export function Sparkline({
 }) {
   if (values.length === 0) {
     return (
-      <svg width={width} height={height} role="img" aria-label={label ?? 'No history yet'}>
+      <svg width={width} height={height} role="img" aria-label={label ?? tr('No history yet')}>
         <line
           x1="2"
           y1={height / 2}
@@ -36,7 +37,12 @@ export function Sparkline({
   const first = values[0]!;
   const stroke = last > first ? 'var(--ok)' : last < first ? 'var(--err)' : 'var(--text-3)';
   return (
-    <svg width={width} height={height} role="img" aria-label={label ?? `Trend from ${first} to ${last}`}>
+    <svg
+      width={width}
+      height={height}
+      role="img"
+      aria-label={label ?? tr('Trend from {v0} to {v1}', { v0: first, v1: last })}
+    >
       {values.length === 1 ? (
         <circle cx={width / 2} cy={height / 2} r="3" fill={stroke} />
       ) : (

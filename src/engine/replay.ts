@@ -1,3 +1,4 @@
+import { sourceText } from '@/i18n';
 import type { ExerciseDef, TakeResult } from './types';
 
 /** [dtMs from run start, midi, 0=off/1=on, velocity 0..127] */
@@ -63,7 +64,16 @@ export class TakeRecorder {
       atomIds: extra.atomIds ?? [],
       ...(extra.unitId !== undefined ? { unitId: extra.unitId } : {}),
       ...(extra.sessionId !== undefined ? { sessionId: extra.sessionId } : {}),
-      exercise: { ...exercise, resolvedSeed },
+      exercise: {
+        ...exercise,
+        params: Object.fromEntries(
+          Object.entries(exercise.params).map(([key, value]) => [
+            key,
+            (key === 'title' || key === 'prompt') && typeof value === 'string' ? sourceText(value) : value,
+          ]),
+        ),
+        resolvedSeed,
+      },
       startedAt: this.startedAtEpoch,
       bpm: extra.bpm ?? null,
       events: this.events,

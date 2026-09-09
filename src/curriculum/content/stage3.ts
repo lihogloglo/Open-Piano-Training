@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from '../schema';
 import type { ExerciseDef } from '@/engine/types';
 
@@ -52,10 +53,11 @@ const FOUR_KEYS = [
 export const stage3: Stage = {
   id: 's3',
   ordinal: 3,
-  title: 'The Roman lens',
-  tagline: 'Chords get jobs',
-  summary:
+  title: tr('The Roman lens'),
+  tagline: tr('Chords get jobs'),
+  summary: tr(
     'Every key hides the same seven chords doing the same seven jobs. Learn to see I, IV and V instead of letters, and every song you meet becomes a pattern you already know.',
+  ),
   unitIds: ['s3.u1', 's3.u2', 's3.u3', 's3.u4', 's3.u5', 's3.u6', 's3.u7', 's3.u8', 's3.cp'],
 };
 
@@ -64,7 +66,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u1',
     stageId: 's3',
     ordinal: 0,
-    title: 'Seven chords hiding in every scale',
+    title: tr('Seven chords hiding in every scale'),
     strandWeights: { theory: 3, keys: 3, create: 1 },
     concepts: ['theory:diatonic-pattern', 'chord:b:dim:inv0'],
     prerequisites: ['s2.cp'],
@@ -77,31 +79,39 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Stack a 3rd and a 5th on **every** note of C major, using only white keys. Seven chords appear, and you did not choose any of them — the key did.',
+            md: tr(
+              'Stack a 3rd and a 5th on **every** note of C major, using only white keys. Seven chords appear, and you did not choose any of them — the key did.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Build the chord standing on **D**: D, F, A.',
+            ask: tr('Build the chord standing on **D**: D, F, A.'),
             notes: ['D', 'F', 'A'],
             count: 3,
             distinct: 'name',
-            hint: 'Same skip-a-letter shape as always. Listen to what comes out: the key made this one minor.',
+            hint: tr(
+              'Same skip-a-letter shape as always. Listen to what comes out: the key made this one minor.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Their qualities follow one fixed pattern, every time: **M m m M M m dim**. Major, minor, minor, major, major, minor, diminished. It is the same in every major key, so learn it once.',
+            md: tr(
+              'Their qualities follow one fixed pattern, every time: **M m m M M m dim**. Major, minor, minor, major, major, minor, diminished. It is the same in every major key, so learn it once.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'The odd one out sits on **B**: play B, D, F.',
+            ask: tr('The odd one out sits on **B**: play B, D, F.'),
             notes: ['B', 'D', 'F'],
             count: 3,
             distinct: 'name',
-            hint: 'Two minor 3rds stacked. It sounds unfinished because it is — that is its job.',
+            hint: tr('Two minor 3rds stacked. It sounds unfinished because it is — that is its job.'),
           },
           {
             kind: 'text',
-            md: 'That last one is **B diminished**: tense on purpose, and desperate to resolve. Play it, then drop to C and hear the relief.',
+            md: tr(
+              'That last one is **B diminished**: tense on purpose, and desperate to resolve. Play it, then drop to C and hear the relief.',
+            ),
           },
         ],
       },
@@ -156,8 +166,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u1.c1',
-        prompt:
+        prompt: tr(
           'The backing walks I–vi–ii–V, four of the seven. Play over it and notice the sorting that happens by itself: some chords feel like standing still, some like walking away, and one keeps shoving you home.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'vi', 'ii', 'V'], loops: 3 }),
       },
     ],
@@ -166,7 +177,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u2',
     stageId: 's3',
     ordinal: 1,
-    title: 'Roman numerals',
+    title: tr('Roman numerals'),
     strandWeights: { theory: 4, keys: 2, create: 1 },
     concepts: ['theory:roman'],
     prerequisites: ['s3.u1'],
@@ -179,31 +190,37 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Name chords by **job**, not letter: capitals for major (**I, IV, V**), lowercase for minor (**ii, iii, vi**), and a ° for diminished (**vii°**). The numeral is the degree it stands on.',
+            md: tr(
+              'Name chords by **job**, not letter: capitals for major (**I, IV, V**), lowercase for minor (**ii, iii, vi**), and a ° for diminished (**vii°**). The numeral is the degree it stands on.',
+            ),
           },
           {
             kind: 'text',
-            md: '"**vi** in G" is a question with one answer: sixth note of G major (E), minor quality. E minor. The letter changes with the key; the numeral never does.',
+            md: tr(
+              '"**vi** in G" is a question with one answer: sixth note of G major (E), minor quality. E minor. The letter changes with the key; the numeral never does.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play **vi in G major**.',
+            ask: tr('Play **vi in G major**.'),
             notes: ['E', 'G', 'B'],
             count: 3,
             distinct: 'name',
-            hint: 'Count up G A B C D E — the sixth is E. Then build minor on it.',
+            hint: tr('Count up G A B C D E — the sixth is E. Then build minor on it.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Same numeral, new key: play **vi in F major**.',
+            ask: tr('Same numeral, new key: play **vi in F major**.'),
             notes: ['D', 'F', 'A'],
             count: 3,
             distinct: 'name',
-            hint: 'F G A B♭ C D — the sixth is D. Minor again, because vi is always minor.',
+            hint: tr('F G A B♭ C D — the sixth is D. Minor again, because vi is always minor.'),
           },
           {
             kind: 'text',
-            md: 'Two different chords, one idea. This is the whole reason musicians talk in numerals: a chart written this way works in all twelve keys without being rewritten.',
+            md: tr(
+              'Two different chords, one idea. This is the whole reason musicians talk in numerals: a chart written this way works in all twelve keys without being rewritten.',
+            ),
           },
         ],
       },
@@ -241,8 +258,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u2.c1',
-        prompt:
+        prompt: tr(
           'The backing is I–V–vi–IV in **D** — a key you have played twice. Do not translate to letters. Think "one, five, six, four" and let your hands go where the numbers point.',
+        ),
         exercise: play({ key: D, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3 }),
       },
     ],
@@ -251,7 +269,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u3',
     stageId: 's3',
     ordinal: 2,
-    title: 'Home, away, tension',
+    title: tr('Home, away, tension'),
     strandWeights: { theory: 2, ear: 3, keys: 2, create: 1 },
     concepts: ['theory:function', 'ear:chord-function:145'],
     prerequisites: ['s3.u2'],
@@ -264,23 +282,27 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Chords do three jobs. **Tonic** (I, vi, iii) is home. **Subdominant** (IV, ii) steps away. **Dominant** (V, vii°) leans hard toward home.',
+            md: tr(
+              'Chords do three jobs. **Tonic** (I, vi, iii) is home. **Subdominant** (IV, ii) steps away. **Dominant** (V, vii°) leans hard toward home.',
+            ),
           },
           {
             kind: 'text',
-            md: 'Two things do the leaning. The **leading tone** — degree 7, one half step under home — and the bass falling a fifth from 5 to 1.',
+            md: tr(
+              'Two things do the leaning. The **leading tone** — degree 7, one half step under home — and the bass falling a fifth from 5 to 1.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play the leading tone of C major, then home.',
+            ask: tr('Play the leading tone of C major, then home.'),
             notes: ['B', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'The note that will not sit still, and the note it wants.',
+            hint: tr('The note that will not sit still, and the note it wants.'),
           },
           {
             kind: 'earCheck',
-            question: 'Home, then… which job is the second chord doing?',
+            question: tr('Home, then… which job is the second chord doing?'),
             demo: {
               bpm: 80,
               loop: false,
@@ -293,16 +315,16 @@ export const stage3Units: Unit[] = [
                 { midi: 62, atBeat: 2, durBeats: 2 },
               ],
             },
-            options: ['Away (IV)', 'Tension (V)'],
+            options: [tr('Away (IV)'), tr('Tension (V)')],
             correctIndex: 1,
           },
           {
             kind: 'playCheck',
-            ask: 'Left hand only: play the V root, then the I root — **G** down to **C**.',
+            ask: tr('Left hand only: play the V root, then the I root — **G** down to **C**.'),
             notes: ['G', 'C'],
             count: 2,
             distinct: 'name',
-            hint: 'That falling fifth in the bass is half of why a cadence sounds final.',
+            hint: tr('That falling fifth in the bass is half of why a cadence sounds final.'),
           },
         ],
       },
@@ -367,8 +389,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u3.c1',
-        prompt:
+        prompt: tr(
           'Say the jobs out loud as the backing turns them over: "home, away, tension, home." Then stop playing on the tension chord and sit in it for a bar. Wanting to resolve is the feeling this whole lesson is about.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'IV', 'V', 'I'], loops: 3 }),
       },
     ],
@@ -377,7 +400,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u4',
     stageId: 's3',
     ordinal: 3,
-    title: 'The four-chord families',
+    title: tr('The four-chord families'),
     strandWeights: { keys: 4, theory: 2, create: 1 },
     concepts: ['prog:i-vi-iv-v:c', 'prog:i-vi-iv-v:g', 'prog:vi-iv-i-v:c', 'prog:vi-iv-i-v:g'],
     prerequisites: ['s3.u3'],
@@ -390,38 +413,46 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: "I–V–vi–IV, I–vi–IV–V and vi–IV–I–V aren't three progressions — they're **one loop entered at different doors**. Same four chords, rotated.",
+            md: tr(
+              "I–V–vi–IV, I–vi–IV–V and vi–IV–I–V aren't three progressions — they're **one loop entered at different doors**. Same four chords, rotated.",
+            ),
           },
           {
             kind: 'progressionCard',
             roman: ['I', 'vi', 'IV', 'V'],
             key: { tonic: 'C', mode: 'major' },
             songRefs: [
-              'Half the doo-wop era',
-              'Countless prom ballads',
-              'Modern pop hooks',
-              'Campfire standards',
-              'Wedding first-dance staples',
-              'Arena singalongs',
+              tr('Half the doo-wop era'),
+              tr('Countless prom ballads'),
+              tr('Modern pop hooks'),
+              tr('Campfire standards'),
+              tr('Wedding first-dance staples'),
+              tr('Arena singalongs'),
             ],
           },
           {
             kind: 'playCheck',
-            ask: 'Enter through the vi door: play the four roots **A, F, C, G**.',
+            ask: tr('Enter through the vi door: play the four roots **A, F, C, G**.'),
             notes: ['A', 'F', 'C', 'G'],
             count: 4,
             distinct: 'name',
-            hint: 'Left hand, low. Same four chords as I–V–vi–IV, started one door along.',
+            hint: tr('Left hand, low. Same four chords as I–V–vi–IV, started one door along.'),
           },
           {
             kind: 'progressionCard',
             roman: ['vi', 'IV', 'I', 'V'],
             key: { tonic: 'C', mode: 'major' },
-            songRefs: ['Melancholy radio pop', 'Singer-songwriter anthems', 'Epic film-trailer cues'],
+            songRefs: [
+              tr('Melancholy radio pop'),
+              tr('Singer-songwriter anthems'),
+              tr('Epic film-trailer cues'),
+            ],
           },
           {
             kind: 'text',
-            md: 'Which door you pick decides the mood. Starting on vi sounds like a question; starting on I sounds like an answer — with no change to the chords at all.',
+            md: tr(
+              'Which door you pick decides the mood. Starting on vi sounds like a question; starting on I sounds like an answer — with no change to the chords at all.',
+            ),
           },
         ],
       },
@@ -475,8 +506,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u4.c1',
-        prompt:
+        prompt: tr(
           'The backing enters on vi. Play with it for a while, then try starting your own phrase on the third bar instead — the loop does not care where you think it begins, and neither does the listener.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['vi', 'IV', 'I', 'V'], loops: 3 }),
       },
     ],
@@ -485,7 +517,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u5',
     stageId: 's3',
     ordinal: 4,
-    title: 'ii and iii, the connectors',
+    title: tr('ii and iii, the connectors'),
     strandWeights: { keys: 3, theory: 3, create: 1 },
     concepts: ['chord:d:min:inv0', 'chord:e:min:inv0', 'prog:i-ii-v:c', 'theory:ii-v'],
     prerequisites: ['s3.u4'],
@@ -498,18 +530,20 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: '**ii** is the professional way into V. Its root is a step above the tonic and a fifth above the dominant, so **ii→V→I** is two falling fifths in a row — the strongest bass move there is.',
+            md: tr(
+              '**ii** is the professional way into V. Its root is a step above the tonic and a fifth above the dominant, so **ii→V→I** is two falling fifths in a row — the strongest bass move there is.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play **ii in C**: D, F, A.',
+            ask: tr('Play **ii in C**: D, F, A.'),
             notes: ['D', 'F', 'A'],
             count: 3,
             distinct: 'name',
           },
           {
             kind: 'keyboardDemo',
-            caption: 'IV–V–I, then ii–V–I. The second one lands harder.',
+            caption: tr('IV–V–I, then ii–V–I. The second one lands harder.'),
             demo: {
               bpm: 72,
               loop: false,
@@ -537,15 +571,19 @@ export const stage3Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: '**iii** is the other connector, and it is colour rather than motion: still a tonic-family chord, but tilted. It is what turns a I–IV climb into something that sounds composed.',
+            md: tr(
+              '**iii** is the other connector, and it is colour rather than motion: still a tonic-family chord, but tilted. It is what turns a I–IV climb into something that sounds composed.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Play **iii in C**: E, G, B.',
+            ask: tr('Play **iii in C**: E, G, B.'),
             notes: ['E', 'G', 'B'],
             count: 3,
             distinct: 'name',
-            hint: 'Two notes of it are also in the I chord. That is why it feels like home wearing a coat.',
+            hint: tr(
+              'Two notes of it are also in the I chord. That is why it feels like home wearing a coat.',
+            ),
           },
         ],
       },
@@ -599,8 +637,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u5.c1',
-        prompt:
+        prompt: tr(
           'Backing: I–vi–ii–V, the turnaround that has ended a hundred thousand songs. Play the ii bar twice as long in your head before it arrives — anticipating a chord is most of what "playing with feel" means.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'vi', 'ii', 'V'], loops: 3 }),
       },
     ],
@@ -609,7 +648,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u6',
     stageId: 's3',
     ordinal: 5,
-    title: 'Harmonize a melody',
+    title: tr('Harmonize a melody'),
     strandWeights: { create: 3, theory: 3 },
     concepts: ['create:harmonize:1'],
     prerequisites: ['s3.u5'],
@@ -622,26 +661,30 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'A melody note fits any chord that **contains** it — and often a chord doing the **same job** works too. Most melodies have several right harmonies. You are choosing, not solving.',
+            md: tr(
+              'A melody note fits any chord that **contains** it — and often a chord doing the **same job** works too. Most melodies have several right harmonies. You are choosing, not solving.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Take the melody note **E**. Harmonize it with C major: C, E, G.',
+            ask: tr('Take the melody note **E**. Harmonize it with C major: C, E, G.'),
             notes: ['C', 'E', 'G'],
             count: 3,
             distinct: 'name',
           },
           {
             kind: 'playCheck',
-            ask: 'Same note, different chord: harmonize that E with A minor instead.',
+            ask: tr('Same note, different chord: harmonize that E with A minor instead.'),
             notes: ['A', 'C', 'E'],
             count: 3,
             distinct: 'name',
-            hint: 'E is the 3rd of C major and the 5th of A minor. One note, two homes, two moods.',
+            hint: tr('E is the 3rd of C major and the 5th of A minor. One note, two homes, two moods.'),
           },
           {
             kind: 'text',
-            md: 'That gap between the two — same melody, different chord under it — is where arranging lives. In the drill you will hear a note and see its degree; answer with any chord that fits.',
+            md: tr(
+              'That gap between the two — same melody, different chord under it — is where arranging lives. In the drill you will hear a note and see its degree; answer with any chord that fits.',
+            ),
           },
         ],
       },
@@ -676,8 +719,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u6.c1',
-        prompt:
+        prompt: tr(
           'Over the drone, hum three long notes — any three. Find a chord for each, then go back and find a second chord for each. Play both versions one after the other. The tune did not change; the story did.',
+        ),
         exercise: play(
           { key: C, palette: 'chordtones', roman: [], loops: 4, tintDegrees: [1, 2, 3, 4, 5, 6, 7] },
           'both',
@@ -690,7 +734,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u7',
     stageId: 's3',
     ordinal: 6,
-    title: 'Ear: name the progression',
+    title: tr('Ear: name the progression'),
     strandWeights: { ear: 4, create: 1 },
     concepts: ['ear:prog:pop4'],
     prerequisites: ['s3.u6'],
@@ -703,12 +747,14 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Four chords play. Answer them back in order — the whole chord, or just its bass note. Hunt the **bass motion** first: it gives most of the answer away before the chords do.',
+            md: tr(
+              'Four chords play. Answer them back in order — the whole chord, or just its bass note. Hunt the **bass motion** first: it gives most of the answer away before the chords do.',
+            ),
           },
           {
             kind: 'earCheck',
-            question: 'Which loop is this?',
-            options: ['I–V–vi–IV', 'I–vi–IV–V'],
+            question: tr('Which loop is this?'),
+            options: [tr('I–V–vi–IV'), tr('I–vi–IV–V')],
             correctIndex: 0,
             demo: {
               bpm: 84,
@@ -735,7 +781,9 @@ export const stage3Units: Unit[] = [
           },
           {
             kind: 'text',
-            md: 'Listen to the bass notes first. Compare their order with the chord chart, then play the chords in that order.',
+            md: tr(
+              'Listen to the bass notes first. Compare their order with the chord chart, then play the chords in that order.',
+            ),
           },
         ],
       },
@@ -779,8 +827,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u7.c1',
-        prompt:
+        prompt: tr(
           'Backing on, eyes shut. Before each chord arrives, try to hear it coming — then check. Predicting the next chord is the same skill as naming the last one, running one bar earlier.',
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'V', 'vi', 'IV'], loops: 3 }),
       },
     ],
@@ -789,7 +838,7 @@ export const stage3Units: Unit[] = [
     id: 's3.u8',
     stageId: 's3',
     ordinal: 7,
-    title: 'Song lab',
+    title: tr('Song lab'),
     strandWeights: { keys: 4, create: 2 },
     concepts: ['song:northline', 'song:paper-sun'],
     prerequisites: ['s3.u7'],
@@ -802,23 +851,25 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'Two new charts. **Northline** climbs through iii — your new colour chord — in G. **Paper Sun** rides the ii→V turnaround in F. Read the romans, not the letters.',
+            md: tr(
+              'Two new charts. **Northline** climbs through iii — your new colour chord — in G. **Paper Sun** rides the ii→V turnaround in F. Read the romans, not the letters.',
+            ),
           },
           {
             kind: 'playCheck',
-            ask: 'Northline is in G. Play its **iii**: B, D, F♯.',
+            ask: tr('Northline is in G. Play its **iii**: B, D, F♯.'),
             notes: ['B', 'D', 'F#'],
             count: 3,
             distinct: 'name',
-            hint: 'Third degree of G major is B, and iii is always minor.',
+            hint: tr('Third degree of G major is B, and iii is always minor.'),
           },
           {
             kind: 'playCheck',
-            ask: 'Paper Sun is in F. Play its **ii**: G, B♭, D.',
+            ask: tr('Paper Sun is in F. Play its **ii**: G, B♭, D.'),
             notes: ['G', 'Bb', 'D'],
             count: 3,
             distinct: 'name',
-            hint: 'Second degree of F is G. The B♭ comes from the key signature, not from the chord.',
+            hint: tr('Second degree of F is G. The B♭ comes from the key signature, not from the chord.'),
           },
         ],
       },
@@ -856,8 +907,9 @@ export const stage3Units: Unit[] = [
       {
         kind: 'create',
         id: 's3.u8.c1',
-        prompt:
+        prompt: tr(
           "Paper Sun's loop is I–vi–ii–V, and the backing plays it in **C** rather than its own key of F. Nothing on screen tells you the letters. Play it from the numerals alone — that is the whole point of this stage, cashed in.",
+        ),
         exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'vi', 'ii', 'V'], loops: 3 }),
       },
     ],
@@ -866,7 +918,7 @@ export const stage3Units: Unit[] = [
     id: 's3.cp',
     stageId: 's3',
     ordinal: 8,
-    title: 'Checkpoint: Roman lens',
+    title: tr('Checkpoint: Roman lens'),
     strandWeights: { theory: 2, keys: 3, ear: 1 },
     concepts: [],
     prerequisites: ['s3.u8'],
@@ -879,7 +931,9 @@ export const stage3Units: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: 'The lens test: numerals in four keys, functions by ear, a harmonization, a rotated loop on demand, and a chart played from its romans. Five takes, no hints.',
+            md: tr(
+              'The lens test: numerals in four keys, functions by ear, a harmonization, a rotated loop on demand, and a chart played from its romans. Five takes, no hints.',
+            ),
           },
         ],
       },

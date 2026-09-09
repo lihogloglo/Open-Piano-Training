@@ -1,7 +1,9 @@
 import { z } from 'zod';
+import { languages } from '@/i18n';
 const score = z.number().min(0).max(1);
 export const preferencesSchema = z
   .object({
+    language: z.enum(['system', ...languages.map((language) => language.code)]),
     theme: z.enum(['dark', 'light', 'system']),
     onboarded: z.boolean(),
     deviceId: z.string().nullable(),

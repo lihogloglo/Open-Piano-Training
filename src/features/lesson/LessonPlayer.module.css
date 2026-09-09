@@ -54,8 +54,9 @@
   flex-shrink: 0;
 }
 
-/* Tourist mode controls. Muted, and clearly not part of the lesson itself. */
-.touristBar {
+/* Optional rehearsal controls stay visible above the exercise. */
+.skipBar {
+  flex-wrap: wrap;
   display: flex;
   align-items: center;
   justify-content: flex-end;

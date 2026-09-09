@@ -52,6 +52,7 @@ function createWindow() {
     minWidth: 1024,
     minHeight: 680,
     backgroundColor: '#0b0d0e',
+    icon: path.join(DIST, 'pwa-512.png'),
     autoHideMenuBar: true,
     show: false,
     webPreferences: {

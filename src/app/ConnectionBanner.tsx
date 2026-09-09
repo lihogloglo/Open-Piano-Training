@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useEffect, useState } from 'react';
 import styles from './AppShell.module.css';
 
@@ -22,7 +23,7 @@ export function ConnectionBanner() {
   if (online) return null;
   return (
     <div className={styles['offlineBanner']} role="status" data-testid="offline-banner">
-      Offline. Everything still works. New piano samples will wait for the network.
+      {tr('Offline. Everything still works. New piano samples will wait for the network.')}
     </div>
   );
 }

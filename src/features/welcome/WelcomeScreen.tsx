@@ -1,3 +1,5 @@
+import { LanguageSelect } from '@/ui/LanguageSelect';
+import { tr } from '@/i18n';
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
 import { APP_NAME, APP_TAGLINE } from '@/app/brand';
@@ -25,13 +27,15 @@ export function WelcomeScreen() {
   return (
     <div className={styles['wrap']}>
       <div className={styles['inner']}>
+        <LanguageSelect />
         {step === 0 && (
           <>
             <h1>{APP_NAME}</h1>
             <p className={styles['tagline']}>{APP_TAGLINE}</p>
             <p className={styles['body']}>
-              A guided path from zero to fluency: scales, chords and harmony you can actually use, on your own
-              MIDI piano, with feedback on every note.
+              {tr(
+                'A guided path from zero to fluency: scales, chords and harmony you can actually use, on your own MIDI piano, with feedback on every note.',
+              )}
             </p>
             {/* The instrument is the hero image. One chord lit, nothing else,
                 so the first thing you see is a C major triad. */}
@@ -39,25 +43,25 @@ export function WelcomeScreen() {
               <Keyboard range={[55, 79]} pressed={new Set([60, 64, 67])} height={96} />
             </div>
             <Button variant="primary" size="l" onClick={() => setStep(1)}>
-              Get started
+              {tr('Get started')}
             </Button>
           </>
         )}
 
         {step === 1 && (
           <>
-            <h2>Connect your keyboard</h2>
+            <h2>{tr('Connect your keyboard')}</h2>
             <div className={styles['panelBox']}>
               <MidiSetupPanel />
             </div>
             <div className={styles['actions']}>
               {midiStatus === 'connected' ? (
                 <Button variant="primary" size="l" onClick={() => setStep(2)}>
-                  Continue
+                  {tr('Continue')}
                 </Button>
               ) : (
                 <Button variant="secondary" onClick={() => setStep(2)}>
-                  I'll use computer keys for now
+                  {tr("I'll use computer keys for now")}
                 </Button>
               )}
             </div>
@@ -66,17 +70,18 @@ export function WelcomeScreen() {
 
         {step === 2 && (
           <>
-            <h2>Hear yourself</h2>
+            <h2>{tr('Hear yourself')}</h2>
             <p className={styles['body']}>
-              If your piano has speakers, use those, it always sounds best. Otherwise we'll play a warm grand
-              piano for every note you press.
+              {tr(
+                "If your piano has speakers, use those, it always sounds best. Otherwise we'll play a warm grand piano for every note you press.",
+              )}
             </p>
             <div className={styles['panelBox']}>
               <SoundPanel />
             </div>
             <div className={styles['actions']}>
               <Button variant="primary" size="l" onClick={() => setStep(3)}>
-                Continue
+                {tr('Continue')}
               </Button>
             </div>
           </>
@@ -84,14 +89,15 @@ export function WelcomeScreen() {
 
         {step === 3 && (
           <>
-            <h2>Where do we begin?</h2>
+            <h2>{tr('Where do we begin?')}</h2>
             <p className={styles['body']}>
-              The path starts at the very beginning, finding your way around the keys. Every step earns the
-              next one. Already play a little? Take the checkpoints instead: pass one, skip its stage.
+              {tr(
+                'The path starts at the very beginning, finding your way around the keys. Every step earns the next one. Already play a little? Take the checkpoints instead: pass one, skip its stage.',
+              )}
             </p>
             <div className={styles['actions']}>
               <Button variant="primary" size="l" onClick={finish}>
-                Start from zero
+                {tr('Start from zero')}
               </Button>
               <Button
                 variant="ghost"
@@ -100,13 +106,13 @@ export function WelcomeScreen() {
                   void navigate('/lesson/s0.cp?placement=1');
                 }}
               >
-                I know some piano, place me
+                {tr('I know some piano, place me')}
               </Button>
             </div>
           </>
         )}
 
-        <div className={styles['dots']} aria-label={`Step ${step + 1} of ${STEPS}`}>
+        <div className={styles['dots']} aria-label={tr('Step {v0} of {v1}', { v0: step + 1, v1: STEPS })}>
           {Array.from({ length: STEPS }, (_, i) => (
             <span key={i} className={styles['dot']} data-active={i === step} />
           ))}

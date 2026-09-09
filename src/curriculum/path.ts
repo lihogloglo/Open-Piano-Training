@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Stage, Unit } from './schema';
 import { CURRICULUM, getUnit } from './content';
 
@@ -51,7 +52,7 @@ export function buildPath(): { stage: Stage; nodes: PathNode[] }[] {
             id: `${stage.id}.r${reviewCount}`,
             kind: 'review',
             stageId: stage.id,
-            title: 'Review',
+            title: tr('Review'),
             minutes: 5,
           });
         }

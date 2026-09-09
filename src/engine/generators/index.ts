@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { generatePhrase } from './phrase';
 import type { ExerciseDef, ExerciseInstance } from '../types';
 import { generateScaleRun } from './scaleRun';
@@ -51,7 +52,7 @@ export function generate(def: ExerciseDef, seed: number): ExerciseInstance {
       .map((t, i) => ({ ...t, atBeat: (t.atBeat ?? (start + i) * spacing) - origin })),
     prompt: {
       ...instance.prompt,
-      title: `Focused practice: ${instance.prompt.title}`,
+      title: tr('Focused practice: {v0}', { v0: instance.prompt.title }),
       ...(instance.prompt.perTarget ? { perTarget: instance.prompt.perTarget.slice(start, end) } : {}),
     },
     perTargetPreview: instance.perTargetPreview?.slice(start, end),

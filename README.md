@@ -14,11 +14,23 @@ The application is called **Keysense**. Connect a MIDI keyboard or use your comp
 - Daily practice sessions with spaced repetition, streaks, ratings, checkpoints, and progress tracking
 - Twelve transposable song studies, three complete studio pieces, and a free-play sandbox
 - Local-first storage, backup and restore, and offline support
-- An installable Windows desktop app and a browser-based PWA
+- Windows and Linux desktop packages, plus a browser-based PWA
+- English and French, with a saved language choice and extensible translation catalogs
 
-## Download for Windows
+## Download for Windows and Linux
 
-Download the current portable app from [GitHub Releases](https://github.com/lihogloglo/Open-Piano-Training/releases/latest). It runs from a single `.exe` and does not require an installer.
+Download desktop packages from [GitHub Releases](https://github.com/lihogloglo/Open-Piano-Training/releases/latest).
+
+Windows releases include an installer and a portable `.exe`. Future releases also include Linux x64 AppImage and `.deb` packages.
+
+On Linux, install the `.deb` through your package manager, or make the AppImage executable and open it:
+
+```bash
+chmod +x Keysense-*-linux-x64.AppImage
+./Keysense-<version>-linux-x64.AppImage
+```
+
+See [desktop releases](docs/releases.md) for Linux requirements and build details.
 
 The desktop build includes its piano samples and works without a network connection. Windows may show a SmartScreen warning because the executable is not code-signed.
 
@@ -37,20 +49,26 @@ Open `http://localhost:5173` in Chrome, Edge, or Opera for Web MIDI support. A M
 
 ## Build the desktop app
 
-On Windows:
+On Windows or Linux:
 
 ```bash
 npm ci
 npm run desktop:build
 ```
 
-This downloads the piano samples, creates the production web build, and writes an installer plus a portable executable to `release/`.
+This downloads the piano samples, creates the production web build, and writes packages for your operating system to `release/`.
 
 To open the Electron app without packaging it:
 
 ```bash
 npm run desktop
 ```
+
+## Languages
+
+Choose **Français**, **English**, or the system language on the welcome screen or in Settings.
+Changing language reloads the app and preserves progress.
+See [the translation guide](docs/localization.md) to add another language.
 
 ## Curriculum
 
@@ -77,7 +95,7 @@ npm run check:bundle   # compressed bundle-size budget
 npm run test:e2e       # Playwright end-to-end suite
 ```
 
-The app is built with React, TypeScript, Vite, Web MIDI, Web Audio, Dexie, Zustand, VexFlow, Vitest, Playwright, and Electron. CI runs the complete validation suite on every branch and pull request. Version tags build the portable Windows release automatically.
+The app is built with React, TypeScript, Vite, Web MIDI, Web Audio, Dexie, Zustand, VexFlow, Vitest, Playwright, and Electron. CI runs the complete validation suite on every branch and pull request. Version tags build Windows and Linux releases automatically. Publishing waits for both builds to pass.
 
 ## Privacy and browser support
 

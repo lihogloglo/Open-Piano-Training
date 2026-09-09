@@ -33,3 +33,17 @@ nsis:
 
 portable:
   artifactName: Keysense-${version}-portable.exe
+
+linux:
+  executableName: keysense
+  icon: public/pwa-512.png
+  category: Education
+  executableArgs: []
+  synopsis: Learn piano with guided lessons and MIDI feedback
+  maintainer: Keysense
+  target:
+    - target: AppImage
+      arch: [x64]
+    - target: deb
+      arch: [x64]
+  artifactName: Keysense-${version}-linux-${arch}.${ext}

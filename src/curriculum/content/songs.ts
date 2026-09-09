@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { KeyContext } from '@/theory/keys';
 
 export interface Bar {
@@ -22,14 +23,14 @@ export interface Song {
 export const SONGS: Song[] = [
   {
     id: 'first-light',
-    title: 'First Light',
-    styleRef: 'Warm four-chord pop, the kind that opens a festival set',
+    title: tr('First Light'),
+    styleRef: tr('Warm four-chord pop, the kind that opens a festival set'),
     key: { tonic: 'C', mode: 'major' },
     bpm: 72,
     timeSig: [4, 4],
     sections: [
-      { name: 'Verse', bars: 8 },
-      { name: 'Chorus', bars: 8 },
+      { name: tr('Verse'), bars: 8 },
+      { name: tr('Chorus'), bars: 8 },
     ],
     romanized: [
       // Verse: home and back, twice
@@ -55,39 +56,39 @@ export const SONGS: Song[] = [
   },
   {
     id: 'northline',
-    title: 'Northline',
-    styleRef: 'Slow-burn piano ballad with a climbing middle',
+    title: tr('Northline'),
+    styleRef: tr('Slow-burn piano ballad with a climbing middle'),
     key: { tonic: 'G', mode: 'major' },
     bpm: 66,
     timeSig: [4, 4],
     sections: [
-      { name: 'Verse', bars: 8 },
-      { name: 'Lift', bars: 4 },
+      { name: tr('Verse'), bars: 8 },
+      { name: tr('Lift'), bars: 4 },
     ],
     romanized: ['I', 'iii', 'IV', 'V', 'I', 'iii', 'IV', 'V', 'vi', 'IV', 'I', 'V'],
     stage: 3,
   },
   {
     id: 'paper-sun',
-    title: 'Paper Sun',
-    styleRef: 'Breezy soul-pop with a turnaround',
+    title: tr('Paper Sun'),
+    styleRef: tr('Breezy soul-pop with a turnaround'),
     key: { tonic: 'F', mode: 'major' },
     bpm: 84,
     timeSig: [4, 4],
-    sections: [{ name: 'Groove', bars: 8 }],
+    sections: [{ name: tr('Groove'), bars: 8 }],
     romanized: ['I', 'vi', 'ii', 'V', 'I', 'vi', 'ii', 'V'],
     stage: 3,
   },
   {
     id: 'ember',
-    title: 'Ember',
-    styleRef: 'Minor-key indie folk, slow build, brushed drums',
+    title: tr('Ember'),
+    styleRef: tr('Minor-key indie folk, slow build, brushed drums'),
     key: { tonic: 'A', mode: 'minor' },
     bpm: 76,
     timeSig: [4, 4],
     sections: [
-      { name: 'Verse', bars: 8 },
-      { name: 'Chorus', bars: 8 },
+      { name: tr('Verse'), bars: 8 },
+      { name: tr('Chorus'), bars: 8 },
     ],
     romanized: [
       // Verse: the minor anthem loop, twice
@@ -113,12 +114,12 @@ export const SONGS: Song[] = [
   },
   {
     id: 'round-the-circle',
-    title: 'Round the Circle',
-    styleRef: 'Standards-era practice etude; walks ii-V-I down in fourths',
+    title: tr('Round the Circle'),
+    styleRef: tr('Standards-era practice etude; walks ii-V-I down in fourths'),
     key: { tonic: 'C', mode: 'major' },
     bpm: 66,
     timeSig: [4, 4],
-    sections: [{ name: 'Etude', bars: 12 }],
+    sections: [{ name: tr('Etude'), bars: 12 }],
     // Four ii-V-I cells (C, F, B♭, E♭) written against C so transposing the
     // whole etude stays one edit.
     romanized: [
@@ -139,8 +140,8 @@ export const SONGS: Song[] = [
   },
   {
     id: 'slow-tide',
-    title: 'Slow Tide',
-    styleRef: 'Standards-era ballad, AABA, brushes and a lot of space',
+    title: tr('Slow Tide'),
+    styleRef: tr('Standards-era ballad, AABA, brushes and a lot of space'),
     key: { tonic: 'Eb', mode: 'major' },
     bpm: 60,
     timeSig: [4, 4],
@@ -191,15 +192,15 @@ export const SONGS: Song[] = [
   },
   {
     id: 'brass-district',
-    title: 'Brass District',
-    styleRef: 'Horn-section soul; verse, pre-chorus, chorus',
+    title: tr('Brass District'),
+    styleRef: tr('Horn-section soul; verse, pre-chorus, chorus'),
     key: { tonic: 'Bb', mode: 'major' },
     bpm: 96,
     timeSig: [4, 4],
     sections: [
-      { name: 'Verse', bars: 8 },
-      { name: 'Pre-chorus', bars: 4 },
-      { name: 'Chorus', bars: 8 },
+      { name: tr('Verse'), bars: 8 },
+      { name: tr('Pre-chorus'), bars: 4 },
+      { name: tr('Chorus'), bars: 8 },
     ],
     romanized: [
       'I7',
@@ -227,8 +228,8 @@ export const SONGS: Song[] = [
   },
   {
     id: 'nightbus',
-    title: 'Nightbus',
-    styleRef: 'Late-night minor AABA, electric piano and rain',
+    title: tr('Nightbus'),
+    styleRef: tr('Late-night minor AABA, electric piano and rain'),
     key: { tonic: 'D', mode: 'minor' },
     bpm: 88,
     timeSig: [4, 4],
@@ -276,15 +277,15 @@ export const SONGS: Song[] = [
   },
   {
     id: 'cassette-summer',
-    title: 'Cassette Summer',
-    styleRef: 'Bright guitar-pop with a lifting pre-chorus',
+    title: tr('Cassette Summer'),
+    styleRef: tr('Bright guitar-pop with a lifting pre-chorus'),
     key: { tonic: 'A', mode: 'major' },
     bpm: 104,
     timeSig: [4, 4],
     sections: [
-      { name: 'Verse', bars: 8 },
-      { name: 'Pre-chorus', bars: 4 },
-      { name: 'Chorus', bars: 8 },
+      { name: tr('Verse'), bars: 8 },
+      { name: tr('Pre-chorus'), bars: 4 },
+      { name: tr('Chorus'), bars: 8 },
     ],
     romanized: [
       'I',
@@ -312,31 +313,31 @@ export const SONGS: Song[] = [
   },
   {
     id: 'blue-monday-blues',
-    title: 'Blue Monday Blues',
-    styleRef: 'Twelve-bar blues, shuffle feel, dominant sevenths throughout',
+    title: tr('Blue Monday Blues'),
+    styleRef: tr('Twelve-bar blues, shuffle feel, dominant sevenths throughout'),
     key: { tonic: 'C', mode: 'major' },
     bpm: 88,
     timeSig: [4, 4],
-    sections: [{ name: 'Chorus (12 bars)', bars: 12 }],
+    sections: [{ name: tr('Chorus (12 bars)'), bars: 12 }],
     romanized: ['I7', 'IV7', 'I7', 'I7', 'IV7', 'IV7', 'I7', 'I7', 'V7', 'IV7', 'I7', 'V7'],
     stage: 7,
   },
   {
     id: 'red-clay-road',
-    title: 'Red Clay Road',
-    styleRef: 'Blues-rock shuffle with a quick change',
+    title: tr('Red Clay Road'),
+    styleRef: tr('Blues-rock shuffle with a quick change'),
     key: { tonic: 'G', mode: 'major' },
     bpm: 100,
     timeSig: [4, 4],
-    sections: [{ name: 'Chorus (12 bars)', bars: 12 }],
+    sections: [{ name: tr('Chorus (12 bars)'), bars: 12 }],
     // Quick change: bar 2 goes to IV before returning.
     romanized: ['I7', 'IV7', 'I7', 'I7', 'IV7', 'IV7', 'I7', 'V7', 'IV7', 'IV7', 'I7', 'V7'],
     stage: 7,
   },
   {
     id: 'the-long-way-home',
-    title: 'The Long Way Home',
-    styleRef: 'Jazz-standard AABA; ii-V-I in three keys before it lands',
+    title: tr('The Long Way Home'),
+    styleRef: tr('Jazz-standard AABA; ii-V-I in three keys before it lands'),
     key: { tonic: 'F', mode: 'major' },
     bpm: 72,
     timeSig: [4, 4],

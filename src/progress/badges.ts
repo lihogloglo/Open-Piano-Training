@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import type { Take } from '@/engine/replay';
 import type { AtomProgressRow, UnitProgressRow } from './db';
 import { ATOMS } from './atoms';
@@ -15,18 +16,30 @@ export interface BadgeDef {
 }
 
 export const BADGES: readonly BadgeDef[] = [
-  { id: 'first-note', title: 'First note', criterion: 'Finish setup and play your first note' },
-  { id: 'first-song', title: 'First song', criterion: 'Pass any song chart' },
-  { id: 'spelling-bee', title: 'Spelling bee', criterion: 'Land 20 chord grips in under 3 seconds each' },
-  { id: 'circle-complete', title: 'Circle complete', criterion: 'Reach all 12 key signatures' },
-  { id: 'smooth-operator', title: 'Smooth operator', criterion: 'Three stars on a voice-led progression' },
-  { id: 'all-twelve', title: 'All twelve', criterion: 'Pass ii-V-I in all 12 keys' },
-  { id: 'chart-slayer', title: 'Chart slayer', criterion: 'Pass an unseen chart on the first try' },
-  { id: 'bluesman', title: 'Bluesman', criterion: 'Pass the blues form' },
-  { id: 'by-ear', title: 'By ear', criterion: 'Transcribe a song by ear' },
-  { id: 'deep-groove', title: 'Deep groove', criterion: 'Make a comping pattern fluent' },
-  { id: 'centurion', title: 'Centurion', criterion: 'Practise 100 sessions' },
-  { id: 'then-vs-now', title: 'Then vs now', criterion: 'Compare a take with one from a month earlier' },
+  { id: 'first-note', title: tr('First note'), criterion: tr('Finish setup and play your first note') },
+  { id: 'first-song', title: tr('First song'), criterion: tr('Pass any song chart') },
+  {
+    id: 'spelling-bee',
+    title: tr('Spelling bee'),
+    criterion: tr('Land 20 chord grips in under 3 seconds each'),
+  },
+  { id: 'circle-complete', title: tr('Circle complete'), criterion: tr('Reach all 12 key signatures') },
+  {
+    id: 'smooth-operator',
+    title: tr('Smooth operator'),
+    criterion: tr('Three stars on a voice-led progression'),
+  },
+  { id: 'all-twelve', title: tr('All twelve'), criterion: tr('Pass ii-V-I in all 12 keys') },
+  { id: 'chart-slayer', title: tr('Chart slayer'), criterion: tr('Pass an unseen chart on the first try') },
+  { id: 'bluesman', title: tr('Bluesman'), criterion: tr('Pass the blues form') },
+  { id: 'by-ear', title: tr('By ear'), criterion: tr('Transcribe a song by ear') },
+  { id: 'deep-groove', title: tr('Deep groove'), criterion: tr('Make a comping pattern fluent') },
+  { id: 'centurion', title: tr('Centurion'), criterion: tr('Practise 100 sessions') },
+  {
+    id: 'then-vs-now',
+    title: tr('Then vs now'),
+    criterion: tr('Compare a take with one from a month earlier'),
+  },
 ];
 
 export const BADGE_BY_ID: ReadonlyMap<string, BadgeDef> = new Map(BADGES.map((b) => [b.id, b]));

@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { toast } from '@/ui/Toast';
 
 /**
@@ -18,7 +19,7 @@ export function registerServiceWorker(): void {
       registerSW({
         immediate: true,
         onOfflineReady() {
-          toast('Ready to work offline', 'ok');
+          toast(tr('Ready to work offline'), 'ok');
         },
       });
     })

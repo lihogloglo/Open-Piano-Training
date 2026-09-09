@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import type { ExerciseDef, ExerciseInstance, Target } from '../types';
 
@@ -37,7 +38,7 @@ export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance
             kind: 'set',
             midis: [...new Set(notes.map((n) => n.midi))],
             atBeat,
-            label: 'Together',
+            label: tr('Together'),
             octaveFlexible: false,
           },
     );
@@ -47,15 +48,18 @@ export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance
     targets,
     beatsPerBar: p.beatsPerBar,
     prompt: {
-      title: p.title,
-      detail: p.ear ? 'Listen, then play from memory' : 'Follow the phrase',
+      title: tr(p.title),
+      detail: p.ear ? tr('Listen, then play from memory') : tr('Follow the phrase'),
       perTarget: targets.map((t) => ({
         label: p.ear
-          ? 'Play from memory'
+          ? tr('Play from memory')
           : t.kind === 'note'
-            ? `${['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'][t.midi % 12]}${Math.floor(t.midi / 12) - 1}`
-            : 'Hands together',
-        detail: `Beat ${((t.atBeat ?? 0) % p.beatsPerBar) + 1}`,
+            ? tr('{v0}{v1}', {
+                v0: ['C', 'C♯', 'D', 'E♭', 'E', 'F', 'F♯', 'G', 'A♭', 'A', 'B♭', 'B'][t.midi % 12],
+                v1: Math.floor(t.midi / 12) - 1,
+              })
+            : tr('Hands together'),
+        detail: tr('Beat {v0}', { v0: ((t.atBeat ?? 0) % p.beatsPerBar) + 1 }),
       })),
     },
   };

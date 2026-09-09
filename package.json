@@ -1,14 +1,14 @@
 {
   "name": "keysense",
   "private": true,
-  "version": "0.1.4",
+  "version": "0.1.5",
   "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "tsc -b && vite build",
     "samples": "node scripts/fetch-samples.mjs",
     "desktop": "npm run build && electron .",
-    "desktop:build": "npm run samples && npm run build && electron-builder --win",
+    "desktop:build": "npm run samples && npm run build && electron-builder --publish never",
     "check:bundle": "node scripts/check-bundle.mjs",
     "check:contrast": "node scripts/check-contrast.mjs",
     "icons": "node scripts/make-icons.mjs",
@@ -20,7 +20,11 @@
     "test": "vitest run",
     "test:watch": "vitest",
     "test:e2e": "playwright test",
-    "check": "npm run lint && npm run typecheck && npm run check:contrast && npm run test"
+    "check": "npm run lint && npm run typecheck && npm run check:i18n && npm run check:contrast && npm run test",
+    "desktop:build:win": "npm run samples && npm run build && electron-builder --win --publish never",
+    "desktop:build:linux": "npm run samples && npm run build && electron-builder --linux --publish never",
+    "check:i18n": "node scripts/check-i18n.mjs",
+    "i18n:extract": "node scripts/check-i18n.mjs --write"
   },
   "dependencies": {
     "@fontsource-variable/geist": "^5.3.0",
@@ -62,5 +66,6 @@
   },
   "description": "Understand the keyboard. Play anything.",
   "author": "Keysense",
-  "main": "electron/main.cjs"
+  "main": "electron/main.cjs",
+  "homepage": "https://github.com/lihogloglo/Open-Piano-Training"
 }

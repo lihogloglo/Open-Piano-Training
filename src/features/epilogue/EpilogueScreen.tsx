@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { useNavigate } from 'react-router';
 import { useLiveQuery } from 'dexie-react-hooks';
 import { db } from '@/progress/db';
@@ -21,48 +22,57 @@ export function EpilogueScreen() {
   return (
     <div className={styles['wrap']}>
       <div className={styles['card']}>
-        <p className={styles['eyebrow']}>Stage 7 complete</p>
-        <h1>The path is yours</h1>
+        <p className={styles['eyebrow']}>{tr('Stage 7 complete')}</p>
+        <h1>{tr('The path is yours')}</h1>
         <p className={styles['lede']}>
-          You started by finding C. You can now read a chart you have never seen, play it in a key nobody
-          warned you about, hear a progression and name it, and make something up over the top. That is not a
-          beginner&apos;s skill set.
+          {tr(
+            "You started by finding C. You can now read a chart you have never seen, play it in a key nobody warned you about, hear a progression and name it, and make something up over the top. That is not a beginner's skill set.",
+          )}
         </p>
 
         <div className={styles['stats']}>
-          <Stat value={practiced?.size ?? 0} label="days practised" />
-          <Stat value={atomCount ?? 0} label="skills learned" />
-          <Stat value={fluentCount ?? 0} label="gone fluent" />
-          <Stat value={takeCount ?? 0} label="takes recorded" />
+          <Stat value={practiced?.size ?? 0} label={tr('days practised')} />
+          <Stat value={atomCount ?? 0} label={tr('skills learned')} />
+          <Stat value={fluentCount ?? 0} label={tr('gone fluent')} />
+          <Stat value={takeCount ?? 0} label={tr('takes recorded')} />
         </div>
 
-        <h2>What happens now</h2>
+        <h2>{tr('What happens now')}</h2>
         <ul className={styles['list']}>
           <li>
-            <strong>Reviews keep running.</strong> The daily session no longer has new units to teach, so it
-            becomes maintenance, and the schedule keeps what you have earned.
+            <strong>{tr('Reviews keep running.')}</strong>
+            {tr(
+              ' The daily session no longer has new units to teach, so it becomes maintenance, and the schedule keeps what you have earned.',
+            )}
           </li>
           <li>
-            <strong>Ratings are the new ladder.</strong> Keys, theory and ear challenges are always open, and
-            they are the honest measure from here.
+            <strong>{tr('Ratings are the new ladder.')}</strong>
+            {tr(
+              ' Keys, theory and ear challenges are always open, and they are the honest measure from here.',
+            )}
           </li>
           <li>
-            <strong>The sandbox and songs have no ceiling.</strong> Transpose anything, loop anything,
-            improvise over anything.
+            <strong>{tr('The sandbox and songs have no ceiling.')}</strong>
+            {tr(' Transpose anything, loop anything, improvise over anything.')}
           </li>
           <li>
-            <strong>Your replays are worth revisiting.</strong> Compare a take from today with one from your
-            first month. That is what all of this was for.
+            <strong>{tr('Your replays are worth revisiting.')}</strong>
+            {tr(
+              ' Compare a take from today with one from your first month. That is what all of this was for.',
+            )}
           </li>
         </ul>
 
-        <p className={styles['sendoff']}>{APP_NAME} taught you the system. The playing was always yours.</p>
+        <p className={styles['sendoff']}>
+          {APP_NAME}
+          {tr(' taught you the system. The playing was always yours.')}
+        </p>
 
         <div className={styles['actions']}>
           <Button variant="primary" size="l" onClick={() => void navigate('/progress')}>
-            See how far you came
+            {tr('See how far you came')}
           </Button>
-          <Button onClick={() => void navigate('/sandbox')}>Go play</Button>
+          <Button onClick={() => void navigate('/sandbox')}>{tr('Go play')}</Button>
         </div>
       </div>
     </div>

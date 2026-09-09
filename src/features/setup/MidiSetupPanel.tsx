@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useEffect } from 'react';
 import { useMidiStore } from '@/store/midiStore';
@@ -25,22 +26,24 @@ export function MidiSetupPanel() {
     <div className={styles['panel']}>
       {status === 'unsupported' && (
         <div className={styles['notice']} data-tone="err">
-          <strong>This browser can't talk to MIDI keyboards.</strong>
+          <strong>{tr("This browser can't talk to MIDI keyboards.")}</strong>
           <p>
-            Safari and iOS don't support Web MIDI. Use <strong>Chrome</strong>, <strong>Edge</strong> or{' '}
-            <strong>Firefox</strong> on a desktop. You can still explore with your computer keys below.
+            {tr("Safari and iOS don't support Web MIDI. Use ")}
+            <strong>{tr('Chrome')}</strong>, <strong>{tr('Edge')}</strong>
+            {tr(' or')} <strong>{tr('Firefox')}</strong>
+            {tr(' on a desktop. You can still explore with your computer keys below.')}
           </p>
         </div>
       )}
       {status === 'denied' && (
         <div className={styles['notice']} data-tone="warn">
-          <strong>MIDI access was declined.</strong>
-          <p>Allow MIDI access for this site in your browser's permission settings, then reload.</p>
+          <strong>{tr('MIDI access was declined.')}</strong>
+          <p>{tr("Allow MIDI access for this site in your browser's permission settings, then reload.")}</p>
         </div>
       )}
       {isFirefox && status !== 'unsupported' && (
         <p className={styles['hint']}>
-          Firefox asks you to approve a small site permission add-on the first time. That's normal.
+          {tr("Firefox asks you to approve a small site permission add-on the first time. That's normal.")}
         </p>
       )}
 
@@ -48,10 +51,10 @@ export function MidiSetupPanel() {
         <div className={styles['devices']}>
           {devices.length === 0 ? (
             <p className={styles['hint']}>
-              No keyboard detected yet. Plug it in and switch it on, and it'll appear here by itself.
+              {tr("No keyboard detected yet. Plug it in and switch it on, and it'll appear here by itself.")}
             </p>
           ) : (
-            <div role="radiogroup" aria-label="MIDI device" className={styles['deviceList']}>
+            <div role="radiogroup" aria-label={tr('MIDI device')} className={styles['deviceList']}>
               <label className={styles['device']}>
                 <input
                   type="radio"
@@ -59,7 +62,7 @@ export function MidiSetupPanel() {
                   checked={selectedId === null}
                   onChange={() => select(null)}
                 />
-                All devices
+                {tr('All devices')}
               </label>
               {devices.map((d) => (
                 <label key={d.id} className={styles['device']}>
@@ -69,7 +72,7 @@ export function MidiSetupPanel() {
                     checked={selectedId === d.id}
                     onChange={() => select(d.id)}
                   />
-                  {d.name || d.manufacturer || 'MIDI device'}
+                  {d.name || d.manufacturer || tr('MIDI device')}
                 </label>
               ))}
             </div>
@@ -86,12 +89,18 @@ export function MidiSetupPanel() {
           onKeyUp={inputNoteOff}
         />
         <p className={styles['hearYou']} data-heard={heard}>
-          {heard ? '✓ We hear you!' : 'Play any key. It should light up here.'}
+          {heard ? tr('✓ We hear you!') : tr('Play any key. It should light up here.')}
         </p>
         <p className={styles['hint']}>
-          No keyboard handy? Your computer keys work too: <kbd>A</kbd> to <kbd>K</kbd> play notes,{' '}
-          <kbd>W</kbd>/<kbd>E</kbd>/<kbd>T</kbd>/<kbd>Y</kbd>/<kbd>U</kbd> the black keys, <kbd>Z</kbd>/
-          <kbd>X</kbd> shift octaves.
+          {tr('No keyboard handy? Your computer keys work too: ')}
+          <kbd>{tr('A')}</kbd>
+          {tr(' to ')}
+          <kbd>{tr('K')}</kbd>
+          {tr(' play notes,')} <kbd>{tr('W')}</kbd>/<kbd>{tr('E')}</kbd>/<kbd>{tr('T')}</kbd>/
+          <kbd>{tr('Y')}</kbd>/<kbd>{tr('U')}</kbd>
+          {tr(' the black keys, ')}
+          <kbd>{tr('Z')}</kbd>/<kbd>{tr('X')}</kbd>
+          {tr(' shift octaves.')}
         </p>
       </div>
     </div>

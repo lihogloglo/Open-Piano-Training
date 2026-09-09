@@ -1,3 +1,4 @@
+import { tr } from '@/i18n';
 import { z } from 'zod';
 import { chordSymbol } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
@@ -117,14 +118,18 @@ export function generateUnseenChart(def: ExerciseDef, seed: number): ExerciseIns
   });
 
   const formLabel =
-    p.form === 'blues' ? '12-bar blues' : p.form === 'aaba' ? 'AABA, 16 bars' : 'Verse/chorus, 16 bars';
+    p.form === 'blues'
+      ? tr('12-bar blues')
+      : p.form === 'aaba'
+        ? tr('AABA, 16 bars')
+        : tr('Verse/chorus, 16 bars');
   return {
     def,
     seed,
     targets,
     prompt: {
-      title: `Unseen chart — ${key.tonic} ${key.mode}`,
-      detail: `${formLabel} · read it down, two passes allowed`,
+      title: tr('Unseen chart — {v0} {v1}', { v0: key.tonic, v1: key.mode }),
+      detail: tr('{v0} · read it down, two passes allowed', { v0: formLabel }),
       key,
       perTarget: labels.map((label) => ({ label })),
     },

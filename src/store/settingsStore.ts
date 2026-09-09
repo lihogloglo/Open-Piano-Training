@@ -1,3 +1,4 @@
+import type { LanguageSetting } from '@/i18n';
 import { readPreferences } from '@/progress/preferences';
 import { setTouristMode } from '@/progress/tourist';
 import { create } from 'zustand';
@@ -5,6 +6,8 @@ import { create } from 'zustand';
 export type ThemeSetting = 'dark' | 'light' | 'system';
 
 interface SettingsState {
+  language: LanguageSetting;
+  setLanguage(language: LanguageSetting): void;
   theme: ThemeSetting;
   onboarded: boolean;
   deviceId: string | null;
@@ -36,6 +39,7 @@ interface SettingsState {
 const LS_KEY = 'ks.settings.v1';
 
 interface PersistedSettings {
+  language: LanguageSetting;
   theme: ThemeSetting;
   onboarded: boolean;
   deviceId: string | null;
@@ -56,6 +60,7 @@ interface PersistedSettings {
 }
 
 const defaults: PersistedSettings = {
+  language: 'system',
   theme: 'dark',
   onboarded: false,
   deviceId: null,
@@ -81,6 +86,7 @@ function persist(state: SettingsState): void {
   const { dailyMinutes, latencyOffsetMs, sidebarExpanded } = state;
   const { readStrandEnabled, reducedMotion } = state;
   const data: PersistedSettings = {
+    language: state.language,
     theme,
     onboarded,
     deviceId,
@@ -105,6 +111,7 @@ function persist(state: SettingsState): void {
 
 export const useSettingsStore = create<SettingsState>((set) => ({
   ...load(),
+  setLanguage: (language) => set({ language }),
   setTheme: (theme) => set({ theme }),
   setOnboarded: (onboarded) => set({ onboarded }),
   setDeviceId: (deviceId) => set({ deviceId }),

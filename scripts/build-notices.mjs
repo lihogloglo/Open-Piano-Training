@@ -79,7 +79,7 @@ for (const [path, entry] of Object.entries(lock.packages).sort(([a], [b]) => a.l
 for (const file of readdirSync(join(root, 'third-party')).filter((name) => name.endsWith('-LICENSE.txt'))) {
   sections.push([`VexFlow embedded font: ${file}`, read(`third-party/${file}`)]);
 }
-sections.push(['Electron desktop shell', read('node_modules/electron/dist/LICENSE')]);
+sections.push(['Electron desktop shell', read('node_modules/electron/LICENSE')]);
 sections.push([
   'Chromium and other Electron components',
   'Desktop packages also include LICENSES.chromium.html beside the executable. Preserve that file when redistributing Electron.',

@@ -5,3 +5,5 @@ test-results
 node_modules
 package-lock.json
 .claude/skills
+third-party/*-LICENSE.txt
+public/THIRD-PARTY-NOTICES.html

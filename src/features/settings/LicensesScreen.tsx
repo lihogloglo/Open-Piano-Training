@@ -103,11 +103,18 @@ const CREDITS: readonly Credit[] = [
     what: tr('Every icon in the interface.'),
   },
   {
+    name: 'VexFlow',
+    version: '5.0',
+    license: 'MIT / OFL-1.1',
+    url: 'https://github.com/vexflow/vexflow',
+    what: tr('Music notation and embedded fonts.'),
+  },
+  {
     name: tr('Splendid Grand Piano'),
     version: '',
-    license: 'CC-BY 3.0',
+    license: tr('Public domain (upstream declaration)'),
     url: 'https://github.com/sfzinstruments/SplendidGrandPiano',
-    what: tr('The piano samples you hear, via smplr.'),
+    what: tr('Piano samples by AKAI, prepared by kinwie and smpldsnds, played through smplr.'),
   },
 ];
 
@@ -121,6 +128,9 @@ export function LicensesScreen() {
         {tr(
           ' is built on open source. These are the projects it depends on, and the terms they are offered under.',
         )}
+      </p>
+      <p>
+        <a href="/THIRD-PARTY-NOTICES.html">{tr('Read full license texts and notices')}</a>
       </p>
       <Card>
         <ul className={styles['creditList']}>

@@ -1516,5 +1516,9 @@
   "Skip now and review this skill later.": "Passez cette étape et révisez cette compétence plus tard.",
   "Already know this? You can skip this step.": "Vous connaissez déjà cela ? Vous pouvez passer cette étape.",
   "Choose any tempo below. Score 80% at full tempo to continue, or skip this step.": "Choisissez un tempo ci-dessous. Obtenez 80 % au tempo final pour continuer, ou passez cette étape.",
-  "Skip this exercise": "Passer cet exercice"
+  "Skip this exercise": "Passer cet exercice",
+  "Music notation and embedded fonts.": "Notation musicale et polices intégrées.",
+  "Public domain (upstream declaration)": "Domaine public (selon la source)",
+  "Piano samples by AKAI, prepared by kinwie and smpldsnds, played through smplr.": "Échantillons de piano AKAI, préparés par kinwie et smpldsnds, lus avec smplr.",
+  "Read full license texts and notices": "Lire les licences complètes et les mentions"
 }

@@ -1,5 +1,9 @@
 # Song sourcing — where real repertoire can come from
 
+> Historical research, not release clearance. The app currently uses original studies and charts.
+> Do not treat the dates, worldwide claims, or proposed catalog below as permission to distribute a song.
+> Verify each composition, arrangement, recording, and source separately for the intended distribution countries.
+
 _Researched 2026-09-02. Companion to [content-audit.md](content-audit.md) §5F, which found the
 app's twelve "songs" are invented chord skeletons with no melody and no recognition value._
 

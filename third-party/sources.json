@@ -1,0 +1,26 @@
+[
+  {
+    "file": ".claude/skills/asd-ste100/LICENSE",
+    "source": "https://raw.githubusercontent.com/danyuchn/asd-ste100-skill/32511c6992ecb5f1971e46a2943f2e6adceedafe/LICENSE"
+  },
+  {
+    "file": "third-party/academico-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/vexflow/vexflow-fonts/b2bc3a6070225e4d395966b36de76c36a9429b1c/academico/LICENSE.txt"
+  },
+  {
+    "file": "third-party/bravura-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/vexflow/vexflow-fonts/b2bc3a6070225e4d395966b36de76c36a9429b1c/bravura/LICENSE.txt"
+  },
+  {
+    "file": "third-party/gonville-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/vexflow/vexflow-fonts/b2bc3a6070225e4d395966b36de76c36a9429b1c/gonville/LICENCE.txt"
+  },
+  {
+    "file": "third-party/petaluma-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/vexflow/vexflow-fonts/b2bc3a6070225e4d395966b36de76c36a9429b1c/petaluma/LICENSE.txt"
+  },
+  {
+    "file": "third-party/petalumascript-LICENSE.txt",
+    "source": "https://raw.githubusercontent.com/vexflow/vexflow-fonts/b2bc3a6070225e4d395966b36de76c36a9429b1c/petalumascript/LICENSE.txt"
+  }
+]

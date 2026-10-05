@@ -47,27 +47,6 @@ export function setMuted(m: boolean): void {
   }
 }
 
-/**
- * Where the piano samples come from. `scripts/fetch-samples.mjs` writes them
- * under `public/samples/`, which the desktop build ships so the app has sound
- * with no network. If that copy is absent we fall back to smplr's own host, so
- * a bare checkout still makes noise.
- */
-const LOCAL_SAMPLES = '/samples/splendid-grand-piano';
-
-async function localSampleBaseUrl(): Promise<string | undefined> {
-  try {
-    // GET also works through the offline sample cache. A HEAD probe would miss it.
-    const res = await fetch(`${LOCAL_SAMPLES}/FF%20A0.ogg`);
-    if (!res.ok) return undefined;
-    // SPA hosts can return index.html with status 200 for an absent sample.
-    const header = new Uint8Array(await res.arrayBuffer()).subarray(0, 4);
-    return String.fromCharCode(...header) === 'OggS' ? new URL(LOCAL_SAMPLES, location.href).href : undefined;
-  } catch {
-    return undefined;
-  }
-}
-
 async function loadSampler(): Promise<void> {
   setStatus({ state: 'loading', progress: 0 });
   try {
@@ -76,10 +55,10 @@ async function loadSampler(): Promise<void> {
     masterGain = ctx.createGain();
     masterGain.gain.value = 0.8;
     masterGain.connect(ctx.destination);
-    const { SplendidGrandPiano } = await import('smplr');
-    const baseUrl = await localSampleBaseUrl();
+    const { SplendidGrandPiano, CacheStorage } = await import('smplr');
     const instrument = SplendidGrandPiano(ctx, {
-      ...(baseUrl ? { baseUrl } : {}),
+      // Download directly from the provider, then retain samples on this device.
+      storage: CacheStorage('keysense-samples'),
       destination: masterGain,
       onLoadProgress: (p: { loaded: number; total: number }) => {
         setStatus({ state: 'loading', progress: p.total > 0 ? p.loaded / p.total : 0 });

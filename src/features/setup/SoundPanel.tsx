@@ -28,6 +28,11 @@ export function SoundPanel() {
 
   return (
     <div className={styles['panel']}>
+      <p className={styles['hint']}>
+        {tr(
+          'First use downloads piano sounds from the provider. Internet access is required. Sounds are then cached on this device.',
+        )}
+      </p>
       <div className={styles['soundRow']}>
         <Button variant={audioEnabled ? 'primary' : 'secondary'} onClick={() => void enable()}>
           {sampler.state === 'ready' && audioEnabled ? tr('Sound is on ✓') : tr('Enable sound')}

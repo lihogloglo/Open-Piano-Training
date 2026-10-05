@@ -80,7 +80,7 @@ test.describe('offline (production build)', () => {
     });
     expect(precached.total, 'the service worker should have precached the shell').toBeGreaterThan(10);
 
-    // Load through the controlling worker so the complete local piano is cached.
+    // Download from the provider and retain the complete piano on this device.
     await page.goto(`${BASE}/studio/morning-steps?midi=fake`);
     await page.getByLabel('Practice tempo').fill('160');
     await page.getByRole('button', { name: 'Hear this phrase' }).click();

@@ -12,7 +12,7 @@ The project MIT license covers project code and original content. It does not re
 | ASD-STE100 writing skill | MIT, copyright Dustin Yuchen Teng. See [.claude/skills/asd-ste100/LICENSE](.claude/skills/asd-ste100/LICENSE).                                                                                   |
 
 Piano sample preparation and SFZ mapping are credited to kinwie. The smpldsnds project converts samples for web playback.
-Keysense downloads its Ogg files without further changes. This attribution follows the distributors' declarations, not an independently recovered AKAI license document.
+Users download its Ogg files directly when enabling sound. Keysense source archives and application packages do not contain these recordings. This attribution follows the distributors' declarations, not an independently recovered AKAI license document.
 The sample mirror contains an inconsistent introductory link to a Rhodes instrument. Its piano description and the original piano repository agree on public-domain status.
 The app does not include other sample collections offered by smplr.
 

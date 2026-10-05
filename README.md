@@ -10,7 +10,8 @@ Automated tests do not replace testing with real keyboards and learners.
 ## Try it
 
 Download Windows or Linux packages from [GitHub Releases](https://github.com/lihogloglo/Open-Piano-Training/releases).
-Desktop packages include piano samples for offline practice. Windows executables are not code-signed.
+The app downloads piano sounds directly from their provider when you first enable sound. Internet access is required for that download.
+Downloaded sounds are cached on your device for later use. Windows executables are not code-signed.
 
 To run from source, install Node.js 22.13 or later and npm:
 
@@ -32,7 +33,6 @@ npm run build          # browser build with license notices
 npm run desktop:build  # desktop packages for your operating system
 ```
 
-Run `npm run samples` before the browser build to include piano samples locally.
 See [desktop build details](docs/releases.md), [project status](docs/STATUS.md), and [translation instructions](docs/localization.md).
 Report bugs and suggest changes through [GitHub Issues](https://github.com/lihogloglo/Open-Piano-Training/issues).
 
@@ -40,7 +40,7 @@ Report bugs and suggest changes through [GitHub Issues](https://github.com/lihog
 
 The app has no accounts or analytics. Practice progress stays on your device.
 Export a backup from Settings before clearing browser data.
-Without local samples, the app downloads piano audio from `smpldsnds.github.io`, which receives normal web requests, including your IP address.
+The app downloads piano audio from `smpldsnds.github.io`, which receives normal web requests, including your IP address.
 
 ## License
 

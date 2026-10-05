@@ -6,11 +6,11 @@ directories:
   output: release
   buildResources: build
 
-# The shell plus the web build, nothing else. `dist` already holds the piano
-# samples, so the installed app needs no network.
+# Piano sounds are downloaded by the user at runtime. Never package local samples.
 files:
   - electron/**/*
   - dist/**/*
+  - '!dist/samples/**/*'
   - package.json
   - LICENSE
 

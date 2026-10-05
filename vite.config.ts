@@ -1,51 +1,33 @@
 /// <reference types="vitest/config" />
-import { defineConfig, type Plugin, type Connect } from 'vite';
-import { createReadStream } from 'node:fs';
-import { join, resolve } from 'node:path';
+import { defineConfig, type Plugin } from 'vite';
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import react from '@vitejs/plugin-react';
 import { VitePWA } from 'vite-plugin-pwa';
 import { fileURLToPath } from 'node:url';
 
-/** Serve encoded sharp-note filenames before Vite treats # as a URL fragment. */
-function pianoSamples(): Plugin {
-  const serve =
-    (directory: string): Connect.NextHandleFunction =>
-    (req, res, next) => {
-      let pathname: string;
-      try {
-        pathname = decodeURIComponent(new URL(req.url ?? '/', 'http://localhost').pathname);
-      } catch {
-        next();
-        return;
-      }
-      const match = /^\/samples\/splendid-grand-piano\/([A-Za-z]{2} [A-G]#?-?\d+\.ogg)$/.exec(pathname);
-      if (!match) {
-        next();
-        return;
-      }
-      const file = join(directory, 'samples', 'splendid-grand-piano', match[1]!);
-      res.setHeader('Content-Type', 'audio/ogg');
-      createReadStream(file)
-        .on('error', () => {
-          res.statusCode = 404;
-          res.end();
-        })
-        .pipe(res);
-    };
+/** Publish only app assets, even if an old local sample folder still exists. */
+function releaseAssets(): Plugin {
   return {
-    name: 'piano-samples',
-    configureServer(server) {
-      server.middlewares.use(serve(server.config.publicDir));
-    },
-    configurePreviewServer(server) {
-      server.middlewares.use(serve(resolve(server.config.root, server.config.build.outDir)));
+    name: 'release-assets',
+    generateBundle() {
+      for (const fileName of [
+        'favicon.svg',
+        'apple-touch-icon.png',
+        'pwa-192.png',
+        'pwa-512.png',
+        'pwa-maskable-512.png',
+        'THIRD-PARTY-NOTICES.html',
+      ]) {
+        this.emitFile({ type: 'asset', fileName, source: readFileSync(join('public', fileName)) });
+      }
     },
   };
 }
 
 export default defineConfig({
   plugins: [
-    pianoSamples(),
+    releaseAssets(),
     react(),
     VitePWA({
       registerType: 'autoUpdate',
@@ -78,8 +60,7 @@ export default defineConfig({
         // so a second visit has sound with no network at all.
         runtimeCaching: [
           {
-            // Matches the vendored copy under /samples/ and smplr's own host
-            // alike, so either source survives an offline reload.
+            // Cache samples fetched directly from the provider.
             urlPattern: /\/(samples|soundfonts)\/.*\.(mp3|ogg|wav|m4a)$/i,
             handler: 'CacheFirst',
             options: {
@@ -102,6 +83,7 @@ export default defineConfig({
     include: ['react', 'react-dom/client', 'react-router', 'zustand', 'webmidi', 'smplr'],
   },
   build: {
+    copyPublicDir: false,
     // VexFlow is ~1.1 MB and deliberately lazy (notation strand only), so the
     // default 500 kB warning fires on a chunk that is working as intended.
     // `npm run check:bundle` is the real guard: it enforces the eager-bundle

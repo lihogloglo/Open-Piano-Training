@@ -41,7 +41,7 @@ const sections = [
     'Splendid Grand Piano samples',
     'Public domain, according to the upstream distributors. Samples by AKAI.\n' +
       'Sample fixes and SFZ mapping by kinwie. Web audio conversion by smpldsnds.\n' +
-      'Keysense redistributes the Ogg files without further changes.\n' +
+      'Users download the Ogg files directly from the provider. Keysense packages contain no piano samples.\n' +
       'https://github.com/sfzinstruments/SplendidGrandPiano\n' +
       'https://github.com/smpldsnds/sfzinstruments-splendid-grand-piano\n' +
       'These samples are separate from the MIT-licensed smplr playback code.',

@@ -56,8 +56,6 @@ jobs:
       - run: npm run check
       - run: npm run format:check
       - run: node --test electron/security.test.cjs
-      - name: Fetch piano samples
-        run: npm run samples
       - run: npm run build
       - run: npm run check:bundle
       - name: Package desktop app
@@ -117,10 +115,10 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             NOTES="docs/releases/${TAG#v}.md"
             if [ -f "$NOTES" ]; then
-              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --notes-file "$NOTES" --draft
+              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --notes-file "$NOTES" --draft --prerelease
             else
-              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --generate-notes --draft
+              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --generate-notes --draft --prerelease
             fi
           fi
           gh release upload "$TAG" release/*.exe release/*.AppImage release/*.deb --clobber
-          gh release edit "$TAG" --draft=false
+          gh release edit "$TAG" --draft=false --prerelease

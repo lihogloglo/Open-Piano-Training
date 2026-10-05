@@ -2,6 +2,7 @@ import { _electron as electron, expect } from '@playwright/test';
 import { basename, dirname, join, resolve } from 'node:path';
 import { mkdtemp, rm } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
+import { audioFixture } from './audio-fixture.mjs';
 
 const executablePath = resolve(process.argv[2]);
 const userData = await mkdtemp(join(tmpdir(), 'keysense-smoke-'));
@@ -20,21 +21,34 @@ try {
   await page.getByRole('combobox').selectOption('fr');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.getByRole('button', { name: 'Commencer', exact: true })).toBeVisible();
-  const result = await page.evaluate(async () => {
-    const response = await fetch('/samples/splendid-grand-piano/FF%20A0.ogg');
+  const result = await page.evaluate(() => {
     return {
       secure: window.isSecureContext,
       midi: typeof navigator.requestMIDIAccess,
-      status: response.status,
-      bytes: (await response.arrayBuffer()).byteLength,
-      type: response.headers.get('content-type'),
     };
   });
   expect(result.secure).toBe(true);
-  expect(result.status).toBe(200);
-  expect(result.bytes).toBeGreaterThan(1000);
-  expect(result.type).toContain('audio/');
   expect(result.midi).toBe('function');
+  await page.getByRole('combobox').selectOption('en');
+  const provider = 'https://smpldsnds.github.io/**';
+  let downloads = 0;
+  await page.route(provider, async (route) => {
+    downloads++;
+    await route.fulfill({ contentType: 'audio/wav', body: audioFixture() });
+  });
+  await page.goto('keysense://app/setup');
+  await page.getByRole('button', { name: 'Enable sound', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sound is on' })).toBeVisible({ timeout: 30_000 });
+  expect(downloads).toBeGreaterThan(200);
+  const cached = await page.evaluate(
+    async () => (await (await caches.open('keysense-samples')).keys()).length,
+  );
+  expect(cached).toBeGreaterThan(200);
+  await page.unroute(provider);
+  await page.route(provider, (route) => route.abort());
+  await page.reload();
+  await page.getByRole('button', { name: 'Enable sound', exact: true }).click();
+  await expect(page.getByRole('button', { name: 'Sound is on' })).toBeVisible({ timeout: 30_000 });
   expect(errors).toEqual([]);
 } finally {
   await app?.close();

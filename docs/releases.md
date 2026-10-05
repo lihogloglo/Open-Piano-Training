@@ -24,7 +24,7 @@ npm run desktop:build
 
 This builds packages for the current operating system in `release/`.
 Explicit commands are `npm run desktop:build:win` and `npm run desktop:build:linux`.
-Build Linux packages on Linux. Both commands include piano samples and the production web build.
+Build Linux packages on Linux. Both commands build the app without piano samples. Users download sounds from the provider when they first enable sound.
 Package targets are configured in `electron-builder.yml`.
 See the [electron-builder Linux reference](https://www.electron.build/v26/docs/linux/).
 
@@ -38,7 +38,7 @@ Use one of the existing release triggers:
 - Start the workflow manually with a matching tag and a source ref.
 
 Both build jobs check the package version, lint, types, translation catalogs, unit tests, formatting, security tests, and bundle size.
-The Linux job also starts the packaged application under Xvfb and checks French startup, MIDI API availability, and an offline piano sample.
+The Linux job also starts the packaged application under Xvfb and checks French startup, MIDI API availability, and sound download/caching behavior with generated test audio.
 It uses a temporary profile so the test cannot change a user's settings.
 
 A separate publishing job requires both builds to succeed.

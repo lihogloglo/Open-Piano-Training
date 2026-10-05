@@ -8,8 +8,9 @@ import { toast } from '@/ui/Toast';
  * Only in production builds: a service worker in dev would cache module
  * responses and fight Vite's HMR, and it would intercept the e2e runs.
  *
- * The desktop shell is skipped too. It ships every asset inside the app, and
+ * The desktop shell is skipped too. It ships app assets locally, and
  * a service worker cannot register on its custom URL scheme.
+ * smplr caches downloaded piano samples separately in both browser and desktop builds.
  */
 export function registerServiceWorker(): void {
   if (!import.meta.env.PROD) return;

@@ -1520,5 +1520,6 @@
   "Music notation and embedded fonts.": "Notation musicale et polices intégrées.",
   "Public domain (upstream declaration)": "Domaine public (selon la source)",
   "Piano samples by AKAI, prepared by kinwie and smpldsnds, played through smplr.": "Échantillons de piano AKAI, préparés par kinwie et smpldsnds, lus avec smplr.",
-  "Read full license texts and notices": "Lire les licences complètes et les mentions"
+  "Read full license texts and notices": "Lire les licences complètes et les mentions",
+  "First use downloads piano sounds from the provider. Internet access is required. Sounds are then cached on this device.": "La première utilisation télécharge les sons du piano depuis leur fournisseur. Une connexion Internet est nécessaire. Les sons sont ensuite conservés sur cet appareil."
 }

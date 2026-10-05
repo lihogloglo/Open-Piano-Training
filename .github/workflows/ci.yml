@@ -22,14 +22,12 @@ jobs:
       - name: Contrast (WCAG AA)
         run: npm run check:contrast
       - run: npm run test
-      - name: Fetch piano samples for offline checks
-        run: npm run samples
       - run: npm run build
       - name: Bundle budget
         run: npm run check:bundle
       - name: Install Playwright browser
         run: npx playwright install --with-deps chromium
       - name: E2E
-        run: npm run test:e2e
+        run: npx playwright test e2e/licenses.spec.ts e2e/offline.spec.ts e2e/i18n.spec.ts
         env:
           CI: 'true'

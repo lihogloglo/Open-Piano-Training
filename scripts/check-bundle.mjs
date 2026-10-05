@@ -24,6 +24,14 @@ if (!existsSync(DIST)) {
   process.exit(1);
 }
 
+const bundledAudio = readdirSync(dirname(DIST), { recursive: true }).filter((file) =>
+  /\.(ogg|mp3|wav|m4a|flac)$/i.test(file),
+);
+if (bundledAudio.length) {
+  console.error('Release builds must not include piano recordings:', bundledAudio);
+  process.exit(1);
+}
+
 let eagerBytes = 0;
 const eager = [];
 const lazy = [];

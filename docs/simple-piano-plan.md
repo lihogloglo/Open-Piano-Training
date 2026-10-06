@@ -65,10 +65,10 @@ arrangements.
 Each tune becomes a studio piece with melody data. This is a first step on §5F (real
 repertoire). The staff draws the same notes the learner plays.
 
-### Part 4 — Rhythm lessons the studio does not have yet
+### Part 4 — Rhythm lessons the studio does not have yet (done 2026-10-07)
 
 The studio already teaches the beat split in two, rests and ties, offbeats and three-beat time.
-It does not teach these. Each becomes a short studio lesson:
+It does not teach these. Each becomes a short lesson in a Rhythm course (built as a course, like Read music, for the same flow):
 
 1. Dotted rhythm: a dotted quarter and an eighth.
 2. Syncopation: a note that starts on the second half of a beat and is held over the beat.

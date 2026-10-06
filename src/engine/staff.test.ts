@@ -64,6 +64,19 @@ describe('staffFromNotes', () => {
     expect(staffBars(staff).map((bar) => beats(bar))).toEqual([[1], [4]]);
   });
 
+  it('writes a syncopation as eighth, quarter, eighth', () => {
+    const staff = staffFromNotes(
+      [
+        { midi: 60, atBeat: 0, durBeats: 0.45 },
+        { midi: 64, atBeat: 0.5, durBeats: 0.9 },
+        { midi: 67, atBeat: 1.5, durBeats: 0.45 },
+        { midi: 72, atBeat: 2, durBeats: 1.8 },
+      ],
+      { clef: 'treble', beatsPerBar: 4 },
+    );
+    expect(beats(staff.items)).toEqual([0.5, 1, 0.5, 2]);
+  });
+
   it('never lets a note cross a bar line', () => {
     const staff = staffFromNotes([{ midi: 60, atBeat: 3, durBeats: 1.8 }], {
       clef: 'treble',
@@ -85,7 +98,7 @@ describe('read snippet rhythm', () => {
   });
 
   it('fills every bar exactly, for every rhythm pool and meter', () => {
-    for (const rhythm of ['quarters', 'halves', 'long', 'rests', 'eighths', 'dotted']) {
+    for (const rhythm of ['quarters', 'halves', 'long', 'rests', 'eighths', 'syncopation', 'dotted']) {
       for (const beatsPerBar of [2, 3, 4]) {
         for (let seed = 1; seed <= 20; seed++) {
           const inst = generate(def({ rhythm, beatsPerBar, bars: 4 }), seed);

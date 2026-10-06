@@ -29,8 +29,11 @@ const paramsSchema = z.object({
 export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance {
   const p = paramsSchema.parse(def.params);
   p.ear = p.ear || !!def.assessment;
+  // A pickup starts on a weak beat. Shift it by the missing beats, so the
+  // metronome's beat 1 falls on the first full bar, as the staff shows it.
+  const shift = p.pickupBeats > 0 ? (p.beatsPerBar - (p.pickupBeats % p.beatsPerBar)) % p.beatsPerBar : 0;
   const groups = new Map<number, typeof p.notes>();
-  for (const n of p.notes) groups.set(n.atBeat, [...(groups.get(n.atBeat) ?? []), n]);
+  for (const n of p.notes) groups.set(n.atBeat + shift, [...(groups.get(n.atBeat + shift) ?? []), n]);
   const targets: Target[] = [...groups]
     .sort((a, b) => a[0] - b[0])
     .map(([atBeat, notes]) =>
@@ -76,9 +79,7 @@ export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance
                 v1: Math.floor(t.midi / 12) - 1,
               })
             : tr('Hands together'),
-        detail: tr('Beat {v0}', {
-          v0: ((((t.atBeat ?? 0) - p.pickupBeats) % p.beatsPerBar) + p.beatsPerBar) % p.beatsPerBar + 1,
-        }),
+        detail: tr('Beat {v0}', { v0: ((t.atBeat ?? 0) % p.beatsPerBar) + 1 }),
       })),
     },
   };

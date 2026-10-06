@@ -86,6 +86,8 @@ export const explainBlockSchema = z.discriminatedUnion('kind', [
     beats: z.array(z.number().positive()).optional(),
     /** Default 4. */
     beatsPerBar: z.number().int().min(2).max(4).optional(),
+    /** Length of an incomplete first bar, in beats. */
+    pickupBeats: z.number().positive().optional(),
     key: keyContextSchema.optional(),
     hint: z.string().max(160).optional(),
     /** Offer a "Hear it" button: for rhythm cards, where the sound is the lesson. */

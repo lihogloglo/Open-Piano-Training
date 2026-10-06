@@ -205,3 +205,14 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - **Explain steps scroll each new card into view.** Before, a card revealed by an answered check could open behind the keyboard. The prompt area also uses `safe center`, so a tall step keeps its top.
 - **The studio player writes the phrase on a staff**, or a grand staff for both hands. The note-card list moved behind "Show note names".
 - **Start no longer waits for the piano sounds** when nothing plays before the learner does: wait-mode exercises and repeat attempts whose demo was already seen.
+
+## The Rhythm course — 2026-10-07
+
+- **Rhythm** (`rt`, `content/rhythm.ts`), four lessons: dotted notes, syncopation, pickup notes, three beats in a bar. It builds on Read music lessons 5–7, which teach the note lengths it uses. Its summary says so, and it never locks.
+- Each lesson opens with "clap it and count aloud" or "tap the beat with your foot" in the first card. This is Simple Piano's best rhythm tip.
+- `read-snippet` gains a `syncopation` pool. A note that starts on *and* and runs to the next start is written eighth–quarter–eighth.
+- `staffCheck` takes `pickupBeats`. The `phrase` generator shifts a pickup later by the missing beats, so the metronome's beat 1 falls on the first full bar, as the staff shows it.
+- When the Saints Go Marching In (American traditional, public domain) carries the pickup lesson. It is a course tune only: the studio's bars assume no pickup.
+- **The staff wraps by content.** Each bar gets width from its number of notes, lines are balanced, and a line never stretches a bar past twice its need. Before, every bar reserved the same width, so a short pickup bar forced a wrap.
+- **The staff has a definite preferred width, capped by its container.** With `width: 100%` inside a shrink-to-fit parent, the staff and its parent sized each other and could lock at a narrow width.
+- The course exercise builders moved to `content/courseKit.ts`.

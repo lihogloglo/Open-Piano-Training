@@ -8,9 +8,9 @@ import { playNote, stopNote } from '@/audio/sampler';
 import { unlockAudio } from '@/audio/clock';
 import { subscribeMidiEvents } from '@/store/midiStore';
 import { midiToName, midiToPcName, namePc, nameToMidi } from '@/theory/notes';
-import { staffBars, staffFromNotes, type TimedNote } from '@/engine/staff';
+import { staffFromNotes, type TimedNote } from '@/engine/staff';
 import type { StaffModel } from '@/engine/types';
-import { StaffSnippet, type StaffNoteState } from '@/ui/StaffSnippet';
+import { StaffSnippet, staffNaturalWidth, type StaffNoteState } from '@/ui/StaffSnippet';
 import { buildChord } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
 import { CIRCLE_OF_FIFTHS } from '@/theory/keys';
@@ -309,19 +309,24 @@ function staffCheckNotes(block: StaffCheck): TimedNote[] {
   return out;
 }
 
-/** Wide enough to keep a short card on one line: one bar per 190 units, or 48 per note when unmetred. */
+/** Wide enough to keep a short card on one line at the card's scale. */
 function cardWidth(staff: StaffModel): number {
-  const bars = staffBars(staff).length;
-  const units = bars > 1 ? 90 + bars * 190 : 110 + staff.items.length * 48;
-  return Math.min(740, Math.round(units * 1.45));
+  // A few units of slack: an exact fit can round below the need and wrap the last bar.
+  return Math.min(740, Math.ceil((staffNaturalWidth(staff) + 12) * CARD_SCALE));
 }
+
+const CARD_SCALE = 1.45;
 
 /** The staff for a block: exactly the authored length, so a trailing rest stays and nothing more is added. */
 function staffCheckStaff(block: StaffCheck, timed: TimedNote[]) {
   const total = (block.beats ?? block.notes.map(() => 1)).reduce((a, b) => a + b, 0);
   // A pitch-only card (no beats given) is one unmetred group: no bar lines inside it.
   const beatsPerBar = block.beats ? (block.beatsPerBar ?? 4) : Math.max(1, block.notes.length);
-  const written = staffFromNotes(timed, { clef: block.clef, beatsPerBar });
+  const written = staffFromNotes(timed, {
+    clef: block.clef,
+    beatsPerBar,
+    ...(block.pickupBeats ? { pickupBeats: block.pickupBeats } : {}),
+  });
   const items = [];
   let at = 0;
   for (const item of written.items) {
@@ -428,7 +433,7 @@ function StaffCheckBlock({
           keyContext={key}
           highlightIndex={listening ? next : -1}
           states={states}
-          scale={1.45}
+          scale={CARD_SCALE}
           showTimeSignature={!!block.beats}
           maxWidth={cardWidth(staff)}
         />

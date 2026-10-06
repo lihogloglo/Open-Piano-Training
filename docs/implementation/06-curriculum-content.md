@@ -191,3 +191,12 @@ Courses are short series of lessons beside the path. They live in the studio, ev
 | rd.u7 | Eighth notes: two per beat     | Plays beamed eighths. Timed phrases with eighths at 56 BPM.                                           |
 | rd.u8 | Your first tunes               | The opening of Ode to Joy and of Au clair de la lune with keys lit; Ode to Joy, eight bars, unlit.    |
 | rd.u9 | Sight-reading                  | The key signature of G, the G scale from the staff. Unseen phrases in G (treble) and C (bass), unlit. |
+
+### Rhythm (`rt`, `content/rhythm.ts`)
+
+| Unit  | Title                | What the learner does                                                                   |
+| ----- | -------------------- | --------------------------------------------------------------------------------------- |
+| rt.u1 | Dotted notes         | Claps, then plays a dotted half and a dotted quarter. Timed dotted phrases at 56 BPM.   |
+| rt.u2 | Syncopation          | Taps the beat and plays eighth–quarter–eighth. Timed syncopated phrases at 52 BPM.      |
+| rt.u3 | Pickup notes         | Counts 2, 3, 4 into beat 1. When the Saints, five bars lit, then eight bars unlit.      |
+| rt.u4 | Three beats in a bar | Counts 1, 2, 3 and plays a half, a quarter, a dotted half. Timed 3/4 phrases at 72 BPM. |

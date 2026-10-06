@@ -1,47 +1,13 @@
 import { tr } from '@/i18n';
 import type { Track, Unit } from '../schema';
-import type { ExerciseDef } from '@/engine/types';
-import { AU_CLAIR, ODE_TO_JOY, tuneNotes, type Tune } from './tunes';
+import { read, tune } from './courseKit';
+import { AU_CLAIR, ODE_TO_JOY } from './tunes';
 
 /**
  * Course: Read music. Topic order follows Simple Piano (foxzi/simplepiano,
  * Apache 2.0); the lessons are our own. Each lesson is a few one-line cards
  * with notes to play, then one practice and one check — about four minutes.
  */
-
-const C = { tonic: 'C', mode: 'major' as const };
-
-/** A fresh phrase to read. No key lights: the staff is the only prompt. */
-const read = (
-  params: Record<string, unknown>,
-  opts: { bpm?: number; hand?: 'rh' | 'lh'; lit?: boolean } = {},
-): ExerciseDef => ({
-  generator: 'read-snippet',
-  params: { key: C, ...params },
-  mode: opts.bpm ? 'tempo' : 'wait',
-  ...(opts.bpm ? { bpm: opts.bpm, timingTier: 'relaxed' as const } : {}),
-  rung: opts.lit ? 'keys-lit' : 'note-names',
-  hand: opts.hand ?? (params['clef'] === 'bass' ? 'lh' : 'rh'),
-  seedPolicy: 'random',
-});
-
-/** A tune written on the treble staff. */
-const tune = (t: Tune, bars: number, opts: { lit: boolean; bpm?: number }): ExerciseDef => ({
-  generator: 'phrase',
-  params: {
-    title: t.title,
-    beatsPerBar: t.beatsPerBar,
-    clef: 'treble',
-    key: C,
-    notes: tuneNotes(t, 0, bars),
-  },
-  mode: 'tempo',
-  bpm: opts.bpm ?? t.bpm - 12,
-  timingTier: 'relaxed',
-  rung: opts.lit ? 'keys-lit' : 'note-names',
-  hand: 'rh',
-  seedPolicy: 'fixed',
-});
 
 export const readingTrack: Track = {
   id: 'rd',
@@ -187,7 +153,9 @@ export const readingUnits: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: tr('Low notes use a second staff, with the **bass clef**. Its two dots hug the line of **F**.'),
+            md: tr(
+              'Low notes use a second staff, with the **bass clef**. Its two dots hug the line of **F**.',
+            ),
           },
           {
             kind: 'staffCheck',
@@ -244,7 +212,9 @@ export const readingUnits: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: tr('A note’s shape says how long to hold it. A filled note with a stem is a **quarter**: one beat.'),
+            md: tr(
+              'A note’s shape says how long to hold it. A filled note with a stem is a **quarter**: one beat.',
+            ),
           },
           {
             kind: 'staffCheck',
@@ -255,7 +225,9 @@ export const readingUnits: Unit[] = [
           },
           {
             kind: 'text',
-            md: tr('An open note with a stem is a **half**: two beats. With no stem, it is a **whole**: four beats.'),
+            md: tr(
+              'An open note with a stem is a **half**: two beats. With no stem, it is a **whole**: four beats.',
+            ),
           },
           {
             kind: 'staffCheck',
@@ -394,7 +366,9 @@ export const readingUnits: Unit[] = [
         blocks: [
           {
             kind: 'text',
-            md: tr('**Sight-reading** is playing music you have never seen. Never stop, and look one note ahead.'),
+            md: tr(
+              '**Sight-reading** is playing music you have never seen. Never stop, and look one note ahead.',
+            ),
           },
           {
             kind: 'text',

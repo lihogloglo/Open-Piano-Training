@@ -16,6 +16,8 @@ export interface Tune {
   credit: string;
   beatsPerBar: number;
   bpm: number;
+  /** The first bar is a pickup of this many beats. 0: no pickup. */
+  pickupBeats?: number;
   bars: TuneBar[];
   /** Bass note per bar (left hand), for the studio's accompaniment levels. */
   roots: string[];
@@ -28,14 +30,52 @@ export const ODE_TO_JOY: Tune = {
   beatsPerBar: 4,
   bpm: 84,
   bars: [
-    [['E4', 1], ['E4', 1], ['F4', 1], ['G4', 1]],
-    [['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1]],
-    [['C4', 1], ['C4', 1], ['D4', 1], ['E4', 1]],
-    [['E4', 1], ['D4', 1], ['D4', 2]],
-    [['E4', 1], ['E4', 1], ['F4', 1], ['G4', 1]],
-    [['G4', 1], ['F4', 1], ['E4', 1], ['D4', 1]],
-    [['C4', 1], ['C4', 1], ['D4', 1], ['E4', 1]],
-    [['D4', 1], ['C4', 1], ['C4', 2]],
+    [
+      ['E4', 1],
+      ['E4', 1],
+      ['F4', 1],
+      ['G4', 1],
+    ],
+    [
+      ['G4', 1],
+      ['F4', 1],
+      ['E4', 1],
+      ['D4', 1],
+    ],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['D4', 1],
+      ['E4', 1],
+    ],
+    [
+      ['E4', 1],
+      ['D4', 1],
+      ['D4', 2],
+    ],
+    [
+      ['E4', 1],
+      ['E4', 1],
+      ['F4', 1],
+      ['G4', 1],
+    ],
+    [
+      ['G4', 1],
+      ['F4', 1],
+      ['E4', 1],
+      ['D4', 1],
+    ],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['D4', 1],
+      ['E4', 1],
+    ],
+    [
+      ['D4', 1],
+      ['C4', 1],
+      ['C4', 2],
+    ],
   ],
   roots: ['C3', 'G2', 'C3', 'G2', 'C3', 'G2', 'C3', 'C3'],
 };
@@ -47,13 +87,39 @@ export const AU_CLAIR: Tune = {
   beatsPerBar: 4,
   bpm: 84,
   bars: [
-    [['C4', 1], ['C4', 1], ['C4', 1], ['D4', 1]],
-    [['E4', 2], ['D4', 2]],
-    [['C4', 1], ['E4', 1], ['D4', 1], ['D4', 1]],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['C4', 1],
+      ['D4', 1],
+    ],
+    [
+      ['E4', 2],
+      ['D4', 2],
+    ],
+    [
+      ['C4', 1],
+      ['E4', 1],
+      ['D4', 1],
+      ['D4', 1],
+    ],
     [['C4', 4]],
-    [['C4', 1], ['C4', 1], ['C4', 1], ['D4', 1]],
-    [['E4', 2], ['D4', 2]],
-    [['C4', 1], ['E4', 1], ['D4', 1], ['D4', 1]],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['C4', 1],
+      ['D4', 1],
+    ],
+    [
+      ['E4', 2],
+      ['D4', 2],
+    ],
+    [
+      ['C4', 1],
+      ['E4', 1],
+      ['D4', 1],
+      ['D4', 1],
+    ],
     [['C4', 4]],
   ],
   roots: ['C3', 'C3', 'C3', 'C3', 'C3', 'C3', 'G2', 'C3'],
@@ -66,18 +132,72 @@ export const TWINKLE: Tune = {
   beatsPerBar: 4,
   bpm: 88,
   bars: [
-    [['C4', 1], ['C4', 1], ['G4', 1], ['G4', 1]],
-    [['A4', 1], ['A4', 1], ['G4', 2]],
-    [['F4', 1], ['F4', 1], ['E4', 1], ['E4', 1]],
-    [['D4', 1], ['D4', 1], ['C4', 2]],
-    [['G4', 1], ['G4', 1], ['F4', 1], ['F4', 1]],
-    [['E4', 1], ['E4', 1], ['D4', 2]],
-    [['G4', 1], ['G4', 1], ['F4', 1], ['F4', 1]],
-    [['E4', 1], ['E4', 1], ['D4', 2]],
-    [['C4', 1], ['C4', 1], ['G4', 1], ['G4', 1]],
-    [['A4', 1], ['A4', 1], ['G4', 2]],
-    [['F4', 1], ['F4', 1], ['E4', 1], ['E4', 1]],
-    [['D4', 1], ['D4', 1], ['C4', 2]],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['G4', 1],
+      ['G4', 1],
+    ],
+    [
+      ['A4', 1],
+      ['A4', 1],
+      ['G4', 2],
+    ],
+    [
+      ['F4', 1],
+      ['F4', 1],
+      ['E4', 1],
+      ['E4', 1],
+    ],
+    [
+      ['D4', 1],
+      ['D4', 1],
+      ['C4', 2],
+    ],
+    [
+      ['G4', 1],
+      ['G4', 1],
+      ['F4', 1],
+      ['F4', 1],
+    ],
+    [
+      ['E4', 1],
+      ['E4', 1],
+      ['D4', 2],
+    ],
+    [
+      ['G4', 1],
+      ['G4', 1],
+      ['F4', 1],
+      ['F4', 1],
+    ],
+    [
+      ['E4', 1],
+      ['E4', 1],
+      ['D4', 2],
+    ],
+    [
+      ['C4', 1],
+      ['C4', 1],
+      ['G4', 1],
+      ['G4', 1],
+    ],
+    [
+      ['A4', 1],
+      ['A4', 1],
+      ['G4', 2],
+    ],
+    [
+      ['F4', 1],
+      ['F4', 1],
+      ['E4', 1],
+      ['E4', 1],
+    ],
+    [
+      ['D4', 1],
+      ['D4', 1],
+      ['C4', 2],
+    ],
   ],
   roots: ['C3', 'F2', 'F2', 'G2', 'C3', 'G2', 'C3', 'G2', 'C3', 'F2', 'F2', 'C3'],
 };
@@ -89,18 +209,100 @@ export const FRERE_JACQUES: Tune = {
   beatsPerBar: 4,
   bpm: 92,
   bars: [
-    [['C4', 1], ['D4', 1], ['E4', 1], ['C4', 1]],
-    [['C4', 1], ['D4', 1], ['E4', 1], ['C4', 1]],
-    [['E4', 1], ['F4', 1], ['G4', 2]],
-    [['E4', 1], ['F4', 1], ['G4', 2]],
-    [['G4', 0.5], ['A4', 0.5], ['G4', 0.5], ['F4', 0.5], ['E4', 1], ['C4', 1]],
-    [['G4', 0.5], ['A4', 0.5], ['G4', 0.5], ['F4', 0.5], ['E4', 1], ['C4', 1]],
-    [['C4', 1], ['G3', 1], ['C4', 2]],
-    [['C4', 1], ['G3', 1], ['C4', 2]],
+    [
+      ['C4', 1],
+      ['D4', 1],
+      ['E4', 1],
+      ['C4', 1],
+    ],
+    [
+      ['C4', 1],
+      ['D4', 1],
+      ['E4', 1],
+      ['C4', 1],
+    ],
+    [
+      ['E4', 1],
+      ['F4', 1],
+      ['G4', 2],
+    ],
+    [
+      ['E4', 1],
+      ['F4', 1],
+      ['G4', 2],
+    ],
+    [
+      ['G4', 0.5],
+      ['A4', 0.5],
+      ['G4', 0.5],
+      ['F4', 0.5],
+      ['E4', 1],
+      ['C4', 1],
+    ],
+    [
+      ['G4', 0.5],
+      ['A4', 0.5],
+      ['G4', 0.5],
+      ['F4', 0.5],
+      ['E4', 1],
+      ['C4', 1],
+    ],
+    [
+      ['C4', 1],
+      ['G3', 1],
+      ['C4', 2],
+    ],
+    [
+      ['C4', 1],
+      ['G3', 1],
+      ['C4', 2],
+    ],
   ],
   roots: ['C3', 'C3', 'C3', 'C3', 'C3', 'C3', 'C3', 'C3'],
 };
 
+/** Starts with a three-beat pickup: "Oh when the". */
+export const WHEN_THE_SAINTS: Tune = {
+  id: 'when-the-saints',
+  title: 'When the Saints Go Marching In',
+  credit: tr('American traditional'),
+  beatsPerBar: 4,
+  bpm: 96,
+  pickupBeats: 3,
+  bars: [
+    [
+      ['C4', 1],
+      ['E4', 1],
+      ['F4', 1],
+    ],
+    [['G4', 4]],
+    [
+      ['rest', 1],
+      ['C4', 1],
+      ['E4', 1],
+      ['F4', 1],
+    ],
+    [['G4', 4]],
+    [
+      ['rest', 1],
+      ['C4', 1],
+      ['E4', 1],
+      ['F4', 1],
+    ],
+    [
+      ['G4', 2],
+      ['E4', 2],
+    ],
+    [
+      ['C4', 2],
+      ['E4', 2],
+    ],
+    [['D4', 4]],
+  ],
+  roots: ['C3', 'C3', 'C3', 'C3', 'C3', 'C3', 'C3', 'G2'],
+};
+
+/** Tunes that are also studio pieces. The pickup tune is course-only: the studio's bars assume no pickup. */
 export const TUNES: Tune[] = [ODE_TO_JOY, AU_CLAIR, TWINKLE, FRERE_JACQUES];
 
 const PCS: Record<string, number> = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
@@ -120,8 +322,13 @@ export function tuneNotes(
   to = tune.bars.length,
 ): { midi: number; atBeat: number; durBeats: number }[] {
   const out: { midi: number; atBeat: number; durBeats: number }[] = [];
-  tune.bars.slice(from, to).forEach((bar, b) => {
-    let at = b * tune.beatsPerBar;
+  const pickup = tune.pickupBeats ?? 0;
+  // Bar b starts after the pickup and b - 1 full bars; the pickup itself starts at 0.
+  const startOf = (b: number) =>
+    pickup && b > 0 ? pickup + (b - 1) * tune.beatsPerBar : b * tune.beatsPerBar;
+  const origin = startOf(from);
+  tune.bars.slice(from, to).forEach((bar, i) => {
+    let at = startOf(from + i) - origin;
     for (const [name, beats] of bar) {
       if (name !== 'rest') out.push({ midi: pitch(name), atBeat: at, durBeats: beats * 0.9 });
       at += beats;

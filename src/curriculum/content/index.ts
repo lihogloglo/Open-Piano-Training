@@ -17,6 +17,7 @@ import { stage6, stage6Units } from './stage6';
 import { stage7, stage7Units } from './stage7';
 import { getSong } from './songs';
 import { readingTrack, readingUnits } from './reading';
+import { rhythmTrack, rhythmUnits } from './rhythm';
 
 // Engine looks songs up through this provider (no upward import from engine/).
 registerSongProvider(getSong);
@@ -41,8 +42,8 @@ validateCurriculum(CURRICULUM);
 export const STAGES: Stage[] = CURRICULUM.stages;
 
 /** Courses beside the path. Their units play in the lesson player, but never join the path. */
-export const TRACKS: Track[] = [readingTrack];
-export const TRACK_UNITS: Unit[] = [...readingUnits];
+export const TRACKS: Track[] = [readingTrack, rhythmTrack];
+export const TRACK_UNITS: Unit[] = [...readingUnits, ...rhythmUnits];
 
 // Courses use the same unit rules as the path; each track stands in for a stage.
 validateCurriculum({

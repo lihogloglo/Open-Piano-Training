@@ -8,8 +8,53 @@ import type { StaffModel } from '@/engine/types';
 /** Per-note result colour: green when played right, red when wrong. */
 export type StaffNoteState = 'ok' | 'bad' | undefined;
 
-/** A bar needs about this much room to stay readable; wider phrases wrap to a new line. */
-const MIN_BAR_WIDTH = 170;
+/** Width a bar needs for its notes: a little per note, with a floor for a lone whole note. */
+function barNeed(items: number): number {
+  return Math.max(80, 30 + items * 36);
+}
+
+/** The unscaled width a staff needs to sit on one line. */
+export function staffNaturalWidth(staff: StaffModel): number {
+  return 10 + LINE_HEAD + staffBars(staff).reduce((sum, bar) => sum + barNeed(bar.length), 0);
+}
+
+/**
+ * Places bars on lines. Bars fill a line until the next one would not fit (at most four),
+ * then lines are balanced by count, and each bar gets width in proportion to its notes.
+ * A line never stretches a bar to more than twice its need, so a short pickup stays short.
+ */
+export function layoutBars(
+  needs: readonly number[],
+  available: number,
+): { row: number; col: number; x: number; width: number }[] {
+  let rowCount = 1;
+  let used = 0;
+  let inRow = 0;
+  for (const need of needs) {
+    if (inRow > 0 && (used + need > available || inRow >= 4)) {
+      rowCount += 1;
+      used = 0;
+      inRow = 0;
+    }
+    used += need;
+    inRow += 1;
+  }
+  const perRow = Math.ceil(needs.length / rowCount);
+  const out: { row: number; col: number; x: number; width: number }[] = [];
+  for (let start = 0, row = 0; start < needs.length; start += perRow, row++) {
+    const line = needs.slice(start, start + perRow);
+    const total = line.reduce((a, b) => a + b, 0);
+    const stretch = Math.min(available / total, 2);
+    let x = 0;
+    line.forEach((need, col) => {
+      const width = need * stretch;
+      out.push({ row, col, x, width });
+      x += width;
+    });
+  }
+  return out;
+}
+
 /** Room for the clef, key signature and time signature at the start of a line. */
 const LINE_HEAD = 70;
 const ROW_HEIGHT = 120;
@@ -86,10 +131,11 @@ export function StaffSnippet({
         const systemHeight = parts.length === 1 ? ROW_HEIGHT : ROW_HEIGHT * 2 - 20;
         // Lay out in unscaled units; the context scales everything at draw time.
         const layoutWidth = width / scale;
-        // As many bars per line as fit, then balanced: 4 bars at 3 per line become 2 + 2, not 3 + 1.
-        const fits = Math.max(1, Math.min(4, Math.floor((layoutWidth - LINE_HEAD) / MIN_BAR_WIDTH)));
-        const rows = Math.ceil(barCount / fits);
-        const perRow = Math.ceil(barCount / rows);
+        const needs = Array.from({ length: barCount }, (_, b) =>
+          barNeed(Math.max(...partBars.map((bars) => bars[b]?.length ?? 1))),
+        );
+        const slots = layoutBars(needs, layoutWidth - 10 - LINE_HEAD);
+        const rows = Math.max(1, ...slots.map((slot) => slot.row + 1));
         const renderer = new Renderer(host.current, Renderer.Backends.SVG);
         renderer.resize(width, (rows * systemHeight + 10) * scale);
         const ctx = renderer.getContext();
@@ -108,11 +154,8 @@ export function StaffSnippet({
         const last = barCount - 1;
         let sounding = 0;
         for (let b = 0; b < barCount; b++) {
-          const row = Math.floor(b / perRow);
-          const col = b % perRow;
-          const inRow = Math.min(perRow, barCount - row * perRow);
-          const barWidth = (layoutWidth - 10 - LINE_HEAD) / inRow;
-          const x = 5 + (col === 0 ? 0 : LINE_HEAD + col * barWidth);
+          const { row, col, x: slotX, width: barWidth } = slots[b]!;
+          const x = 5 + (col === 0 ? 0 : LINE_HEAD + slotX);
 
           const staves = parts.map((part, pi) => {
             const stave = new Stave(
@@ -228,7 +271,10 @@ export function StaffSnippet({
       ref={host}
       role="img"
       aria-label={tr('Notation: {v0}', { v0: names.join(', ') })}
-      style={{ color: 'var(--text)', width: '100%', maxWidth, margin: '0 auto' }}
+      // A definite preferred width, capped by the container. With "width: 100%" a
+      // shrink-to-fit parent sized itself from the staff, the staff from the parent,
+      // and the pair could lock at a narrow width.
+      style={{ color: 'var(--text)', width: maxWidth, maxWidth: '100%', margin: '0 auto' }}
     />
   );
 }

@@ -1592,5 +1592,21 @@
   "French traditional, 1761": "Chanson traditionnelle française, 1761",
   "Read it": "Lisez",
   "Play what you see.": "Jouez ce que vous voyez.",
-  "Show note names": "Afficher le nom des notes"
+  "Show note names": "Afficher le nom des notes",
+  "Dotted notes, syncopation, pickups and three-beat bars. Best after Read music lesson 7.": "Notes pointées, syncopes, levées et mesures à trois temps. Idéal après la leçon 7 de Lire la musique.",
+  "Dotted notes": "Les notes pointées",
+  "A **dot** makes a note half as long again. A dotted half lasts three beats.": "Un **point** allonge une note de sa moitié. Une blanche pointée dure trois temps.",
+  "Clap it and count aloud first: *1, 2, 3*, then *4*. Then play it.": "Frappez-le en comptant à voix haute : *1, 2, 3*, puis *4*. Ensuite, jouez-le.",
+  "A dotted quarter lasts one and a half beats. The short note after it falls on *and*.": "Une noire pointée dure un temps et demi. La note courte qui suit tombe sur le *et*.",
+  "Count *1, 2-and*: the eighth lands on the *and*.": "Comptez *1, 2-et* : la croche tombe sur le *et*.",
+  "Syncopation": "La syncope",
+  "**Syncopation** starts a note between two beats and holds it across the next one.": "La **syncope** commence une note entre deux temps et la tient par-dessus le temps suivant.",
+  "Tap the beat with your foot. The long note starts on *and*.": "Marquez le temps du pied. La note longue commence sur le *et*.",
+  "Pickup notes": "La levée",
+  "Some tunes start before the first full bar. Those first notes are the **pickup**.": "Certains airs commencent avant la première mesure complète. Ces premières notes forment la **levée**.",
+  "Count *2, 3, 4* on the pickup. The long G is beat 1.": "Comptez *2, 3, 4* sur la levée. Le G long tombe sur le temps 1.",
+  "Three beats in a bar": "Trois temps par mesure",
+  "In **3/4** time, each bar holds three beats. Count *1, 2, 3*, a little heavier on 1.": "En **3/4**, chaque mesure compte trois temps. Comptez *1, 2, 3*, un peu plus fort sur le 1.",
+  "A half, a quarter, then a dotted half. Hear it, then play it.": "Une blanche, une noire, puis une blanche pointée. Écoutez, puis jouez.",
+  "American traditional": "Chanson traditionnelle américaine"
 }

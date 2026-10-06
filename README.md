@@ -44,7 +44,7 @@ The app downloads piano audio from `smpldsnds.github.io`, which receives normal 
 
 ## Credits
 
-The reading, rhythm and arpeggio lessons (in progress) follow the topic order and teaching tips of
+The Read music and Rhythm courses, the arpeggio unit and several practice tips follow the topic order and teaching tips of
 [Simple Piano](https://github.com/foxzi/simplepiano) by foxzi (Apache 2.0).
 We write our own lessons. We do not copy its text or code. See [the plan](docs/simple-piano-plan.md).
 

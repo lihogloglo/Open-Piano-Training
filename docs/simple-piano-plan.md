@@ -88,9 +88,11 @@ arpeggio across an octave.
    s4.u5 and s4.u7, which already teach it.)
 3. One guided rep, one ladder, one graded take, one create step. No more.
 
-### Part 6 — Teaching tips in existing lessons
+### Part 6 — Teaching tips in existing lessons (done 2026-10-07)
 
-Add these tips where they fit. Do not rewrite the lesson prose.
+Add these tips where they fit. Do not rewrite the lesson prose. (Built: the first two appear on the
+result screen after a take with mistakes, the third in "Let the melody sing", and the fourth was
+already in "Clear pedal changes".)
 
 - Learn each hand alone at tempo, then both hands very slowly, in phrases of two to four bars.
 - If a bar does not work, slow down to one note per second.

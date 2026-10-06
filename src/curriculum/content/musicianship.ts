@@ -226,7 +226,7 @@ export const MUSIC_LESSONS: MusicStudy[] = [
     tr('Let the melody sing'),
     3,
     tr(
-      'Dynamics describe loud and soft playing. Hear the upper melody above a quiet bass. Practice the right hand with a clear sound. Add the left hand softly. Then reverse the balance to hear the difference. A phrase can grow toward its middle and relax at its end. The app records velocity but does not grade your dynamics.',
+      'Dynamics describe loud and soft playing. Hear the upper melody above a quiet bass. Practice the right hand with a clear sound. Loudness comes from how fast the key goes down, not from pressing harder. Add the left hand softly. Then reverse the balance to hear the difference. A phrase can grow toward its middle and relax at its end. The app records velocity but does not grade your dynamics.',
     ),
     [
       tr('The melody remains easy to hear with my eyes closed.'),

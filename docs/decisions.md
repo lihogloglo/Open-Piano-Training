@@ -225,3 +225,11 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - The unit keeps the path grammar (guided, ladder, graded, create) but stays short: one ladder only, for the two-octave right hand, where the thumb pass needs a ramp.
 - New atoms `arp:c:maj:rh` and `arp:c:maj:lh`, drilled as one-octave arpeggios at 72. The Stage 4 checkpoint gains a G major arpeggio take.
 - Not done: scoring how even an arpeggio is. The MIDI log has the data. That is engine work for later.
+
+## Teaching tips where they help — 2026-10-07
+
+- **Practice tips appear on the result screen, at the moment they help, not as text before the lesson.** After a take with mistakes, the diagnosis adds one tip chosen by what went wrong. A two-hand take: "Play each hand alone at this tempo, then both hands slowly." A timed one-hand take: "Slow down until every note is easy, even one note per second." A wait-mode take keeps "Hear it first, then try without hints."
+- The success message only says "repeat without illuminated keys" when the keys were lit.
+- The studio lesson "Let the melody sing" gains one sentence: loudness comes from how fast the key goes down, not from pressing harder.
+- The pedal tip ("press just after the new chord") was already in "Clear pedal changes". The clap-and-count tip opens each Rhythm lesson.
+- Translation keys made obsolete by this work were removed from both catalogs. The extract script never removes keys, because some are added by hand.

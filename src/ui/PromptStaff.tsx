@@ -26,6 +26,8 @@ export function PromptStaff({ instance }: { instance: ExerciseInstance }) {
       staff={staff}
       keyContext={key}
       highlightIndex={live && (phase === 'running' || phase === 'count-in') ? targetIndex : -1}
+      scale={1.25}
+      maxWidth={900}
       {...(states ? { states } : {})}
     />
   );

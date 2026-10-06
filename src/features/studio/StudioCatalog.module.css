@@ -1,0 +1,211 @@
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 32px 24px 64px;
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+}
+
+.intro h1 {
+  font-size: 2rem;
+  margin: 0 0 8px;
+}
+
+.intro p {
+  color: var(--text-2);
+  margin: 0;
+}
+
+.sectionTitle {
+  font-size: 0.85rem;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  margin: 0 0 14px;
+}
+
+.courses {
+  display: grid;
+  gap: 16px;
+}
+
+.course {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 18px;
+  padding: 22px 24px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+.courseHead {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 14px;
+  align-items: start;
+}
+
+.courseHead h3 {
+  font-size: 1.2rem;
+  margin: 2px 0 4px;
+}
+
+.courseHead p {
+  margin: 0;
+  color: var(--text-2);
+  line-height: 1.5;
+}
+
+.courseIcon {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  background: var(--surface-2);
+  color: var(--accent-text);
+}
+
+.count {
+  color: var(--text-2);
+  font-size: 0.9rem;
+  padding-top: 4px;
+}
+
+.dots {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px 8px;
+}
+
+.dots li {
+  position: relative;
+}
+
+.dot {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  display: grid;
+  place-items: center;
+  font-weight: 600;
+  text-decoration: none;
+  color: var(--text-2);
+  border: 2px solid var(--border);
+  background: var(--surface-2);
+  transition:
+    transform 120ms ease,
+    border-color 120ms ease;
+}
+
+.dot:hover,
+.dot:focus-visible {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+}
+
+.dot[data-state='done'] {
+  background: var(--accent);
+  border-color: var(--accent);
+  color: var(--accent-contrast);
+}
+
+.dot[data-state='next'] {
+  border-color: var(--accent);
+  color: var(--accent-text);
+  box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+/* The title shows on hover and keyboard focus, above the dot. */
+.dotLabel {
+  position: absolute;
+  bottom: calc(100% + 8px);
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+  font-size: 0.8rem;
+  padding: 4px 8px;
+  border-radius: 6px;
+  background: var(--surface-2);
+  border: 1px solid var(--border);
+  color: var(--text);
+  pointer-events: none;
+  opacity: 0;
+  transition: opacity 120ms ease;
+  z-index: 2;
+}
+
+.dots li:hover .dotLabel,
+.dots li:focus-within .dotLabel {
+  opacity: 1;
+}
+
+.courseFoot {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.nextTitle {
+  color: var(--text-2);
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 12px;
+}
+
+.study {
+  border: 1px solid var(--border);
+  background: var(--surface);
+  border-radius: 14px;
+  padding: 16px 18px;
+  color: var(--text);
+  text-decoration: none;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  transition: border-color 120ms ease;
+}
+
+.study:hover,
+.study:focus-visible {
+  border-color: var(--accent);
+}
+
+.study h3 {
+  font-size: 1rem;
+  margin: 0;
+}
+
+.study p {
+  margin: 0;
+  color: var(--text-2);
+  font-size: 0.9rem;
+  line-height: 1.45;
+}
+
+.study small {
+  margin-top: auto;
+  color: var(--text-3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dot,
+  .study {
+    transition: none;
+  }
+  .dot:hover,
+  .dot:focus-visible {
+    transform: none;
+  }
+}

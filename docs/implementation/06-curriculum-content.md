@@ -173,3 +173,21 @@ Learners can select any ladder tempo and continue after passing the final tempo.
 The authored slower repetitions remain available for learners who need them.
 Skipped assessments remain flagged for review. Checkpoint assessments still require a pass.
 Daily warmup and review exercises can also be skipped without changing skill scores.
+
+## Courses (2026-10-06)
+
+Courses are short series of lessons beside the path. They live in the studio, every lesson is open, and they never join the path or the daily session. `src/curriculum/courses.test.ts` holds their lint. See `docs/decisions.md`, "Courses and the Read music course".
+
+### Read music (`rd`, `content/reading.ts`)
+
+| Unit  | Title                          | What the learner does                                                                                 |
+| ----- | ------------------------------ | ----------------------------------------------------------------------------------------------------- |
+| rd.u1 | The staff and middle C         | Plays middle C from the staff, then C D E. Practice and check: fresh phrases on C–E, wait mode.       |
+| rd.u2 | Treble clef: C to G            | G on the clef's line, a walk C to G, the line notes. Phrases on C–G.                                  |
+| rd.u3 | The whole treble staff         | Lines E G B D F and spaces F A C E. Phrases on E4–F5, then C4–G5.                                     |
+| rd.u4 | The bass clef                  | F on the clef's line, middle C above the staff, a walk down, the five lines. Left-hand phrases.       |
+| rd.u5 | How long: quarter, half, whole | Hears and plays quarters, halves, a whole. Timed phrases at 60 BPM, keys lit, then unlit.             |
+| rd.u6 | Rests: counted silence         | Plays a line with rests. Timed phrases with rests.                                                    |
+| rd.u7 | Eighth notes: two per beat     | Plays beamed eighths. Timed phrases with eighths at 56 BPM.                                           |
+| rd.u8 | Your first tunes               | The opening of Ode to Joy and of Au clair de la lune with keys lit; Ode to Joy, eight bars, unlit.    |
+| rd.u9 | Sight-reading                  | The key signature of G, the G scale from the staff. Unseen phrases in G (treble) and C (bass), unlit. |

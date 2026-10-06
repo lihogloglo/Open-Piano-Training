@@ -21,6 +21,9 @@ import { Circle } from '@phosphor-icons/react/Circle';
 import { Play } from '@phosphor-icons/react/Play';
 import { Stop } from '@phosphor-icons/react/Stop';
 import { SpeakerHigh } from '@phosphor-icons/react/SpeakerHigh';
+import { BookOpen } from '@phosphor-icons/react/BookOpen';
+import { Metronome } from '@phosphor-icons/react/Metronome';
+import { MusicNoteSimple } from '@phosphor-icons/react/MusicNoteSimple';
 import type { ComponentType } from 'react';
 
 /**
@@ -53,6 +56,9 @@ const ICONS = {
   play: Play,
   stop: Stop,
   listen: SpeakerHigh,
+  studio: BookOpen,
+  metronome: Metronome,
+  note: MusicNoteSimple,
 } satisfies Record<string, ComponentType<IconGlyphProps>>;
 
 interface IconGlyphProps {

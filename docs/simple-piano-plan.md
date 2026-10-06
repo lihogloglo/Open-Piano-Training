@@ -32,7 +32,7 @@ Each part fits in about one session.
    There is one user, so the app does not move old data.
 2. Credit Simple Piano in the README.
 
-### Part 2 — Staff that shows rhythm
+### Part 2 — Staff that shows rhythm (done 2026-10-06)
 
 The staff (`src/ui/StaffSnippet.tsx`) draws only quarter notes. The reading lessons need more.
 
@@ -41,7 +41,7 @@ The staff (`src/ui/StaffSnippet.tsx`) draws only quarter notes. The reading less
 3. Give `readSnippet` an optional rhythm pool, so a generated phrase can mix note lengths.
 4. Add an option that turns off the key highlights, for sight-reading.
 
-### Part 3 — A reading course in the studio
+### Part 3 — A reading course in the studio (done 2026-10-06)
 
 Reading stays optional, as `decisions.md` (2026-09-02) says. But the optional part becomes a
 real course in the studio, not only a drill switch in Settings. Lessons, in this order:

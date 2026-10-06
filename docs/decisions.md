@@ -191,3 +191,17 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - **A staff exercise without key hints never demonstrates.** The demo would play the answer.
 - **A ladder never gates.** Continue is always available on a ladder step. It is the primary button once the full tempo passes. Repetition stays available, never forced.
 - Known failures, older than this change: `lab.spec.ts` tempo test, `skipping.spec.ts` full-tempo test, three `feedback.spec.ts` tests and one `rating.spec.ts` test fail on the previous commit too. The tempo tests start the fake performance before the demonstration ends. The sample test expects local sample files, which 0.1.6 removed.
+
+## Courses and the Read music course — 2026-10-06
+
+- **A course is a short series of lessons beside the path.** `Track` in `schema.ts`, `TRACKS` and `TRACK_UNITS` in `content/index.ts`. Course units use the same `Unit` schema and play in the lesson player. The path, the daily session and placement never see them. Unit ids name the course: `rd.u3`.
+- **Every course lesson is open from the start.** The studio marks the first unfinished lesson as next. Nothing is locked.
+- This keeps the 2026-09-02 decision: reading stays optional. It is now a real course, not only a switch in Settings. Finishing a reading lesson turns the reading drills on, so they join daily review.
+- **Course lint** (`courses.test.ts`) is stricter and lighter than the path grammar. A course lesson has at most six steps and seven minutes. It opens with an explain step. Every explain step has something to play. A text card has at most 140 characters, and at most two text cards come in a row. Practice comes before any check. Courses need no ladder and no create step.
+- New explain block `staffCheck`: a few notes on a staff, played in order at the written pitch. Each note turns green when played. A wrong key is named back in the error colour. Notes may include rests, and an optional "Hear it" button plays the rhythm.
+- **Read music**, nine lessons: middle C, treble clef C to G, the whole treble staff, the bass clef, quarter/half/whole, rests, eighths, first tunes, sight-reading with a key signature. The topic order follows Simple Piano (Apache 2.0). The text is ours.
+- Four traditional tunes live in `content/tunes.ts`: Ode to Joy (simplified), Au clair de la lune, Twinkle / Ah ! vous dirai-je, maman, Frère Jacques. All are public domain everywhere. The arrangements are ours. They are studio pieces with melody, bass and chord levels, and Read music uses two of them.
+- **The studio is a sidebar page now** ("Studio" / "Atelier"). It shows courses first, then pieces, then the practical lessons. A finished or abandoned course lesson returns there, not to the path.
+- **Explain steps scroll each new card into view.** Before, a card revealed by an answered check could open behind the keyboard. The prompt area also uses `safe center`, so a tall step keeps its top.
+- **The studio player writes the phrase on a staff**, or a grand staff for both hands. The note-card list moved behind "Show note names".
+- **Start no longer waits for the piano sounds** when nothing plays before the learner does: wait-mode exercises and repeat attempts whose demo was already seen.

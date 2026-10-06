@@ -1,5 +1,6 @@
 import { tr } from '@/i18n';
 import { z } from 'zod';
+import { TUNES, pitch, tuneNotes, type Tune } from './tunes';
 
 export const playedNoteSchema = z.object({
   midi: z.number().int().min(21).max(108),
@@ -392,4 +393,39 @@ export const PIECES: MusicStudy[] = [
     [48, 53, 55, 48, 53, 48, 55, 48],
   ),
 ];
-export const MUSIC_STUDIES = [...MUSIC_LESSONS, ...PIECES];
+
+/** C-position fingers for the right hand: thumb on C. Notes outside the position carry none. */
+const C_POSITION: Record<number, number> = { 60: 1, 62: 2, 64: 3, 65: 4, 67: 5 };
+
+/** A traditional tune as a studio piece: melody, then a bass note per bar, then a triad per bar. */
+function tunePiece(tune: Tune, stage: number): MusicStudy {
+  const notes = tuneNotes(tune).map((n) => note(n.midi, n.atBeat, n.durBeats, 'rh', C_POSITION[n.midi]));
+  const roots = tune.roots.map(pitch);
+  const bar = tune.beatsPerBar;
+  const bass = roots.map((m, b) => note(m, b * bar, bar * 0.9, 'lh', 5));
+  const chords = roots.flatMap((m, b) =>
+    [m, m + 4, m + 7].map((n, i) => note(n, b * bar, bar * 0.9, 'lh', [5, 3, 1][i])),
+  );
+  return musicStudySchema.parse({
+    id: tune.id,
+    title: tune.title,
+    stage,
+    kind: 'piece',
+    bpm: tune.bpm - 16,
+    beatsPerBar: bar,
+    bars: tune.bars.length,
+    notes,
+    bass,
+    chords,
+    instruction: tr('{v0}. Hear it first. Learn two bars at a time, then add the bass.', { v0: tune.credit }),
+    selfChecks: [
+      tr('I can play the whole tune without stopping.'),
+      tr('The left hand stays softer than the tune.'),
+    ],
+  });
+}
+
+/** Traditional tunes, shared with the Read music course. */
+export const TUNE_PIECES: MusicStudy[] = TUNES.map((t) => tunePiece(t, 0));
+
+export const MUSIC_STUDIES = [...MUSIC_LESSONS, ...PIECES, ...TUNE_PIECES];

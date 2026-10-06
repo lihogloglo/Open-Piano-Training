@@ -15,39 +15,19 @@ import { Keyboard } from '@/ui/Keyboard';
 import { exerciseRange } from '@/ui/Keyboard/utils';
 import { toast } from '@/ui/Toast';
 import { MovementGuide } from './MovementGuide';
+import { StudioCatalog } from './StudioCatalog';
 import { Button } from '@/ui/Button';
 import { PlayerNotices } from '@/ui/PlayerNotices';
 import { TransportBar } from '@/ui/TransportBar';
+import { StaffSnippet } from '@/ui/StaffSnippet';
+import { staffFromNotes } from '@/engine/staff';
 import styles from './StudioScreen.module.css';
 
 export function StudioScreen() {
   const { studyId } = useParams();
   const study = MUSIC_STUDIES.find((s) => s.id === studyId);
   if (study) return <StudyPlayer key={study.id} study={study} />;
-  return (
-    <main className={styles['catalog']}>
-      <Link to="/path">{tr('Back to the path')}</Link>
-      <h1>{tr('At the piano')}</h1>
-      <p>
-        {tr(
-          'Build rhythm, comfortable movement, and complete musical performances alongside the harmony path.',
-        )}
-      </p>
-      <div className={styles['cards']}>
-        {MUSIC_STUDIES.map((s) => (
-          <Link className={styles['card']} key={s.id} to={`/studio/${s.id}`}>
-            <small>
-              {s.kind === 'piece' ? tr('Complete piece') : tr('Practical lesson')}
-              {tr(' · Suggested from Stage ')}
-              {s.stage}
-            </small>
-            <h2>{s.title}</h2>
-            <p>{s.selfChecks[0]}</p>
-          </Link>
-        ))}
-      </div>
-    </main>
-  );
+  return <StudioCatalog />;
 }
 
 function StudyPlayer({ study }: { study: MusicStudy }) {
@@ -191,7 +171,7 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
   return (
     <main className={styles['player']}>
       <header className={styles['header']}>
-        <Link to="/studio">{tr('All practical lessons')}</Link>
+        <Link to="/studio">{tr('Back to the studio')}</Link>
         <h1>{study.title}</h1>
         <span>
           {tr('Pedal ')}
@@ -349,7 +329,13 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
             )}
           </div>
           {(!study.ear || reveal) && !(run.instance?.def.assessment && run.phase !== 'done') && (
-            <Phrase notes={notes} meter={study.beatsPerBar} />
+            <>
+              <PhraseStaves notes={notes} meter={study.beatsPerBar} />
+              <details className={styles['noteList']}>
+                <summary>{tr('Show note names')}</summary>
+                <Phrase notes={notes} meter={study.beatsPerBar} />
+              </details>
+            </>
           )}
           {notes.length === 0 && (
             <p>
@@ -417,7 +403,7 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
         beatsPerBar={study.beatsPerBar}
         canStart={!busy && notes.length > 0 && (!study.ear || heard)}
         onStart={() => start(false)}
-        startLabel="Practice this phrase"
+        startLabel={tr('Practice this phrase')}
       />
       <div className={styles['performance']}>
         <Button
@@ -433,6 +419,31 @@ function StudyPlayer({ study }: { study: MusicStudy }) {
     </main>
   );
 }
+
+/** The selection written out: one hand on its staff, or both hands on a grand staff. */
+function PhraseStaves({ notes, meter }: { notes: PlayedNote[]; meter: number }) {
+  const parts = useMemo(() => {
+    const rh = notes.filter((n) => n.hand === 'rh');
+    const lh = notes.filter((n) => n.hand === 'lh');
+    const treble = rh.length ? staffFromNotes(rh, { clef: 'treble', beatsPerBar: meter }) : undefined;
+    const bass = lh.length ? staffFromNotes(lh, { clef: 'bass', beatsPerBar: meter }) : undefined;
+    return treble ? { staff: treble, lower: bass } : bass ? { staff: bass, lower: undefined } : null;
+  }, [notes, meter]);
+  if (!parts) return null;
+  return (
+    <div className={styles['staves']}>
+      <StaffSnippet
+        staff={parts.staff}
+        lower={parts.lower}
+        keyContext={C_MAJOR}
+        scale={1.15}
+        maxWidth={980}
+      />
+    </div>
+  );
+}
+
+const C_MAJOR = { tonic: 'C', mode: 'major' as const };
 
 function Phrase({ notes, meter }: { notes: PlayedNote[]; meter: number }) {
   return (

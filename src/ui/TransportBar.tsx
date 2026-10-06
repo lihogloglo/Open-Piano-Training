@@ -23,6 +23,8 @@ interface TransportBarProps {
   pips?: LadderPips;
   startLabel?: string;
   showSequence?: boolean;
+  /** False when nothing plays before the learner does (wait mode, or a demo already seen). */
+  needsSound?: boolean;
 }
 
 export function TransportBar({
@@ -36,6 +38,7 @@ export function TransportBar({
   pips,
   startLabel,
   showSequence = true,
+  needsSound = true,
 }: TransportBarProps) {
   const instance = useRunStore((s) => s.instance);
   const targetIndex = useRunStore((s) => s.targetIndex);
@@ -46,8 +49,9 @@ export function TransportBar({
     ? tr('Stop demonstration')
     : (startLabel ?? (phase === 'done' ? tr('Try again') : running ? tr('Restart') : tr('Start')));
   const beatInBar = beatIndex === null ? null : ((beatIndex % beatsPerBar) + beatsPerBar) % beatsPerBar;
-  // Starting before the samples land would run the exercise in silence.
-  const loading = useSamplerLoading();
+  // Starting before the samples land would play the demonstration in silence.
+  // An exercise with nothing to demonstrate never waits for the download.
+  const loading = useSamplerLoading() && needsSound;
 
   return (
     <div className={styles['bar']}>

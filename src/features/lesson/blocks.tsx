@@ -7,7 +7,10 @@ import { Icon } from '@/ui/Icon';
 import { playNote, stopNote } from '@/audio/sampler';
 import { unlockAudio } from '@/audio/clock';
 import { subscribeMidiEvents } from '@/store/midiStore';
-import { midiToPcName, namePc } from '@/theory/notes';
+import { midiToName, midiToPcName, namePc, nameToMidi } from '@/theory/notes';
+import { staffBars, staffFromNotes, type TimedNote } from '@/engine/staff';
+import type { StaffModel } from '@/engine/types';
+import { StaffSnippet, type StaffNoteState } from '@/ui/StaffSnippet';
 import { buildChord } from '@/theory/chords';
 import { progressionChords } from '@/theory/progressions';
 import { CIRCLE_OF_FIFTHS } from '@/theory/keys';
@@ -292,6 +295,167 @@ function PlayCheckBlock({
   );
 }
 
+type StaffCheck = Extract<ExplainBlock, { kind: 'staffCheck' }>;
+
+/** The block's notes with their start beats. A rest is a gap; the staff draws it from the gap. */
+function staffCheckNotes(block: StaffCheck): TimedNote[] {
+  const out: TimedNote[] = [];
+  let at = 0;
+  block.notes.forEach((name, i) => {
+    const len = block.beats?.[i] ?? 1;
+    if (name !== 'rest') out.push({ midi: nameToMidi(name) ?? 60, atBeat: at, durBeats: len * 0.9 });
+    at += len;
+  });
+  return out;
+}
+
+/** Wide enough to keep a short card on one line: one bar per 190 units, or 48 per note when unmetred. */
+function cardWidth(staff: StaffModel): number {
+  const bars = staffBars(staff).length;
+  const units = bars > 1 ? 90 + bars * 190 : 110 + staff.items.length * 48;
+  return Math.min(740, Math.round(units * 1.45));
+}
+
+/** The staff for a block: exactly the authored length, so a trailing rest stays and nothing more is added. */
+function staffCheckStaff(block: StaffCheck, timed: TimedNote[]) {
+  const total = (block.beats ?? block.notes.map(() => 1)).reduce((a, b) => a + b, 0);
+  // A pitch-only card (no beats given) is one unmetred group: no bar lines inside it.
+  const beatsPerBar = block.beats ? (block.beatsPerBar ?? 4) : Math.max(1, block.notes.length);
+  const written = staffFromNotes(timed, { clef: block.clef, beatsPerBar });
+  const items = [];
+  let at = 0;
+  for (const item of written.items) {
+    at += item.beats;
+    if (at > total + 1e-6) break;
+    items.push(item);
+  }
+  return { ...written, items };
+}
+
+/**
+ * "Read it, play it" — a few notes on a staff, played in order at the written
+ * pitch. The current note is lit, each played note turns green, and a wrong
+ * key is named back. Like the play-check, it answers but never gates.
+ */
+function StaffCheckBlock({
+  block,
+  active,
+  onSatisfied,
+  registerOffer,
+}: {
+  block: StaffCheck;
+  active: boolean;
+  onSatisfied: () => void;
+  registerOffer: (handler: ((midi: number) => void) | null) => void;
+}) {
+  const key = useMemo(() => block.key ?? { tonic: 'C', mode: 'major' as const }, [block.key]);
+  const timed = useMemo(() => staffCheckNotes(block), [block]);
+  const staff = useMemo(() => staffCheckStaff(block, timed), [block, timed]);
+  const [next, setNext] = useState(0);
+  const [missed, setMissed] = useState<string | null>(null);
+  const done = next >= timed.length;
+  const listening = active && !done;
+  const timers = useRef<ReturnType<typeof setTimeout>[]>([]);
+  useEffect(
+    () => () => {
+      for (const t of timers.current) clearTimeout(t);
+    },
+    [],
+  );
+
+  useEffect(() => {
+    if (done) onSatisfied();
+  }, [done, onSatisfied]);
+
+  const offer = useCallback(
+    (midi: number) => {
+      if (!listening) return;
+      if (midi !== timed[next]?.midi) {
+        setMissed(midiToName(midi, key));
+        return;
+      }
+      setMissed(null);
+      setNext((n) => n + 1);
+    },
+    [listening, timed, next, key],
+  );
+  useEffect(
+    () =>
+      subscribeMidiEvents((e) => {
+        if (e.kind === 'noteon') offer(e.midi);
+      }),
+    [offer],
+  );
+  useEffect(() => {
+    if (!listening) return;
+    registerOffer(offer);
+    return () => registerOffer(null);
+  }, [listening, offer, registerOffer]);
+
+  const hear = () => {
+    void unlockAudio().then(() => {
+      for (const t of timers.current) clearTimeout(t);
+      timers.current = [];
+      const beatMs = 60_000 / (block.bpm ?? 72);
+      for (const n of timed) {
+        const at = n.atBeat * beatMs + 150;
+        timers.current.push(
+          setTimeout(() => playNote(n.midi, 0.7), at),
+          setTimeout(() => stopNote(n.midi), at + n.durBeats * beatMs),
+        );
+      }
+    });
+  };
+
+  const states = useMemo<StaffNoteState[]>(
+    () => timed.map((_, i) => (i < next ? 'ok' : undefined)),
+    [timed, next],
+  );
+  const status = done
+    ? tr('That’s it.')
+    : !active
+      ? tr('Finish the step above first.')
+      : missed
+        ? tr('That’s {v0}. Look again.', { v0: missed })
+        : (block.hint ?? tr('Play the lit note on your keyboard, or click the keys below.'));
+
+  return (
+    <div className={styles['playCheck']} data-done={done || undefined} data-waiting={!active || undefined}>
+      <p className={styles['text']}>{renderMd(block.ask)}</p>
+      <div className={styles['staffCard']}>
+        <StaffSnippet
+          staff={staff}
+          keyContext={key}
+          highlightIndex={listening ? next : -1}
+          states={states}
+          scale={1.45}
+          showTimeSignature={!!block.beats}
+          maxWidth={cardWidth(staff)}
+        />
+      </div>
+      <div className={styles['demoRow']}>
+        <span className={styles['checkMark']} aria-hidden>
+          {done ? <Icon name="check" size={18} /> : null}
+        </span>
+        <span className={styles['caption']} role="status" data-missed={(listening && !!missed) || undefined}>
+          {status}
+        </span>
+        {timed.length > 1 && (
+          <span className={`${styles['checkCount']} tabular`}>
+            {Math.min(next, timed.length)} / {timed.length}
+          </span>
+        )}
+        {block.listen && (
+          <Button variant="ghost" onClick={hear}>
+            <Icon name="play" size={16} />
+            {tr('Hear it')}
+          </Button>
+        )}
+      </div>
+    </div>
+  );
+}
+
 export function ExplainBlockView({
   block,
   active = true,
@@ -310,6 +474,16 @@ export function ExplainBlockView({
   if (block.kind === 'playCheck') {
     return (
       <PlayCheckBlock
+        block={block}
+        active={active}
+        onSatisfied={onSatisfied ?? (() => {})}
+        registerOffer={registerOffer ?? (() => {})}
+      />
+    );
+  }
+  if (block.kind === 'staffCheck') {
+    return (
+      <StaffCheckBlock
         block={block}
         active={active}
         onSatisfied={onSatisfied ?? (() => {})}

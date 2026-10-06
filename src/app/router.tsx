@@ -27,7 +27,6 @@ function RootRedirect() {
 
 export const router = createBrowserRouter([
   { path: '/', element: <RootRedirect /> },
-  { path: '/studio', element: <StudioScreen /> },
   { path: '/studio/:studyId', element: <StudioScreen /> },
   { path: '/welcome', element: <WelcomeScreen /> },
   // Focus-mode routes render without the sidebar shell.
@@ -53,6 +52,7 @@ export const router = createBrowserRouter([
     children: [
       { path: '/setup', element: <SetupScreen /> },
       { path: '/lab', element: <LabScreen /> },
+      { path: '/studio', element: <StudioScreen /> },
       { path: '/practice', element: <TodayScreen /> },
       { path: '/path', element: <PathScreen /> },
       { path: '/songs', element: <SongsScreen /> },

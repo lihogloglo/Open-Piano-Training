@@ -177,8 +177,12 @@ test('ear practice hides its answer and requires a listening pass before assessm
   await seedOnboarded(page);
   await page.goto('/studio/melody-echo?midi=fake');
   await expect(page.getByLabel('Phrase notes and durations')).toHaveCount(0);
+  await expect(page.getByRole('img', { name: /^Notation:/ })).toHaveCount(0);
   await expect(page.getByRole('button', { name: 'Perform without hints' })).toBeDisabled();
   await page.getByRole('button', { name: 'Reveal for practice' }).click();
+  // The phrase shows on a staff; the note names sit behind "Show note names".
+  await expect(page.getByRole('img', { name: /^Notation:/ })).toBeVisible();
+  await page.getByText('Show note names').click();
   await expect(page.getByLabel('Phrase notes and durations')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Perform without hints' })).toBeDisabled();
 });

@@ -30,14 +30,23 @@ export function StaffSnippet({
   highlightIndex = -1,
   states,
   maxWidth = 760,
+  scale = 1,
+  showTimeSignature = true,
+  lower,
 }: {
   staff: StaffModel;
+  /** A second part, drawn below as a grand staff: the left hand under the right. */
+  lower?: StaffModel | undefined;
   keyContext: KeyContext;
   /** The sounding note the learner is on (rests do not count); drawn in the accent colour. */
   highlightIndex?: number;
   /** Results so far, by sounding note. */
   states?: readonly StaffNoteState[];
   maxWidth?: number;
+  /** Teaching cards draw a larger staff, so a beginner can read it at a glance. */
+  scale?: number;
+  /** A pitch-only card has no rhythm to count, so it leaves the time signature out. */
+  showTimeSignature?: boolean;
 }) {
   const host = useRef<HTMLDivElement>(null);
   const [failed, setFailed] = useState(false);
@@ -67,15 +76,24 @@ export function StaffSnippet({
         // measures note heads with the wrong glyphs, and stems come loose from the heads.
         await Promise.all([document.fonts.load('30px Bravura'), document.fonts.load('12px Academico')]);
         if (cancelled || !host.current) return;
-        const { Renderer, Stave, StaveNote, Voice, Formatter, Accidental, Beam, Dot } = VF;
+        const { Renderer, Stave, StaveNote, StaveConnector, Voice, Formatter, Accidental, Beam, Dot } = VF;
         host.current.querySelector('svg')?.remove();
 
-        const bars = staffBars(staff);
-        const perRow = Math.max(1, Math.min(4, Math.floor((width - LINE_HEAD) / MIN_BAR_WIDTH)));
-        const rows = Math.ceil(bars.length / perRow);
+        // One part, or two joined as a grand staff (right hand above, left hand below).
+        const parts = lower ? [staff, lower] : [staff];
+        const partBars = parts.map(staffBars);
+        const barCount = Math.max(...partBars.map((bars) => bars.length));
+        const systemHeight = parts.length === 1 ? ROW_HEIGHT : ROW_HEIGHT * 2 - 20;
+        // Lay out in unscaled units; the context scales everything at draw time.
+        const layoutWidth = width / scale;
+        // As many bars per line as fit, then balanced: 4 bars at 3 per line become 2 + 2, not 3 + 1.
+        const fits = Math.max(1, Math.min(4, Math.floor((layoutWidth - LINE_HEAD) / MIN_BAR_WIDTH)));
+        const rows = Math.ceil(barCount / fits);
+        const perRow = Math.ceil(barCount / rows);
         const renderer = new Renderer(host.current, Renderer.Backends.SVG);
-        renderer.resize(width, rows * ROW_HEIGHT + 10);
+        renderer.resize(width, (rows * systemHeight + 10) * scale);
         const ctx = renderer.getContext();
+        ctx.scale(scale, scale);
         // Inherit the theme instead of VexFlow's hard-coded black.
         const css = getComputedStyle(host.current);
         const ink = css.color || '#000';
@@ -87,64 +105,99 @@ export function StaffSnippet({
         ctx.setStrokeStyle(ink);
 
         const signature = ascii(keyContext.tonic) + (keyContext.mode === 'minor' ? 'm' : '');
+        const last = barCount - 1;
         let sounding = 0;
-        bars.forEach((bar, b) => {
+        for (let b = 0; b < barCount; b++) {
           const row = Math.floor(b / perRow);
           const col = b % perRow;
-          const inRow = Math.min(perRow, bars.length - row * perRow);
-          const barWidth = (width - 10 - LINE_HEAD) / inRow;
+          const inRow = Math.min(perRow, barCount - row * perRow);
+          const barWidth = (layoutWidth - 10 - LINE_HEAD) / inRow;
           const x = 5 + (col === 0 ? 0 : LINE_HEAD + col * barWidth);
-          const stave = new Stave(x, row * ROW_HEIGHT, col === 0 ? barWidth + LINE_HEAD : barWidth);
-          if (col === 0) {
-            stave.addClef(staff.clef).addKeySignature(signature);
-            if (b === 0) stave.addTimeSignature(`${staff.beatsPerBar}/4`);
-          }
-          if (b === bars.length - 1) stave.setEndBarType(VF.Barline.type.END);
-          stave.setContext(ctx).draw();
 
-          const notes = bar.map((item) => {
-            const { code, dots } = vexDuration(item.beats);
-            const base = code.replace('d', '');
-            const rest = item.midis.length === 0;
-            const keys = rest
-              ? [staff.clef === 'bass' ? 'd/3' : 'b/4']
-              : item.midis.map((midi) => {
-                  const name = ascii(midiToName(midi, keyContext)); // e.g. "F#4"
-                  return `${name.slice(0, -1).toLowerCase()}/${name.slice(-1)}`;
-                });
-            const note = new StaveNote({
-              keys,
-              duration: rest ? `${base}r` : base,
-              dots,
-              clef: staff.clef,
-              autoStem: true,
-            });
-            if (dots > 0) Dot.buildAndAttach([note], { all: true });
-            // VexFlow draws stems, flags and ledger lines black unless told otherwise.
-            let fill = ink;
-            if (!rest) {
-              const state = states?.[sounding];
-              fill = sounding === highlightIndex ? accent : state === 'ok' ? ok : state === 'bad' ? bad : ink;
-              sounding += 1;
+          const staves = parts.map((part, pi) => {
+            const stave = new Stave(
+              x,
+              row * systemHeight + pi * (ROW_HEIGHT - 20),
+              col === 0 ? barWidth + LINE_HEAD : barWidth,
+            );
+            if (col === 0) {
+              stave.addClef(part.clef).addKeySignature(signature);
+              if (b === 0 && showTimeSignature) stave.addTimeSignature(`${part.beatsPerBar}/4`);
             }
-            const style = { fillStyle: fill, strokeStyle: fill };
-            note.setStyle(style);
-            note.setLedgerLineStyle(style);
-            return note;
+            if (b === last)
+              stave.setEndBarType(showTimeSignature ? VF.Barline.type.END : VF.Barline.type.SINGLE);
+            return stave;
+          });
+          // Both staves start their notes at the same x, so the hands line up.
+          if (staves.length > 1) Stave.formatBegModifiers(staves);
+          for (const stave of staves) stave.setContext(ctx).draw();
+          if (staves.length > 1) {
+            const [top, bottom] = staves as [InstanceType<typeof Stave>, InstanceType<typeof Stave>];
+            if (col === 0) {
+              new StaveConnector(top, bottom).setType('brace').setContext(ctx).draw();
+              new StaveConnector(top, bottom).setType('singleLeft').setContext(ctx).draw();
+            }
+            new StaveConnector(top, bottom)
+              .setType(b === last && showTimeSignature ? 'boldDoubleRight' : 'singleRight')
+              .setContext(ctx)
+              .draw();
+          }
+
+          const voices = parts.map((part, pi) => {
+            const bar = partBars[pi]![b] ?? [{ midis: [], beats: part.beatsPerBar }];
+            const notes = bar.map((item) => {
+              const { code, dots } = vexDuration(item.beats);
+              const base = code.replace('d', '');
+              const rest = item.midis.length === 0;
+              const keys = rest
+                ? [part.clef === 'bass' ? 'd/3' : 'b/4']
+                : item.midis.map((midi) => {
+                    const name = ascii(midiToName(midi, keyContext)); // e.g. "F#4"
+                    return `${name.slice(0, -1).toLowerCase()}/${name.slice(-1)}`;
+                  });
+              const note = new StaveNote({
+                keys,
+                duration: rest ? `${base}r` : base,
+                dots,
+                clef: part.clef,
+                autoStem: true,
+              });
+              if (dots > 0) Dot.buildAndAttach([note], { all: true });
+              // VexFlow draws stems, flags and ledger lines black unless told otherwise.
+              let fill = ink;
+              if (!rest && pi === 0) {
+                const state = states?.[sounding];
+                fill =
+                  sounding === highlightIndex ? accent : state === 'ok' ? ok : state === 'bad' ? bad : ink;
+                sounding += 1;
+              }
+              const style = { fillStyle: fill, strokeStyle: fill };
+              note.setStyle(style);
+              note.setLedgerLineStyle(style);
+              return note;
+            });
+            const beats = bar.reduce((sum, item) => sum + item.beats, 0);
+            const voice = new Voice({ numBeats: beats, beatValue: 4 }).setStrict(false);
+            voice.addTickables(notes);
+            // Only the accidentals the key signature does not already give.
+            Accidental.applyAccidentals([voice], signature);
+            return { voice, beams: Beam.generateBeams(notes) };
           });
 
-          const beats = bar.reduce((sum, item) => sum + item.beats, 0);
-          const voice = new Voice({ numBeats: beats, beatValue: 4 }).setStrict(false);
-          voice.addTickables(notes);
-          // Only the accidentals the key signature does not already give.
-          Accidental.applyAccidentals([voice], signature);
-          const beams = Beam.generateBeams(notes);
-          const room = stave.getNoteEndX() - stave.getNoteStartX() - 12;
-          new Formatter().joinVoices([voice]).format([voice], Math.max(40, room));
-          voice.draw(ctx, stave);
-          for (const beam of beams)
-            beam.setStyle({ fillStyle: ink, strokeStyle: ink }).setContext(ctx).draw();
-        });
+          const stave0 = staves[0]!;
+          const room = stave0.getNoteEndX() - stave0.getNoteStartX() - 12;
+          const formatter = new Formatter();
+          for (const { voice } of voices) formatter.joinVoices([voice]);
+          formatter.format(
+            voices.map((v) => v.voice),
+            Math.max(40, room),
+          );
+          voices.forEach(({ voice, beams }, pi) => {
+            voice.draw(ctx, staves[pi]!);
+            for (const beam of beams)
+              beam.setStyle({ fillStyle: ink, strokeStyle: ink }).setContext(ctx).draw();
+          });
+        }
       } catch (err) {
         if (!cancelled) {
           console.warn('Notation renderer unavailable:', err);
@@ -156,7 +209,7 @@ export function StaffSnippet({
     return () => {
       cancelled = true;
     };
-  }, [staff, keyContext, highlightIndex, states, width]);
+  }, [staff, lower, keyContext, highlightIndex, states, width, scale, showTimeSignature]);
 
   const names = staff.items
     .filter((item) => item.midis.length > 0)

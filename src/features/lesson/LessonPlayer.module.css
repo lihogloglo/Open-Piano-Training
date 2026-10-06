@@ -117,7 +117,9 @@
   min-height: 0;
   overflow-y: auto;
   display: grid;
-  place-items: center;
+  /* "safe": a tall step scrolls from its top instead of losing it above the fold. */
+  align-items: safe center;
+  justify-items: center;
   padding: var(--space-6) var(--space-5);
   position: relative;
 }

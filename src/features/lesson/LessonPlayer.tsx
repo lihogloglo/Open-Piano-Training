@@ -12,7 +12,7 @@ import { exerciseRange } from '@/ui/Keyboard/utils';
 import { inputNoteOn, inputNoteOff } from '@/store/midiStore';
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { useNavigate, useParams, useSearchParams } from 'react-router';
-import { getUnit } from '@/curriculum/content';
+import { getUnit, trackOf } from '@/curriculum/content';
 import type { LessonStep, Unit } from '@/curriculum/schema';
 import type { ExerciseDef, ExerciseInstance } from '@/engine/types';
 import { generate } from '@/engine/generators';
@@ -22,7 +22,7 @@ import { TakeRecorder } from '@/engine/replay';
 import { demoAlreadySeen, forgetDemo, useRunStore } from '@/store/runStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { db, markUnitInProgress, saveTake } from '@/progress/db';
-import { getSession, completeUnit, markBlockComplete } from '@/progress/service';
+import { getSession, completeUnit, markBlockComplete, syncReadStrand } from '@/progress/service';
 import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
@@ -94,6 +94,9 @@ function improvTint(
 
 function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume | null }) {
   const navigate = useNavigate();
+  // A course lesson lives in the studio; leaving it goes back there, not to the path.
+  const course = trackOf(unit.id);
+  const home = course ? '/studio' : '/path';
   const tourist = useSettingsStore((s) => s.tourist);
   const [lessonSeed] = useState(() => resume?.seed ?? resolveSeed('random'));
   const [searchParams] = useSearchParams();
@@ -136,13 +139,27 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
     // placement chain, no epilogue. The path is exactly where they left it.
     if (tourist) {
       toast(tr('End of {v0}. Nothing was recorded.', { v0: unit.title }));
-      void navigate('/path');
+      void navigate(home);
       return;
     }
     const scores = gradedScores.current;
     const score = scores.length > 0 ? scores.reduce((a, b) => a + b, 0) / scores.length : 1;
     await completeUnit(unit, score, flaggedRef.current);
     await clearResume(unit.id);
+    if (course) {
+      // Reading lessons put the notation drills into daily review.
+      if (course.id === 'rd' && !useSettingsStore.getState().readStrandEnabled) {
+        useSettingsStore.getState().setReadStrandEnabled(true);
+        await syncReadStrand(true);
+      }
+      const next = course.unitIds[course.unitIds.indexOf(unit.id) + 1];
+      toast(
+        next ? tr('{v0} complete!', { v0: unit.title }) : tr('{v0}: course complete!', { v0: course.title }),
+        'ok',
+      );
+      void navigate('/studio');
+      return;
+    }
     if (placement) {
       const next = PLACEMENT_CHAIN[PLACEMENT_CHAIN.indexOf(unit.id) + 1];
       if (next) {
@@ -167,7 +184,7 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       return;
     }
     void navigate('/path');
-  }, [unit, tourist, placement, sessionId, sessionBlock, navigate]);
+  }, [unit, tourist, placement, sessionId, sessionBlock, navigate, home, course]);
 
   const advance = useCallback(() => {
     if (advancing.current) return;
@@ -241,8 +258,8 @@ function LessonPlayerInner({ unit, resume }: { unit: Unit; resume: LessonResume 
       return;
     }
     abortRun();
-    void navigate('/path');
-  }, [exitArmed, abortRun, navigate]);
+    void navigate(home);
+  }, [exitArmed, abortRun, navigate, home]);
 
   useEffect(() => {
     const onKey = (e: KeyboardEvent) => {
@@ -375,7 +392,9 @@ function ExplainStep({
   const markSatisfied = useCallback((i: number) => {
     setSatisfied((prev) => (prev.has(i) ? prev : new Set([...prev, i])));
   }, []);
-  const pendingCheck = step.blocks.findIndex((b, i) => b.kind === 'playCheck' && !satisfied.has(i));
+  const pendingCheck = step.blocks.findIndex(
+    (b, i) => (b.kind === 'playCheck' || b.kind === 'staffCheck') && !satisfied.has(i),
+  );
 
   // The listening check borrows this keyboard, so a learner with no MIDI device
   // answers by clicking the same keys everyone else plays.
@@ -384,10 +403,23 @@ function ExplainStep({
     offerRef.current = handler;
   }, []);
 
+  // Each answered check reveals the next card. Bring it into view, or it opens
+  // below the fold, behind the keyboard, and the learner never sees it.
+  const blocksRef = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const last = blocksRef.current?.lastElementChild;
+    if (!last || pendingCheck === 0) return;
+    const reduce = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches;
+    const id = requestAnimationFrame(() =>
+      last.scrollIntoView({ behavior: reduce ? 'auto' : 'smooth', block: 'nearest' }),
+    );
+    return () => cancelAnimationFrame(id);
+  }, [pendingCheck]);
+
   return (
     <>
       <div className={styles['promptZone']}>
-        <div className={styles['blocks']}>
+        <div className={styles['blocks']} ref={blocksRef}>
           {step.blocks.slice(0, browse || pendingCheck === -1 ? undefined : pendingCheck + 1).map((b, i) => (
             <ExplainBlockView
               key={i}
@@ -765,7 +797,9 @@ function ExerciseStep({
                     : tr('The count-in starts after Start')))}
             </h2>
           )}
-          <p className={styles['promptDetail']}>{perTarget?.detail ?? prompt?.detail}</p>
+          <p className={styles['promptDetail']}>
+            {prompt?.staff ? prompt.detail : (perTarget?.detail ?? prompt?.detail)}
+          </p>
           {isLadder && <p>{tr('Pick any tempo. Continue whenever you feel ready.')}</p>}
           {isTempo && phase === 'idle' && (
             <p className={styles['demoLine']}>
@@ -874,6 +908,7 @@ function ExerciseStep({
         // Guided steps auto-start and auto-advance; a manual restart mid-advance
         // would race the pending step change.
         canStart={step.kind !== 'guided'}
+        needsSound={isTempo && !demoAlreadySeen(instance)}
         onStart={() => start()}
         {...(isTempo && phase === 'idle'
           ? { startLabel: tr('Start at {v0} BPM', { v0: currentBpm ?? step.exercise.bpm ?? 80 }) }

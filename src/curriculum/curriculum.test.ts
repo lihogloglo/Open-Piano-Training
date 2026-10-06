@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import { CURRICULUM, getUnit } from './content';
 import { getSong } from './content/songs';
-import { validateCurriculum, type Unit } from './schema';
+import { INTERACTIVE_BLOCKS, validateCurriculum, type Unit } from './schema';
 import { buildPath, nodeStatuses, nextUnit, type UnitProgressLike } from './path';
 import { GENERATORS, generate } from '@/engine/generators';
 import { scaleFingering, type Hand, type ScaleType } from '@/theory/scales';
@@ -124,7 +124,7 @@ describe('curriculum content', () => {
       // No explain step is a slide: every one of them puts hands on keys.
       for (const step of unit.steps) {
         if (step.kind !== 'explain') continue;
-        const interactive = step.blocks.some((b) => b.kind === 'playCheck' || b.kind === 'earCheck');
+        const interactive = step.blocks.some((b) => INTERACTIVE_BLOCKS.has(b.kind));
         expect(interactive, `${step.id} has no block that needs playing`).toBe(true);
       }
     });

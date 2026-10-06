@@ -20,6 +20,7 @@ const NAV: { to: string; label: string; icon: IconName }[] = [
   { to: '/practice', label: tr('Today'), icon: 'today' },
   { to: '/path', label: tr('Path'), icon: 'path' },
   { to: '/songs', label: tr('Songs'), icon: 'songs' },
+  { to: '/studio', label: tr('Studio'), icon: 'studio' },
   { to: '/sandbox', label: tr('Sandbox'), icon: 'sandbox' },
   { to: '/progress', label: tr('Progress'), icon: 'progress' },
 ];

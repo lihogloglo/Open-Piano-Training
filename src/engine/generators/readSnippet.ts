@@ -128,8 +128,8 @@ export function generateReadSnippet(def: ExerciseDef, seed: number): ExerciseIns
     beatsPerBar: p.beatsPerBar,
     beatsPerTarget: 1,
     prompt: {
-      title: tr('Read it — {v0} {v1}', { v0: p.key.tonic, v1: p.key.mode }),
-      detail: tr('{v0} bars, {v1} clef · play what you see', { v0: p.bars, v1: p.clef }),
+      title: tr('Read it'),
+      detail: tr('Play what you see.'),
       key: p.key,
       perTarget: notes.map((n) => ({ label: midiToName(n.midi, p.key) })),
       staff: staffFromNotes(notes, { clef: p.clef, beatsPerBar: p.beatsPerBar }),

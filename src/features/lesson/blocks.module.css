@@ -145,3 +145,15 @@
   border-radius: var(--radius-m);
   background: var(--surface-2);
 }
+
+.staffCard {
+  display: flex;
+  justify-content: center;
+  padding: var(--space-2, 8px) 0;
+}
+
+/* A wrong key in a staff check: named back, in the error colour, never buzzed. */
+.caption[data-missed] {
+  color: var(--err);
+  font-weight: 600;
+}

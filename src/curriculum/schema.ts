@@ -69,8 +69,39 @@ export const explainBlockSchema = z.discriminatedUnion('kind', [
     distinct: z.enum(['octave', 'name']).default('octave'),
     hint: z.string().max(160).optional(),
   }),
+  /**
+   * Reading: a few notes on a staff, played in order at the written pitch.
+   * Each note turns green when played. Like playCheck, it answers but never gates.
+   */
+  z.object({
+    kind: z.literal('staffCheck'),
+    ask: z.string().max(120),
+    clef: z.enum(['treble', 'bass']),
+    /** Scientific pitch names, e.g. "C4", "F#3", or "rest" for a silent beat. */
+    notes: z
+      .array(z.string().regex(/^([A-G][#b]?-?\d|rest)$/))
+      .min(1)
+      .max(16),
+    /** Written length of each note in beats. Default: all quarters. */
+    beats: z.array(z.number().positive()).optional(),
+    /** Default 4. */
+    beatsPerBar: z.number().int().min(2).max(4).optional(),
+    key: keyContextSchema.optional(),
+    hint: z.string().max(160).optional(),
+    /** Offer a "Hear it" button: for rhythm cards, where the sound is the lesson. */
+    listen: z.boolean().optional(),
+    /** Tempo of the "Hear it" playback. Default 72. */
+    bpm: z.number().int().min(40).max(160).optional(),
+  }),
 ]);
 export type ExplainBlock = z.infer<typeof explainBlockSchema>;
+
+/** Blocks the learner answers at the keyboard: an explain step must carry at least one. */
+export const INTERACTIVE_BLOCKS: ReadonlySet<ExplainBlock['kind']> = new Set([
+  'playCheck',
+  'earCheck',
+  'staffCheck',
+]);
 
 export const lessonStepSchema = z.discriminatedUnion('kind', [
   z.object({ kind: z.literal('explain'), id: z.string(), blocks: z.array(explainBlockSchema).min(1) }),
@@ -98,8 +129,9 @@ export const lessonStepSchema = z.discriminatedUnion('kind', [
 export type LessonStep = z.infer<typeof lessonStepSchema>;
 
 export const unitSchema = z.object({
-  id: z.string().regex(/^s\d+\.(u\d+|cp)$/),
-  stageId: z.string().regex(/^s\d+$/),
+  /** Path units are `s3.u2`; course units are `rd.u2`, where `rd` is the track id. */
+  id: z.string().regex(/^(s\d+|[a-z]{2,4})\.(u\d+|cp)$/),
+  stageId: z.string().regex(/^(s\d+|[a-z]{2,4})$/),
   ordinal: z.number().int().min(0),
   title: z.string().min(3).max(60),
   strandWeights: z.partialRecord(strandEnum, z.number()).default({}),
@@ -112,7 +144,8 @@ export const unitSchema = z.object({
 export type Unit = z.infer<typeof unitSchema>;
 
 export const stageSchema = z.object({
-  id: z.string().regex(/^s\d+$/),
+  /** A path stage (`s3`), or a course standing in for one during validation (`rd`). */
+  id: z.string().regex(/^(s\d+|[a-z]{2,4})$/),
   ordinal: z.number().int().min(0),
   title: z.string(),
   tagline: z.string(),
@@ -120,6 +153,21 @@ export const stageSchema = z.object({
   unitIds: z.array(z.string()).min(1),
 });
 export type Stage = z.infer<typeof stageSchema>;
+
+/**
+ * A course: a short side series of lessons beside the path (reading, rhythm).
+ * Its units play in the lesson player, but the path, the daily session and the
+ * placement chain never see them. Every course lesson is open from the start.
+ */
+export const trackSchema = z.object({
+  id: z.string().regex(/^[a-z]{2,4}$/),
+  title: z.string(),
+  summary: z.string().max(200),
+  /** Path stage after which the course makes sense; shown as a suggestion, never a lock. */
+  suggestedStage: z.number().int().min(0).max(7),
+  unitIds: z.array(z.string()).min(1),
+});
+export type Track = z.infer<typeof trackSchema>;
 
 export interface CurriculumContent {
   stages: Stage[];

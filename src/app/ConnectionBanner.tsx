@@ -3,7 +3,7 @@ import { useEffect, useState } from 'react';
 import styles from './AppShell.module.css';
 
 /**
- * Offline notice (05 §Empty/edge states). Keysense works offline once its
+ * Offline notice (05 §Empty/edge states). Open Piano Training works offline once its
  * assets are cached, so this is information, not an error — the copy says so.
  */
 export function ConnectionBanner() {

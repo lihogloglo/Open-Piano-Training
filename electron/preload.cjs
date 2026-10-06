@@ -5,6 +5,6 @@
  */
 const { contextBridge } = require('electron');
 
-contextBridge.exposeInMainWorld('keysenseDesktop', {
+contextBridge.exposeInMainWorld('openPianoTrainingDesktop', {
   version: process.versions.electron,
 });

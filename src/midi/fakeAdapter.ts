@@ -42,7 +42,7 @@ export class FakeAdapter implements MidiAdapter {
   }
 
   listInputs(): MidiDeviceInfo[] {
-    return [{ id: 'fake', name: tr('Fake MIDI (test)'), manufacturer: 'keysense' }];
+    return [{ id: 'fake', name: tr('Fake MIDI (test)'), manufacturer: 'open-piano-training' }];
   }
 
   select(): void {

@@ -1,4 +1,4 @@
-# Keysense improvement tracker
+# Open Piano Training improvement tracker
 
 Opened: 2026-09-06. Source: the app review and the user's request to implement all recommendations.
 

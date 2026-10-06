@@ -9,7 +9,7 @@ for (const language of ['en', 'fr']) {
     await page.getByRole('link', { name: /Read full license|Lire les licences/ }).click();
     await expect(page).toHaveURL(/\/THIRD-PARTY-NOTICES\.html$/);
     await expect(
-      page.getByRole('heading', { name: 'Open Piano Training / Keysense', exact: true }),
+      page.getByRole('heading', { name: 'Open Piano Training', exact: true }),
     ).toBeVisible();
     const notices = await page.locator('body').innerText();
     for (const text of [

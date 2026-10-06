@@ -5,7 +5,7 @@ import { tmpdir } from 'node:os';
 import { audioFixture } from './audio-fixture.mjs';
 
 const executablePath = resolve(process.argv[2]);
-const userData = await mkdtemp(join(tmpdir(), 'keysense-smoke-'));
+const userData = await mkdtemp(join(tmpdir(), 'open-piano-training-smoke-'));
 let app;
 try {
   app = await electron.launch({
@@ -17,7 +17,7 @@ try {
   const page = await app.firstWindow();
   const errors = [];
   page.on('pageerror', (error) => errors.push(error.message));
-  await expect(page.getByRole('heading', { name: 'Keysense' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Open Piano Training' })).toBeVisible();
   await page.getByRole('combobox').selectOption('fr');
   await expect(page.locator('html')).toHaveAttribute('lang', 'fr');
   await expect(page.getByRole('button', { name: 'Commencer', exact: true })).toBeVisible();
@@ -36,12 +36,12 @@ try {
     downloads++;
     await route.fulfill({ contentType: 'audio/wav', body: audioFixture() });
   });
-  await page.goto('keysense://app/setup');
+  await page.goto('open-piano-training://app/setup');
   await page.getByRole('button', { name: 'Enable sound', exact: true }).click();
   await expect(page.getByRole('button', { name: 'Sound is on' })).toBeVisible({ timeout: 30_000 });
   expect(downloads).toBeGreaterThan(200);
   const cached = await page.evaluate(
-    async () => (await (await caches.open('keysense-samples')).keys()).length,
+    async () => (await (await caches.open('open-piano-training-samples')).keys()).length,
   );
   expect(cached).toBeGreaterThan(200);
   await page.unroute(provider);
@@ -52,7 +52,7 @@ try {
   expect(errors).toEqual([]);
 } finally {
   await app?.close();
-  if (dirname(resolve(userData)) !== resolve(tmpdir()) || !basename(userData).startsWith('keysense-smoke-')) {
+  if (dirname(resolve(userData)) !== resolve(tmpdir()) || !basename(userData).startsWith('open-piano-training-smoke-')) {
     throw new Error('Refusing to remove a profile outside the temporary smoke-test directory');
   }
   await rm(userData, { recursive: true, force: true });

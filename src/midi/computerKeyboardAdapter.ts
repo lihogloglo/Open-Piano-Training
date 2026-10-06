@@ -46,7 +46,7 @@ export class ComputerKeyboardAdapter implements MidiAdapter {
 
   init(): Promise<MidiInitResult> {
     window.addEventListener('blur', this.release);
-    window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
+    window.dispatchEvent(new CustomEvent('open-piano-training:octave', { detail: this.baseC }));
     window.addEventListener('keydown', this.keydown);
     window.addEventListener('keyup', this.keyup);
     return Promise.resolve('ok');
@@ -86,12 +86,12 @@ export class ComputerKeyboardAdapter implements MidiAdapter {
     const key = e.key.toLowerCase();
     if (key === 'z') {
       this.baseC = Math.max(MIN_MIDI + 3, this.baseC - 12);
-      window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
+      window.dispatchEvent(new CustomEvent('open-piano-training:octave', { detail: this.baseC }));
       return;
     }
     if (key === 'x') {
       this.baseC = Math.min(MAX_MIDI - 12, this.baseC + 12);
-      window.dispatchEvent(new CustomEvent('keysense:octave', { detail: this.baseC }));
+      window.dispatchEvent(new CustomEvent('open-piano-training:octave', { detail: this.baseC }));
       return;
     }
     const offset = KEY_TO_OFFSET[key];

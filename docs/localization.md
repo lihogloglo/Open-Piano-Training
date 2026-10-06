@@ -1,6 +1,6 @@
 # Languages
 
-Keysense includes English and French. Choose a language on the welcome screen or in Settings.
+Open Piano Training includes English and French. Choose a language on the welcome screen or in Settings.
 The system option follows the first supported browser or operating-system language.
 Regional variants such as `fr-CA` use French. Unsupported languages use English.
 Changing the language reloads the current page. Progress and other preferences remain on the device.

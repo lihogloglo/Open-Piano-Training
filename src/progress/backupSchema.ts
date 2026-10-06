@@ -61,7 +61,7 @@ const block = z.discriminatedUnion('kind', [
 ]);
 
 export const backupSchema = z.object({
-  app: z.literal('keysense'),
+  app: z.literal('open-piano-training'),
   schemaVersion: z.literal(1),
   exportedAt: date.optional(),
   preferences: preferencesSchema.optional(),

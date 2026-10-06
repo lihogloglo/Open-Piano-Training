@@ -62,7 +62,7 @@ jobs:
         run: npx electron-builder --${{ matrix.flag }} --publish never
       - name: Check packaged Linux app
         if: matrix.platform == 'linux'
-        run: xvfb-run -a node scripts/smoke-desktop.mjs release/linux-unpacked/keysense
+        run: xvfb-run -a node scripts/smoke-desktop.mjs release/linux-unpacked/open-piano-training
       - name: Save packages
         uses: actions/upload-artifact@v4
         with:
@@ -115,9 +115,9 @@ jobs:
           if ! gh release view "$TAG" >/dev/null 2>&1; then
             NOTES="docs/releases/${TAG#v}.md"
             if [ -f "$NOTES" ]; then
-              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --notes-file "$NOTES" --draft --prerelease
+              gh release create "$TAG" --target "$COMMIT" --title "Open Piano Training ${TAG#v}" --notes-file "$NOTES" --draft --prerelease
             else
-              gh release create "$TAG" --target "$COMMIT" --title "Keysense ${TAG#v}" --generate-notes --draft --prerelease
+              gh release create "$TAG" --target "$COMMIT" --title "Open Piano Training ${TAG#v}" --generate-notes --draft --prerelease
             fi
           fi
           gh release upload "$TAG" release/*.exe release/*.AppImage release/*.deb --clobber

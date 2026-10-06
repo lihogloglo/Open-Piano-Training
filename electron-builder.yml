@@ -1,6 +1,6 @@
-appId: dev.keysense.app
-productName: Keysense
-copyright: Keysense
+appId: dev.openpianotraining.app
+productName: Open Piano Training
+copyright: Open Piano Training
 
 directories:
   output: release
@@ -30,21 +30,21 @@ nsis:
   allowToChangeInstallationDirectory: true
   createDesktopShortcut: true
   createStartMenuShortcut: true
-  shortcutName: Keysense
+  shortcutName: Open Piano Training
 
 portable:
-  artifactName: Keysense-${version}-portable.exe
+  artifactName: Open-Piano-Training-${version}-portable.exe
 
 linux:
-  executableName: keysense
+  executableName: open-piano-training
   icon: public/pwa-512.png
   category: Education
   executableArgs: []
   synopsis: Learn piano with guided lessons and MIDI feedback
-  maintainer: Keysense
+  maintainer: Open Piano Training
   target:
     - target: AppImage
       arch: [x64]
     - target: deb
       arch: [x64]
-  artifactName: Keysense-${version}-linux-${arch}.${ext}
+  artifactName: Open-Piano-Training-${version}-linux-${arch}.${ext}

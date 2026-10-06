@@ -36,12 +36,12 @@ for (const [path, entry] of Object.entries(lock.packages)) {
 }
 const mitTerms = read('LICENSE').slice(read('LICENSE').indexOf('Permission is hereby granted'));
 const sections = [
-  ['Open Piano Training / Keysense', read('LICENSE')],
+  ['Open Piano Training', read('LICENSE')],
   [
     'Splendid Grand Piano samples',
     'Public domain, according to the upstream distributors. Samples by AKAI.\n' +
       'Sample fixes and SFZ mapping by kinwie. Web audio conversion by smpldsnds.\n' +
-      'Users download the Ogg files directly from the provider. Keysense packages contain no piano samples.\n' +
+      'Users download the Ogg files directly from the provider. Open Piano Training packages contain no piano samples.\n' +
       'https://github.com/sfzinstruments/SplendidGrandPiano\n' +
       'https://github.com/smpldsnds/sfzinstruments-splendid-grand-piano\n' +
       'These samples are separate from the MIT-licensed smplr playback code.',
@@ -88,7 +88,7 @@ sections.push([
 const escape = (text) => text.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;');
 const html = `<!doctype html>
 <html lang="en"><meta charset="utf-8"><meta name="viewport" content="width=device-width">
-<title>Keysense licenses and notices</title>
+<title>Open Piano Training licenses and notices</title>
 <style>body{max-width:72rem;margin:2rem auto;padding:0 1rem;font:16px/1.5 system-ui}pre{white-space:pre-wrap;overflow-wrap:anywhere}h2{margin-top:2rem}</style>
 <body><a href="/licenses">Back to credits / Retour aux crédits</a>
 <h1>Licenses and notices / Licences et mentions</h1>

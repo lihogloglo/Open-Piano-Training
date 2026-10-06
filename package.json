@@ -1,5 +1,5 @@
 {
-  "name": "keysense",
+  "name": "open-piano-training",
   "private": true,
   "license": "MIT",
   "version": "0.1.6",
@@ -68,7 +68,7 @@
     "vitest": "^4.1.11"
   },
   "description": "Understand the keyboard. Play anything.",
-  "author": "Keysense",
+  "author": "Open Piano Training",
   "main": "electron/main.cjs",
   "homepage": "https://github.com/lihogloglo/Open-Piano-Training"
 }

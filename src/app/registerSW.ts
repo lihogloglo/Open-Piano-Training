@@ -14,7 +14,7 @@ import { toast } from '@/ui/Toast';
  */
 export function registerServiceWorker(): void {
   if (!import.meta.env.PROD) return;
-  if ('keysenseDesktop' in window) return;
+  if ('openPianoTrainingDesktop' in window) return;
   void import('virtual:pwa-register')
     .then(({ registerSW }) => {
       registerSW({

@@ -1,5 +1,5 @@
 /**
- * Rasterizes the Keysense mark (public/favicon.svg) into the PWA icon PNGs.
+ * Rasterizes the Open Piano Training mark (public/favicon.svg) into the PWA icon PNGs.
  * Hand-rolled so icon generation needs no image toolchain: the mark is only
  * rounded rectangles, so a scanline fill plus zlib is the whole renderer.
  *

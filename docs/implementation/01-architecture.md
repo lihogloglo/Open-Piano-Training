@@ -83,7 +83,7 @@ src/
   features/            # route-level screens composing ui/ + stores
     welcome/ setup/ practice/ path/ lesson/ drill/ rating/ songs/
     sandbox/ progress/ epilogue/ settings/ lab/
-electron/              # desktop shell: main.cjs (keysense:// scheme, MIDI grant), preload.cjs
+electron/              # desktop shell: main.cjs (open-piano-training:// scheme, MIDI grant), preload.cjs
 scripts/               # fetch-samples, make-icons, check-bundle, check-contrast
 e2e/                   # Playwright specs + drive.ts (the fake-MIDI driver)
 ```

@@ -42,7 +42,7 @@ export interface KVRow {
   value: unknown;
 }
 
-export class KeysenseDb extends Dexie {
+export class OpenPianoTrainingDb extends Dexie {
   takes!: EntityTable<Take, 'id'>;
   unitProgress!: EntityTable<UnitProgressRow, 'unitId'>;
   atomProgress!: EntityTable<AtomProgressRow, 'atomId'>;
@@ -52,7 +52,7 @@ export class KeysenseDb extends Dexie {
   meta!: EntityTable<KVRow, 'key'>;
 
   constructor() {
-    super('keysense');
+    super('open-piano-training');
     this.version(1).stores({
       takes: 'id, startedAt, unitId, *atomIds',
       unitProgress: 'unitId, status',
@@ -65,7 +65,7 @@ export class KeysenseDb extends Dexie {
   }
 }
 
-export const db = new KeysenseDb();
+export const db = new OpenPianoTrainingDb();
 
 const MAX_TAKES = 500;
 
@@ -128,7 +128,7 @@ export async function exportAll(): Promise<string> {
     db.meta.toArray(),
   ]);
   return JSON.stringify({
-    app: 'keysense',
+    app: 'open-piano-training',
     schemaVersion: 1,
     exportedAt: new Date().toISOString(),
     preferences: readPreferences(),

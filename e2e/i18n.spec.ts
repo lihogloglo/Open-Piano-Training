@@ -32,7 +32,7 @@ test('changes language without losing preferences or lesson progress', async ({ 
   await expect(page.getByText('Meet the keyboard', { exact: true })).toBeVisible();
   await page.evaluate(async () => {
     await new Promise<void>((resolve, reject) => {
-      const request = indexedDB.open('keysense');
+      const request = indexedDB.open('open-piano-training');
       request.onerror = () => reject(request.error);
       request.onsuccess = () => {
         const database = request.result;
@@ -63,7 +63,7 @@ test('changes language without losing preferences or lesson progress', async ({ 
   const progress = await page.evaluate(
     async () =>
       new Promise((resolve, reject) => {
-        const request = indexedDB.open('keysense');
+        const request = indexedDB.open('open-piano-training');
         request.onerror = () => reject(request.error);
         request.onsuccess = () => {
           const database = request.result;

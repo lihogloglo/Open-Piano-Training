@@ -68,7 +68,7 @@ export const useMidiStore = create<MidiState>((set, get) => ({
   async init() {
     if (get().status !== 'uninitialized') return;
     set({ status: 'initializing' });
-    window.addEventListener('keysense:octave', (event) =>
+    window.addEventListener('open-piano-training:octave', (event) =>
       set({ computerBase: (event as CustomEvent<number>).detail }),
     );
     adapter = createMidiAdapter();

@@ -32,7 +32,7 @@ Teacher review, physical MIDI/audio checks, and beginner observations remain ope
 Two passes ran after the build order closed:
 
 - **Content rebuild** (2026-09-03). All eight stages were rewritten against `docs/content-audit.md` and are held by two lints in `curriculum.test.ts`: the minimum unit grammar, and "graded takes only score rehearsed material". Totals: 879 nominal minutes, 345 exercise instances, 62 tempo ladders.
-- **Desktop build** (2026-09-06). `electron/main.cjs` serves the built app over a private `keysense://` scheme and grants MIDI. `npm run desktop:build` packages a Windows installer and a portable .exe; pushing a `v*` tag builds the portable one in `.github/workflows/release.yml`. The samples are vendored by `scripts/fetch-samples.mjs`, so the installed app needs no network.
+- **Desktop build** (2026-09-06). `electron/main.cjs` serves the built app over a private `open-piano-training://` scheme and grants MIDI. `npm run desktop:build` packages a Windows installer and a portable .exe; pushing a `v*` tag builds the portable one in `.github/workflows/release.yml`. The samples are vendored by `scripts/fetch-samples.mjs`, so the installed app needs no network.
 
 ## What exists (map)
 
@@ -43,7 +43,7 @@ Two passes ran after the build order closed:
 - `src/audio/` — clock, metronome, sampler, **`backing.ts`** (looping chord backing on the metronome clock).
 - `src/features/` — welcome + placement, setup, Today (session, streak, recap card, challenge suggestion), Path, lesson player (5 step kinds, staff rendering for read steps, improv backing), drill player, songs, sandbox, **Progress (rating dials, heatmap, then-vs-now, best takes, badge wall)**, **rating challenge**, **epilogue**, settings (+ licenses, read strand, reduce motion), `/lab`.
 - `scripts/` — `make-icons.mjs` (PWA icons from the mark), `check-bundle.mjs` (eager-bundle budget), `check-contrast.mjs` (WCAG AA on the tokens), `fetch-samples.mjs` (vendors the piano samples).
-- `electron/` — `main.cjs` (window, `keysense://` scheme, MIDI permission), `preload.cjs`.
+- `electron/` — `main.cjs` (window, `open-piano-training://` scheme, MIDI permission), `preload.cjs`.
 - `e2e/` — `drive.ts` (fake-MIDI driver + challenge driver), per-stage marathons (`stage0/1/3/5`), `marathon.spec.ts` (whole path), `content-lessons.spec.ts`, `daily.spec.ts`, `placement.spec.ts`, `rating.spec.ts`, `lab.spec.ts`, `edge-states.spec.ts`, `offline.spec.ts`, `a11y.spec.ts` (axe-core), `smoke.spec.ts`, `screenshots.spec.ts`.
 
 ## How to verify from scratch

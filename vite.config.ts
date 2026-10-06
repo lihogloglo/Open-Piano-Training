@@ -33,8 +33,8 @@ export default defineConfig({
       registerType: 'autoUpdate',
       includeAssets: ['favicon.svg', 'apple-touch-icon.png'],
       manifest: {
-        name: 'Keysense',
-        short_name: 'Keysense',
+        name: 'Open Piano Training',
+        short_name: 'Open Piano Training',
         description: 'Understand the keyboard. Play anything.',
         theme_color: '#0b0d0e',
         background_color: '#0b0d0e',
@@ -64,7 +64,7 @@ export default defineConfig({
             urlPattern: /\/(samples|soundfonts)\/.*\.(mp3|ogg|wav|m4a)$/i,
             handler: 'CacheFirst',
             options: {
-              cacheName: 'keysense-samples',
+              cacheName: 'open-piano-training-samples',
               expiration: { maxEntries: 512, maxAgeSeconds: 60 * 60 * 24 * 365 },
               cacheableResponse: { statuses: [0, 200] },
             },

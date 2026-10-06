@@ -2,7 +2,7 @@
 
 ## Product one-pager (the finished state)
 
-**Name (working):** _Keysense_ (rename freely in one place: `src/app/brand.ts`).
+**Name:** _Open Piano Training_. The display name lives in one place: `src/app/brand.ts`.
 
 **What it is:** a web app (PWA) for desktop Chrome/Edge/Firefox that connects to a MIDI piano and carries an adult beginner through a guided, theory-first path — from finding middle C to comping any lead sheet in any key and improvising over progressions. Exercises are generated from music theory (not canned assets), feedback is per-note pitch + timing + hand, review is scheduled by FSRS, and honest progress is shown as per-strand skill ratings driven by always-fresh material.
 

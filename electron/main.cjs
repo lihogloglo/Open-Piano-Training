@@ -1,5 +1,5 @@
 /**
- * Desktop shell for Keysense.
+ * Desktop shell for Open Piano Training.
  *
  * The app is the same Vite build the web ships. This file only does the three
  * things a browser would otherwise do for us:
@@ -15,7 +15,7 @@ const { pathToFileURL } = require('node:url');
 const { isAppUrl, resolveAsset } = require('./security.cjs');
 
 const DIST = path.join(__dirname, '..', 'dist');
-const SCHEME = 'keysense';
+const SCHEME = 'open-piano-training';
 const ORIGIN = `${SCHEME}://app`;
 
 // A privileged scheme gets treated as secure and standard. Without this the

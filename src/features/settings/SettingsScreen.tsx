@@ -46,7 +46,7 @@ export function SettingsScreen() {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `keysense-export-${new Date().toISOString().slice(0, 10)}.json`;
+    a.download = `open-piano-training-export-${new Date().toISOString().slice(0, 10)}.json`;
     a.click();
     URL.revokeObjectURL(url);
     toast(tr('Progress exported'), 'ok');

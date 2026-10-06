@@ -94,12 +94,12 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 
 ## Desktop build
 
-- **2026-09-06** — **Keysense ships as a Windows executable, built with Electron** (`electron/main.cjs`, `electron-builder.yml`). The app needs Web MIDI and Web Audio, and only a Chromium engine gives both. Electron carries its own Chromium, so the desktop app behaves exactly as the browser build does. The cost is size: the installer is about 139 MB. Tauri would be about 10 MB, but it runs on WebView2, where the MIDI permission path is less proven, and it needs a Rust toolchain on every build machine.
-- **2026-09-06** — The shell serves `dist/` over a private URL scheme, `keysense://app/`, registered as standard and secure. Three things depend on this. The history router needs real paths, not `file://`. Web MIDI and the AudioWorklet need a secure context. Relative asset URLs in the build need an origin. A `file://` load fails all three.
+- **2026-09-06** — **Open Piano Training ships as a Windows executable, built with Electron** (`electron/main.cjs`, `electron-builder.yml`). The app needs Web MIDI and Web Audio, and only a Chromium engine gives both. Electron carries its own Chromium, so the desktop app behaves exactly as the browser build does. The cost is size: the installer is about 139 MB. Tauri would be about 10 MB, but it runs on WebView2, where the MIDI permission path is less proven, and it needs a Rust toolchain on every build machine.
+- **2026-09-06** — The shell serves `dist/` over a private URL scheme, `open-piano-training://app/`, registered as standard and secure. Three things depend on this. The history router needs real paths, not `file://`. Web MIDI and the AudioWorklet need a secure context. Relative asset URLs in the build need an origin. A `file://` load fails all three.
 - **2026-09-06** — **Electron asks for MIDI under the name `midiSysex`, even when the page requested `sysex: false`.** Our adapter always asks without sysex (`webmidiAdapter.ts`). Granting only `midi` leaves the app with no keyboard. Both names are in `ALLOWED_PERMISSIONS`; everything else is denied.
 - **2026-09-06** — **The piano samples are now vendored.** `scripts/fetch-samples.mjs` reads the sample list out of the installed `smplr` bundle and downloads 226 OGG files (20 MB) into `public/samples/`. The desktop app must not depend on a GitHub Pages host being reachable. The files are **not committed**; `npm run samples` fetches them, and `npm run desktop:build` runs it first.
 - **2026-09-06** — `sampler.ts` picks its `baseUrl` at load time. It sends one HEAD request for a local sample. If that answers, it plays from `public/samples/`; if not, it falls back to smplr's own host. So a bare checkout still makes noise, and no build flag is needed to tell the two cases apart.
-- **2026-09-06** — **The desktop build skips the service worker.** A worker cannot register on a custom URL scheme, and it has no work to do: the app already carries every asset. `registerSW.ts` returns early when the preload's `keysenseDesktop` marker is present.
+- **2026-09-06** — **The desktop build skips the service worker.** A worker cannot register on a custom URL scheme, and it has no work to do: the app already carries every asset. `registerSW.ts` returns early when the preload's `openPianoTrainingDesktop` marker is present.
 - **2026-09-06** — Android is **not** built yet. The same web build should wrap with Capacitor, but MIDI over USB inside an Android WebView needs its own proving pass, and the toolchain (Android Studio, a JDK) is not installed here.
 
 ## Playtest repairs
@@ -172,3 +172,10 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - Successful slower tempos remain recorded. Skipped tempos remain unmarked.
 - Warmup and review exercises have a skip control. Skips advance the session without grading skills, clearing retests, or adding practice minutes.
 - Tourist mode retains unrestricted navigation and writes no progress.
+
+## One name, and the Simple Piano plan — 2026-10-06
+
+- The app is called **Open Piano Training** everywhere. The working name "Keysense" is gone.
+- The rename also changes the storage keys: the database, the sound cache, the backup format, the desktop URL scheme (`open-piano-training://`) and the app id. The app does not move old data. The project has one user, and that user accepted the loss.
+- Old backup files carry `app: 'keysense'`. The importer now rejects them.
+- The project takes topics, order and teaching tips from [Simple Piano](https://github.com/foxzi/simplepiano) (Apache 2.0). It does not copy its text or code. The work is in `docs/simple-piano-plan.md`.

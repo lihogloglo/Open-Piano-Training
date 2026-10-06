@@ -89,7 +89,7 @@ test.describe('offline (production build)', () => {
       .poll(
         () =>
           page.evaluate(async () => {
-            const cache = await caches.open('keysense-samples');
+            const cache = await caches.open('open-piano-training-samples');
             return (await cache.keys()).filter((r) => r.url.includes('/samples/')).length;
           }),
         { timeout: 60_000 },

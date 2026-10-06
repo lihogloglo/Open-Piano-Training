@@ -1,6 +1,6 @@
 # Open Piano Training
 
-**Keysense** is a piano practice app with guided lessons, music theory, ear training, and feedback on notes and timing.
+**Open Piano Training** is a piano practice app with guided lessons, music theory, ear training, and feedback on notes and timing.
 Use a MIDI keyboard, your computer keyboard, or the on-screen piano. The interface supports English and French.
 
 **Early release: this project is not thoroughly tested and needs more love.**
@@ -41,6 +41,12 @@ Report bugs and suggest changes through [GitHub Issues](https://github.com/lihog
 The app has no accounts or analytics. Practice progress stays on your device.
 Export a backup from Settings before clearing browser data.
 The app downloads piano audio from `smpldsnds.github.io`, which receives normal web requests, including your IP address.
+
+## Credits
+
+The reading, rhythm and arpeggio lessons (in progress) follow the topic order and teaching tips of
+[Simple Piano](https://github.com/foxzi/simplepiano) by foxzi (Apache 2.0).
+We write our own lessons. We do not copy its text or code. See [the plan](docs/simple-piano-plan.md).
 
 ## License
 

@@ -58,7 +58,7 @@ async function loadSampler(): Promise<void> {
     const { SplendidGrandPiano, CacheStorage } = await import('smplr');
     const instrument = SplendidGrandPiano(ctx, {
       // Download directly from the provider, then retain samples on this device.
-      storage: CacheStorage('keysense-samples'),
+      storage: CacheStorage('open-piano-training-samples'),
       destination: masterGain,
       onLoadProgress: (p: { loaded: number; total: number }) => {
         setStatus({ state: 'loading', progress: p.total > 0 ? p.loaded / p.total : 0 });

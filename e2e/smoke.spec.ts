@@ -25,7 +25,7 @@ test('first run walks the onboarding wizard to Today', async ({ page }) => {
   const errors = collectErrors(page);
   await page.goto('/?midi=fake');
   await expect(page).toHaveURL(/\/welcome/);
-  await expect(page.getByRole('heading', { name: 'Keysense' })).toBeVisible();
+  await expect(page.getByRole('heading', { name: 'Open Piano Training' })).toBeVisible();
 
   await page.getByRole('button', { name: 'Get started' }).click();
   await expect(page.getByRole('heading', { name: 'Connect your keyboard' })).toBeVisible();

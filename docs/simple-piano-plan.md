@@ -76,7 +76,7 @@ It does not teach these. Each becomes a short lesson in a Rhythm course (built a
 
 Each lesson starts with the same tip: clap the rhythm and count it aloud before you play it.
 
-### Part 5 — Arpeggios on the path
+### Part 5 — Arpeggios on the path (done 2026-10-07)
 
 An arpeggio is a chord played one note at a time. The path has broken left-hand patterns but no
 arpeggio across an octave.
@@ -84,8 +84,8 @@ arpeggio across an octave.
 1. Add an arpeggio option to the `scaleRun` generator, or add a small generator. Choose after
    reading `scaleRun.ts`.
 2. Add one unit to Stage 4, after s4.u5: C, F and G arpeggios, right hand 1-2-3-5, left hand
-   5-4-2-1, hands separately. Then a bass note in the left hand under a broken chord in the
-   right hand.
+   5-4-2-1, hands separately. (Built as s4.u8. The bass-under-broken-chord texture stays in
+   s4.u5 and s4.u7, which already teach it.)
 3. One guided rep, one ladder, one graded take, one create step. No more.
 
 ### Part 6 — Teaching tips in existing lessons

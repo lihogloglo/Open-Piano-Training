@@ -26,6 +26,7 @@ const KIND_BASE: Record<string, number> = {
   spell: 10,
   chord: 15,
   scale: 20,
+  arp: 22,
   ear: 25,
   prog: 30,
   'prog-smooth': 30,
@@ -44,6 +45,7 @@ const KIND_STRAND: Record<string, Strand> = {
   note: 'keys',
   fivefinger: 'keys',
   scale: 'keys',
+  arp: 'keys',
   chord: 'keys',
   prog: 'keys',
   'prog-smooth': 'keys',
@@ -131,6 +133,19 @@ function drillFor(id: string): ExerciseDef | null {
       params: { tonic: cap(parts[1]), scaleType: scaleTypeOf(parts[2]), hand, direction: 'up' },
       mode: 'tempo',
       bpm: 70,
+      timingTier: 'standard',
+      rung: 'keys-lit',
+      hand,
+      seedPolicy: 'random',
+    };
+  }
+  if (kind === 'arp' && parts[1] && parts[3]) {
+    const hand = parts[3] === 'lh' ? 'lh' : 'rh';
+    return {
+      generator: 'arpeggio',
+      params: { tonic: cap(parts[1]), quality: parts[2] === 'min' ? 'min' : 'maj', hand, octaves: 1 },
+      mode: 'tempo',
+      bpm: 72,
       timingTier: 'standard',
       rung: 'keys-lit',
       hand,
@@ -479,6 +494,12 @@ function labelFor(id: string): string {
     return tr('{v0} {v1} scale · {v2}', {
       v0: pretty(parts[1] ?? '?'),
       v1: parts[2] ?? '',
+      v2: (parts[3] ?? '').toUpperCase(),
+    });
+  if (kind === 'arp')
+    return tr('{v0} {v1} arpeggio · {v2}', {
+      v0: pretty(parts[1] ?? '?'),
+      v1: parts[2] === 'min' ? 'minor' : 'major',
       v2: (parts[3] ?? '').toUpperCase(),
     });
   if (kind === 'chord') {

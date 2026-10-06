@@ -216,3 +216,12 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - **The staff wraps by content.** Each bar gets width from its number of notes, lines are balanced, and a line never stretches a bar past twice its need. Before, every bar reserved the same width, so a short pickup bar forced a wrap.
 - **The staff has a definite preferred width, capped by its container.** With `width: 100%` inside a shrink-to-fit parent, the staff and its parent sized each other and could lock at a narrow width.
 - The course exercise builders moved to `content/courseKit.ts`.
+
+## Arpeggios on the path — 2026-10-07
+
+- New path unit **s4.u8, "Arpeggios: chords that travel"**, played right after s4.u5. It gets a new id instead of renumbering s4.u6 and s4.u7, so stored progress keeps its meaning. s4.u6 now requires s4.u8.
+- New generator `arpeggio`: a root-position triad, one or two octaves, up or up and down, one note per beat. Fingering is the standard one for white-key roots: RH 1-2-3-5 (two octaves 1-2-3-1-2-3-5), LH 5-4-2-1 (two octaves 5-4-2-1-4-2-1).
+- The rehearsal lint signs an arpeggio by hand and octave count: that is its motor pattern. The graded F major take is a transposition of the laddered C major one.
+- The unit keeps the path grammar (guided, ladder, graded, create) but stays short: one ladder only, for the two-octave right hand, where the thumb pass needs a ramp.
+- New atoms `arp:c:maj:rh` and `arp:c:maj:lh`, drilled as one-octave arpeggios at 72. The Stage 4 checkpoint gains a G major arpeggio take.
+- Not done: scoring how even an arpeggio is. The MIDI log has the data. That is engine work for later.

@@ -14,6 +14,7 @@ import { generateUnseenChart } from './unseenChart';
 import { generateImprov } from './improv';
 import { generateReadSnippet } from './readSnippet';
 import { generateKeyGroupFind } from './keyGroupFind';
+import { generateArpeggio } from './arpeggio';
 
 export type Generator = (def: ExerciseDef, seed: number) => ExerciseInstance;
 
@@ -34,6 +35,7 @@ export const GENERATORS: Record<string, Generator> = {
   improv: generateImprov,
   'read-snippet': generateReadSnippet,
   'key-group-find': generateKeyGroupFind,
+  arpeggio: generateArpeggio,
 };
 
 export function generate(def: ExerciseDef, seed: number): ExerciseInstance {

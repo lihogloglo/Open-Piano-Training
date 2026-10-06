@@ -11,7 +11,7 @@ const THROUGH_STAGE4 = [
   ...['s1.u1', 's1.u2', 's1.u3', 's1.u4', 's1.u5', 's1.u6', 's1.u7', 's1.cp'],
   ...['s2.u1', 's2.u2', 's2.u3', 's2.u4', 's2.u5', 's2.u6', 's2.u7', 's2.cp'],
   ...['s3.u1', 's3.u2', 's3.u3', 's3.u4', 's3.u5', 's3.u6', 's3.u7', 's3.u8', 's3.cp'],
-  ...['s4.u1', 's4.u2', 's4.u3', 's4.u4', 's4.u5', 's4.u6', 's4.u7', 's4.cp'],
+  ...['s4.u1', 's4.u2', 's4.u3', 's4.u4', 's4.u5', 's4.u8', 's4.u6', 's4.u7', 's4.cp'],
 ];
 
 async function unitRow(page: import('@playwright/test').Page, unitId: string) {

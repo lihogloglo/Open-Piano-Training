@@ -196,6 +196,9 @@ describe('curriculum content', () => {
           // motor pattern to compare. Scale type and hand are all we can check.
           return `scale:${s('scaleType')}:${s('hand')}:${f ? f.join('') : 'none'}`;
         }
+        case 'arpeggio':
+          // The fingering is the pattern: 1-2-3-5 for one octave, a thumb pass for two.
+          return `arp:${s('hand')}:${s('octaves') || '1'}`;
         case 'five-finger':
           // Five fingers on five notes, 1-5 in every key. Only the hand differs.
           return `fivefinger:${s('hand')}`;

@@ -1608,5 +1608,21 @@
   "Three beats in a bar": "Three beats in a bar",
   "In **3/4** time, each bar holds three beats. Count *1, 2, 3*, a little heavier on 1.": "In **3/4** time, each bar holds three beats. Count *1, 2, 3*, a little heavier on 1.",
   "A half, a quarter, then a dotted half. Hear it, then play it.": "A half, a quarter, then a dotted half. Hear it, then play it.",
-  "American traditional": "American traditional"
+  "American traditional": "American traditional",
+  "{v0} {v1} arpeggio · {v2}": "{v0} {v1} arpeggio · {v2}",
+  "Arpeggios: chords that travel": "Arpeggios: chords that travel",
+  "An **arpeggio** is a chord played one note at a time, climbing the keyboard: C, E, G, then the next C, and on up.": "An **arpeggio** is a chord played one note at a time, climbing the keyboard: C, E, G, then the next C, and on up.",
+  "C major, two octaves, up and back down.": "C major, two octaves, up and back down.",
+  "Play the three notes of C major one at a time, low to high.": "Play the three notes of C major one at a time, low to high.",
+  "C, then E, then G. Any octave.": "C, then E, then G. Any octave.",
+  "Right hand: fingers **1-2-3-5** for one octave. For two, the thumb passes under after G, just as in the scale.": "Right hand: fingers **1-2-3-5** for one octave. For two, the thumb passes under after G, just as in the scale.",
+  "Left hand: little finger on a C, then play its E and G with fingers 4 and 2.": "Left hand: little finger on a C, then play its E and G with fingers 4 and 2.",
+  "5 on C, 4 on E, 2 on G, then the thumb on the next C.": "5 on C, 4 on E, 2 on G, then the thumb on the next C.",
+  "Over the backing, break each chord into an arpeggio: up through the chord, then down. Change chord when the backing does.": "Over the backing, break each chord into an arpeggio: up through the chord, then down. Change chord when the backing does.",
+  "{v0} minor arpeggio": "{v0} minor arpeggio",
+  "{v0} major arpeggio": "{v0} major arpeggio",
+  "two octaves": "two octaves",
+  "one octave": "one octave",
+  "up and down": "up and down",
+  "Finger {v0}": "Finger {v0}"
 }

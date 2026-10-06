@@ -1608,5 +1608,21 @@
   "Three beats in a bar": "Trois temps par mesure",
   "In **3/4** time, each bar holds three beats. Count *1, 2, 3*, a little heavier on 1.": "En **3/4**, chaque mesure compte trois temps. Comptez *1, 2, 3*, un peu plus fort sur le 1.",
   "A half, a quarter, then a dotted half. Hear it, then play it.": "Une blanche, une noire, puis une blanche pointée. Écoutez, puis jouez.",
-  "American traditional": "Chanson traditionnelle américaine"
+  "American traditional": "Chanson traditionnelle américaine",
+  "{v0} {v1} arpeggio · {v2}": "Arpège de {v0} {v1} · {v2}",
+  "Arpeggios: chords that travel": "Arpèges : des accords qui voyagent",
+  "An **arpeggio** is a chord played one note at a time, climbing the keyboard: C, E, G, then the next C, and on up.": "Un **arpège** est un accord joué une note à la fois, en montant le clavier : C, E, G, puis le C suivant, et ainsi de suite.",
+  "C major, two octaves, up and back down.": "C majeur, deux octaves, en montant puis en descendant.",
+  "Play the three notes of C major one at a time, low to high.": "Jouez les trois notes de C majeur une par une, du grave à l’aigu.",
+  "C, then E, then G. Any octave.": "C, puis E, puis G. N’importe quelle octave.",
+  "Right hand: fingers **1-2-3-5** for one octave. For two, the thumb passes under after G, just as in the scale.": "Main droite : doigts **1-2-3-5** pour une octave. Pour deux, le pouce passe dessous après le G, comme dans la gamme.",
+  "Left hand: little finger on a C, then play its E and G with fingers 4 and 2.": "Main gauche : l’auriculaire sur un C, puis jouez son E et son G avec les doigts 4 et 2.",
+  "5 on C, 4 on E, 2 on G, then the thumb on the next C.": "5 sur C, 4 sur E, 2 sur G, puis le pouce sur le C suivant.",
+  "Over the backing, break each chord into an arpeggio: up through the chord, then down. Change chord when the backing does.": "Sur l’accompagnement, transformez chaque accord en arpège : montez dans l’accord, puis redescendez. Changez d’accord quand l’accompagnement change.",
+  "{v0} minor arpeggio": "Arpège de {v0} mineur",
+  "{v0} major arpeggio": "Arpège de {v0} majeur",
+  "two octaves": "deux octaves",
+  "one octave": "une octave",
+  "up and down": "en montant et en descendant",
+  "Finger {v0}": "Doigt {v0}"
 }

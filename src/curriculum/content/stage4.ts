@@ -11,6 +11,18 @@ const wait = (
   rung = 'chord-symbols',
 ): ExerciseDef => ({ generator, params, mode: 'wait', rung, hand, seedPolicy: 'random' }) as ExerciseDef;
 
+/** A triad arpeggio. Keys stay lit: the fingering is the new thing, not the notes. */
+const arp = (params: Record<string, unknown>, hand: 'rh' | 'lh', bpm?: number): ExerciseDef =>
+  ({
+    generator: 'arpeggio',
+    params: { hand, ...params },
+    mode: bpm ? 'tempo' : 'wait',
+    ...(bpm ? { bpm, timingTier: 'standard' } : {}),
+    rung: 'keys-lit',
+    hand,
+    seedPolicy: 'random',
+  }) as ExerciseDef;
+
 const tempo = (
   generator: string,
   params: Record<string, unknown>,
@@ -53,7 +65,7 @@ export const stage4: Stage = {
   summary: tr(
     'Stop leaping between root positions. Inversions put every chord change under your hand, and voice leading — moving each finger as little as possible — is what makes chords sound like music.',
   ),
-  unitIds: ['s4.u1', 's4.u2', 's4.u3', 's4.u4', 's4.u5', 's4.u6', 's4.u7', 's4.cp'],
+  unitIds: ['s4.u1', 's4.u2', 's4.u3', 's4.u4', 's4.u5', 's4.u8', 's4.u6', 's4.u7', 's4.cp'],
 };
 
 export const stage4Units: Unit[] = [
@@ -661,13 +673,103 @@ export const stage4Units: Unit[] = [
     ],
   },
   {
-    id: 's4.u6',
+    // Inserted after s4.u5 (2026-10-07). The id is new rather than renumbered,
+    // so stored progress on s4.u6 and s4.u7 keeps its meaning.
+    id: 's4.u8',
     stageId: 's4',
     ordinal: 5,
+    title: tr('Arpeggios: chords that travel'),
+    strandWeights: { keys: 4, create: 1 },
+    concepts: ['arp:c:maj:rh', 'arp:c:maj:lh'],
+    prerequisites: ['s4.u5'],
+    minutes: 12,
+    kind: 'lesson',
+    steps: [
+      {
+        kind: 'explain',
+        id: 's4.u8.e1',
+        blocks: [
+          {
+            kind: 'text',
+            md: tr(
+              'An **arpeggio** is a chord played one note at a time, climbing the keyboard: C, E, G, then the next C, and on up.',
+            ),
+          },
+          {
+            kind: 'keyboardDemo',
+            caption: tr('C major, two octaves, up and back down.'),
+            demo: {
+              bpm: 100,
+              loop: false,
+              events: [60, 64, 67, 72, 76, 79, 84, 79, 76, 72, 67, 64, 60].map((midi, i) => ({
+                midi,
+                atBeat: i,
+                durBeats: 0.9,
+              })),
+            },
+          },
+          {
+            kind: 'playCheck',
+            ask: tr('Play the three notes of C major one at a time, low to high.'),
+            notes: ['C', 'E', 'G'],
+            count: 3,
+            distinct: 'name',
+            hint: tr('C, then E, then G. Any octave.'),
+          },
+          {
+            kind: 'text',
+            md: tr(
+              'Right hand: fingers **1-2-3-5** for one octave. For two, the thumb passes under after G, just as in the scale.',
+            ),
+          },
+          {
+            kind: 'playCheck',
+            ask: tr('Left hand: little finger on a C, then play its E and G with fingers 4 and 2.'),
+            notes: ['C', 'E', 'G'],
+            count: 3,
+            distinct: 'name',
+            hint: tr('5 on C, 4 on E, 2 on G, then the thumb on the next C.'),
+          },
+        ],
+      },
+      { kind: 'guided', id: 's4.u8.g1', exercise: arp({ tonic: 'C', octaves: 1 }, 'rh') },
+      {
+        kind: 'ladder',
+        id: 's4.u8.l1',
+        tempos: [0.6, 0.8, 1],
+        exercise: arp({ tonic: 'C', octaves: 2 }, 'rh', 80),
+      },
+      { kind: 'guided', id: 's4.u8.g2', exercise: arp({ tonic: 'C', octaves: 1 }, 'lh') },
+      {
+        kind: 'graded',
+        id: 's4.u8.q1',
+        passScore: 0.8,
+        exercise: arp({ tonic: 'F', octaves: 2 }, 'rh', 80),
+      },
+      {
+        kind: 'graded',
+        id: 's4.u8.q2',
+        passScore: 0.8,
+        exercise: arp({ tonic: 'G', octaves: 1 }, 'lh'),
+      },
+      {
+        kind: 'create',
+        id: 's4.u8.c1',
+        prompt: tr(
+          'Over the backing, break each chord into an arpeggio: up through the chord, then down. Change chord when the backing does.',
+        ),
+        exercise: play({ key: C, palette: 'chordtones', roman: ['I', 'IV', 'V', 'I'], loops: 3 }, 'rh', 72),
+      },
+    ],
+  },
+  {
+    id: 's4.u6',
+    stageId: 's4',
+    ordinal: 6,
     title: tr('Cadences'),
     strandWeights: { theory: 2, ear: 3, keys: 2, create: 1 },
     concepts: ['theory:cadence', 'ear:cadence'],
-    prerequisites: ['s4.u5'],
+    prerequisites: ['s4.u8'],
     minutes: 12,
     kind: 'lesson',
     steps: [
@@ -807,7 +909,7 @@ export const stage4Units: Unit[] = [
   {
     id: 's4.u7',
     stageId: 's4',
-    ordinal: 6,
+    ordinal: 7,
     title: tr('Song lab: texture'),
     strandWeights: { keys: 4, create: 2 },
     concepts: ['song:northline:texture'],
@@ -892,7 +994,7 @@ export const stage4Units: Unit[] = [
   {
     id: 's4.cp',
     stageId: 's4',
-    ordinal: 7,
+    ordinal: 8,
     title: tr('Checkpoint: Smooth hands'),
     strandWeights: { keys: 4, ear: 1 },
     concepts: [],
@@ -991,6 +1093,13 @@ export const stage4Units: Unit[] = [
           72,
           'both',
         ),
+      },
+      {
+        // Arpeggios (s4.u8): one octave, right hand, in a key it was not drilled in.
+        kind: 'graded',
+        id: 's4.cp.q6',
+        passScore: 0.8,
+        exercise: arp({ tonic: 'G', octaves: 1 }, 'rh'),
       },
     ],
   },

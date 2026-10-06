@@ -179,3 +179,15 @@ _A second audit (2026-09-03) found that graded takes often scored material the u
 - The rename also changes the storage keys: the database, the sound cache, the backup format, the desktop URL scheme (`open-piano-training://`) and the app id. The app does not move old data. The project has one user, and that user accepted the loss.
 - Old backup files carry `app: 'keysense'`. The importer now rejects them.
 - The project takes topics, order and teaching tips from [Simple Piano](https://github.com/foxzi/simplepiano) (Apache 2.0). It does not copy its text or code. The work is in `docs/simple-piano-plan.md`.
+
+## Staff with rhythm, demos once, ladders never gate — 2026-10-06
+
+- **Exercises can carry a staff.** `PromptModel.staff` holds a clef, a meter, an optional pickup and a list of items (a note, a chord or a rest, with a written length). `engine/staff.ts` builds it from timed notes. `read-snippet` always writes one. `phrase` writes one when its params name a clef.
+- **The staff is the prompt.** When an exercise has a staff, the lesson player hides the list of note names. The list gave the answer away.
+- `read-snippet` takes a rhythm pool (`quarters`, `halves`, `long`, `rests`, `eighths`, `dotted`) and an optional `low`/`high` note range for beginner lessons. A phrase never starts on a rest and ends on the home note when it is close.
+- The staff colours each played note green or red from the run store's new per-target verdicts. It wraps long tunes onto several lines.
+- VexFlow draws stems, flags, beams and ledger lines black by default. The staff sets the theme colour on each of them, or they disappear in the dark theme. It also waits for the music fonts before drawing.
+- **A timed exercise demonstrates only the first time.** A retry goes straight to the count-in. The learner can press "Watch the demo again". A demonstration counts as seen only when it plays to the end. Before this, every attempt replayed the whole demo.
+- **A staff exercise without key hints never demonstrates.** The demo would play the answer.
+- **A ladder never gates.** Continue is always available on a ladder step. It is the primary button once the full tempo passes. Repetition stays available, never forced.
+- Known failures, older than this change: `lab.spec.ts` tempo test, `skipping.spec.ts` full-tempo test, three `feedback.spec.ts` tests and one `rating.spec.ts` test fail on the previous commit too. The tempo tests start the fake performance before the demonstration ends. The sample test expects local sample files, which 0.1.6 removed.

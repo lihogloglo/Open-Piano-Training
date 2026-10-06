@@ -198,3 +198,11 @@
   border-top: 1px solid var(--border);
   background: var(--surface);
 }
+
+.demoLine {
+  min-height: 2.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--text-2);
+}

@@ -1521,5 +1521,9 @@
   "Public domain (upstream declaration)": "Domaine public (selon la source)",
   "Piano samples by AKAI, prepared by kinwie and smpldsnds, played through smplr.": "Échantillons de piano AKAI, préparés par kinwie et smpldsnds, lus avec smplr.",
   "Read full license texts and notices": "Lire les licences complètes et les mentions",
-  "First use downloads piano sounds from the provider. Internet access is required. Sounds are then cached on this device.": "La première utilisation télécharge les sons du piano depuis leur fournisseur. Une connexion Internet est nécessaire. Les sons sont ensuite conservés sur cet appareil."
+  "First use downloads piano sounds from the provider. Internet access is required. Sounds are then cached on this device.": "La première utilisation télécharge les sons du piano depuis leur fournisseur. Une connexion Internet est nécessaire. Les sons sont ensuite conservés sur cet appareil.",
+  "Pick any tempo. Continue whenever you feel ready.": "Choisissez un tempo. Continuez dès que vous vous sentez prêt.",
+  "Read it, then play after the count-in.": "Lisez, puis jouez après le décompte.",
+  "Watch the demo again": "Revoir la démonstration",
+  "Watch once, then play after the count-in.": "Regardez une fois, puis jouez après le décompte."
 }

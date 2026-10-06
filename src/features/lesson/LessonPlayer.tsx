@@ -19,7 +19,7 @@ import { generate } from '@/engine/generators';
 import { resolveSeed } from '@/engine/rng';
 import { subscribeMidiEvents, useMidiStore } from '@/store/midiStore';
 import { TakeRecorder } from '@/engine/replay';
-import { useRunStore } from '@/store/runStore';
+import { demoAlreadySeen, forgetDemo, useRunStore } from '@/store/runStore';
 import { useSettingsStore } from '@/store/settingsStore';
 import { db, markUnitInProgress, saveTake } from '@/progress/db';
 import { getSession, completeUnit, markBlockComplete } from '@/progress/service';
@@ -28,11 +28,10 @@ import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { ExerciseSequence } from '@/ui/ExerciseSequence';
 import { TransportBar } from '@/ui/TransportBar';
-import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PromptStaff } from '@/ui/PromptStaff';
 import { PlayerNotices } from '@/ui/PlayerNotices';
 import { startBacking, type BackingHandle } from '@/audio/backing';
 import type { KeyContext } from '@/theory/keys';
-import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import { ExplainBlockView, renderMd } from './blocks';
 import { ResultsOverlay } from './ResultsOverlay';
@@ -752,14 +751,9 @@ function ExerciseStep({
             {prompt?.title ??
               (isLadder ? tr('Choose a tempo, then press Start') : tr('Press Start when you are ready'))}
           </p>
-          {instance?.def.generator === 'read-snippet' && prompt?.key ? (
-            // Notation reading: the staff IS the prompt.
-            <StaffSnippet
-              midis={snippetNotes(instance)}
-              keyContext={prompt.key}
-              clef={instance.def.params['clef'] === 'bass' ? 'bass' : 'treble'}
-              highlightIndex={targetIndex}
-            />
+          {instance?.prompt.staff ? (
+            // Reading: the staff IS the prompt.
+            <PromptStaff instance={instance} />
           ) : (
             <h2 className={styles['promptMain']}>
               {listening
@@ -772,20 +766,36 @@ function ExerciseStep({
             </h2>
           )}
           <p className={styles['promptDetail']}>{perTarget?.detail ?? prompt?.detail}</p>
-          {isLadder && (
-            <p>{tr('Choose any tempo below. Score 80% at full tempo to continue, or skip this step.')}</p>
-          )}
-          {isTempo && (
-            <p>
-              {tr('Watch the demonstration, then play after ')}
-              {instance.beatsPerBar ?? 4}
-              {tr(' count-in beats.')}
+          {isLadder && <p>{tr('Pick any tempo. Continue whenever you feel ready.')}</p>}
+          {isTempo && phase === 'idle' && (
+            <p className={styles['demoLine']}>
+              {demoAlreadySeen(instance) ? (
+                instance.prompt.staff && instance.def.rung !== 'keys-lit' ? (
+                  tr('Read it, then play after the count-in.')
+                ) : (
+                  <Button
+                    variant="ghost"
+                    onClick={() => {
+                      forgetDemo(instance);
+                      start();
+                    }}
+                  >
+                    <Icon name="play" size={16} />
+                    {tr('Watch the demo again')}
+                  </Button>
+                )
+              ) : (
+                tr('Watch once, then play after the count-in.')
+              )}
             </p>
           )}
-          <ExerciseSequence
-            instance={instance}
-            activeIndex={phase === 'idle' || phase === 'done' ? undefined : targetIndex}
-          />
+          {/* The staff already shows the notes; a list of names would give the answer away. */}
+          {!instance.prompt.staff && (
+            <ExerciseSequence
+              instance={instance}
+              activeIndex={phase === 'idle' || phase === 'done' ? undefined : targetIndex}
+            />
+          )}
           {instance && (
             <p className={styles['targetCount']}>
               <span className="tabular">
@@ -882,9 +892,10 @@ function ExerciseStep({
             }
           : {})}
       />
-      {isLadder && fullTempoPassed && (
+      {/* Repetition is never a gate: the ladder offers Continue at any time. */}
+      {isLadder && phase !== 'running' && phase !== 'count-in' && phase !== 'preview' && (
         <div className={styles['footer']}>
-          <Button variant="primary" size="l" onClick={() => onDone(1)}>
+          <Button variant={fullTempoPassed ? 'primary' : 'secondary'} size="l" onClick={() => onDone(1)}>
             {tr('Continue')}
           </Button>
         </div>

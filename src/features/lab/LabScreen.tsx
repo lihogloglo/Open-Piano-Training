@@ -10,6 +10,7 @@ import { useMidiStore } from '@/store/midiStore';
 import { useRunStore } from '@/store/runStore';
 import { Keyboard, type KeyLabels } from '@/ui/Keyboard';
 import { ExerciseSequence } from '@/ui/ExerciseSequence';
+import { PromptStaff } from '@/ui/PromptStaff';
 import { Button } from '@/ui/Button';
 import { Card } from '@/ui/Card';
 import styles from './LabScreen.module.css';
@@ -66,6 +67,7 @@ export function LabScreen() {
   const [voiceLead, setVoiceLead] = useState<'free' | 'smooth'>('free');
   const [style, setStyle] = useState<'block' | 'brokenLH'>('block');
   const [voicing, setVoicing] = useState<'triad' | 'shell17' | 'shell13' | 'guidetones'>('triad');
+  const [rhythm, setRhythm] = useState('quarters');
   const [compPattern, setCompPattern] = useState<'straight8' | 'ballad' | 'boomchuck' | 'swing'>('straight8');
 
   const activeNotes = useMidiStore((s) => s.activeNotes);
@@ -181,7 +183,12 @@ export function LabScreen() {
       return {
         ...base,
         generator,
-        params: { key: { tonic, mode: 'major' }, clef: hand === 'lh' ? 'bass' : 'treble', bars: 2 },
+        params: {
+          key: { tonic, mode: 'major' },
+          clef: hand === 'lh' ? 'bass' : 'treble',
+          bars: count > 4 ? 8 : 2,
+          rhythm,
+        },
       };
     }
     if (generator === 'ear-progression') {
@@ -285,6 +292,18 @@ export function LabScreen() {
                 </select>
               </label>
             </>
+          )}
+          {generator === 'read-snippet' && (
+            <label>
+              {tr('Rhythm')}
+              <select value={rhythm} onChange={(e) => setRhythm(e.target.value)}>
+                {['quarters', 'halves', 'long', 'rests', 'eighths', 'dotted'].map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+            </label>
           )}
           {(generator === 'comp-pattern' || generator === 'unseen-chart') && (
             <label>
@@ -439,6 +458,7 @@ export function LabScreen() {
         )}
       </div>
 
+      {instance?.prompt.staff && <PromptStaff instance={instance} />}
       {instance && phase === 'preview' && <ExerciseSequence instance={instance} activeIndex={targetIndex} />}
       <Keyboard
         range={[36, 96]}

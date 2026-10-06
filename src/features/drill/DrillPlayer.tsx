@@ -17,9 +17,8 @@ import { Keyboard } from '@/ui/Keyboard';
 import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { TransportBar } from '@/ui/TransportBar';
-import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PromptStaff } from '@/ui/PromptStaff';
 import { PlayerNotices } from '@/ui/PlayerNotices';
-import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import styles from './DrillPlayer.module.css';
 
@@ -252,13 +251,9 @@ function DrillBlock({ plan, block, blockIdx }: { plan: SessionPlan; block: Sessi
       <div className={styles['promptZone']}>
         <div className={styles['exercisePrompt']}>
           <p className={styles['sub']}>{instance?.prompt.title ?? item.label}</p>
-          {instance?.def.generator === 'read-snippet' && instance.prompt.key ? (
-            <StaffSnippet
-              midis={snippetNotes(instance)}
-              keyContext={instance.prompt.key}
-              clef={instance.def.params['clef'] === 'bass' ? 'bass' : 'treble'}
-              highlightIndex={targetIndex}
-            />
+          {instance?.prompt.staff ? (
+            // Reading: the staff IS the prompt.
+            <PromptStaff instance={instance} />
           ) : (
             <h2 className={styles['promptMain']}>{perTarget?.label ?? instance?.prompt.detail ?? ''}</h2>
           )}

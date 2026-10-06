@@ -26,7 +26,7 @@ vi.mock('./midiStore', () => ({
 vi.mock('./settingsStore', () => ({
   useSettingsStore: { getState: () => ({ metronomeVolume: 0.7, latencyOffsetMs: 0 }) },
 }));
-import { useRunStore } from './runStore';
+import { resetDemoMemory, useRunStore } from './runStore';
 import type { ExerciseInstance } from '@/engine/types';
 const inst: ExerciseInstance = {
   def: {
@@ -49,6 +49,7 @@ const inst: ExerciseInstance = {
 beforeEach(() => {
   vi.useFakeTimers({ toFake: ['setTimeout', 'clearTimeout', 'performance'] });
   vi.clearAllMocks();
+  resetDemoMemory();
   useRunStore.getState().abortRun();
 });
 afterEach(() => {
@@ -89,4 +90,28 @@ it('restarting during a demonstration cannot start the abandoned take', async ()
   expect(useRunStore.getState().instance?.seed).toBe(99);
   expect(mock.start).toHaveBeenCalledTimes(1);
   expect(mock.play.mock.calls.map((c) => c[0])).toEqual([60, 67]);
+});
+it('demonstrates only the first time; a retry goes straight to the count-in', async () => {
+  const first = useRunStore.getState().startRun(inst);
+  await vi.advanceTimersByTimeAsync(2000);
+  await first;
+  expect(mock.play).toHaveBeenCalledTimes(2);
+  useRunStore.getState().abortRun();
+  const again = useRunStore.getState().startRun(inst);
+  await vi.advanceTimersByTimeAsync(50);
+  await again;
+  expect(useRunStore.getState().phase).toBe('count-in');
+  expect(mock.play).toHaveBeenCalledTimes(2);
+});
+it('never demonstrates a staff exercise without key hints', async () => {
+  const reading: ExerciseInstance = {
+    ...inst,
+    def: { ...inst.def, rung: 'note-names' },
+    prompt: { title: 'Read', staff: { clef: 'treble', beatsPerBar: 3, items: [] } },
+  };
+  const run = useRunStore.getState().startRun(reading);
+  await vi.advanceTimersByTimeAsync(50);
+  await run;
+  expect(useRunStore.getState().phase).toBe('count-in');
+  expect(mock.play).not.toHaveBeenCalled();
 });

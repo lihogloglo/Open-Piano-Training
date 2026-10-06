@@ -23,6 +23,8 @@ interface RunState {
   targets: ReadonlyMap<number, 'target' | 'hint'>;
   /** midi -> most recent judgment (flash; cleared after 350ms) */
   judgments: ReadonlyMap<number, JudgeVerdict>;
+  /** target index -> latest judgment for that target (kept for the whole run; the staff colours notes with it) */
+  targetVerdicts: ReadonlyMap<number, JudgeVerdict>;
   fingerMap: ReadonlyMap<number, number>;
   /** negative during count-in, then 0.. */
   beatIndex: number | null;
@@ -50,6 +52,37 @@ let previewUntilPerf = 0;
 let runGeneration = 0;
 let finishDemo: (() => void) | null = null;
 const previewSounding = new Set<number>();
+/** Exercises whose demonstration already played in this session. */
+const demoSeen = new Set<string>();
+
+function demoKey(instance: ExerciseInstance): string {
+  return JSON.stringify([
+    instance.def.generator,
+    instance.seed,
+    instance.def.focus ?? null,
+    instance.targets.map((t) => [targetMidis(t), t.atBeat ?? null]),
+  ]);
+}
+
+function wantsDemo(instance: ExerciseInstance): boolean {
+  if (instance.prompt.staff && (instance.def.rung !== 'keys-lit' || instance.def.assessment)) return false;
+  return !demoSeen.has(demoKey(instance));
+}
+
+/** True when the next start of this exercise skips the demonstration. */
+export function demoAlreadySeen(instance: ExerciseInstance): boolean {
+  return !wantsDemo(instance);
+}
+
+/** Test helper: forget every demonstration. */
+export function resetDemoMemory(): void {
+  demoSeen.clear();
+}
+
+/** Make the next start of this exercise play its demonstration again. */
+export function forgetDemo(instance: ExerciseInstance): void {
+  demoSeen.delete(demoKey(instance));
+}
 
 function clearPreview(): void {
   finishDemo?.();
@@ -127,6 +160,7 @@ export const useRunStore = create<RunState>((set, get) => ({
   targetIndex: 0,
   targets: new Map(),
   judgments: new Map(),
+  targetVerdicts: new Map(),
   fingerMap: new Map(),
   beatIndex: null,
   beatsPerBar: 4,
@@ -154,6 +188,7 @@ export const useRunStore = create<RunState>((set, get) => ({
         targetIndex: 0,
         targets: computeHighlights(instance, 0, false),
         judgments: new Map(),
+        targetVerdicts: new Map(),
         fingerMap,
         beatIndex: null,
         anchorT0Perf: null,
@@ -176,57 +211,64 @@ export const useRunStore = create<RunState>((set, get) => ({
       return;
     }
 
-    // Show and play this exact sequence before the count-in. Input during the
-    // demonstration never reaches a matcher or a recording.
-    set({
-      phase: 'preview',
-      instance,
-      bpm: instance.def.bpm ?? 80,
-      targetIndex: 0,
-      targets: new Map(),
-      judgments: new Map(),
-      fingerMap,
-      beatIndex: null,
-      beatsPerBar: instance.beatsPerBar ?? 4,
-      anchorT0Perf: null,
-      listening: true,
-      result: null,
-      lastTake: null,
-    });
-    await unlockAudio();
-    await ensureSamplerLoaded();
-    if (generation !== runGeneration) return;
-    const demo = exerciseDemo(instance);
-    const demoBeatMs = 60_000 / (instance.def.bpm ?? 80);
-    schedulePreview({ notes: demo, bpm: instance.def.bpm ?? 80 }, set);
-    instance.targets.forEach((target, index) => {
-      previewTimers.push(
-        setTimeout(
-          () => {
-            set({
-              targetIndex: index,
-              beatIndex: Math.floor(target.atBeat ?? index * (instance.beatsPerTarget ?? 1)),
-              targets: new Map(
-                instance.targets.flatMap((t, i) =>
-                  (t.atBeat ?? i * (instance.beatsPerTarget ?? 1)) ===
-                  (target.atBeat ?? index * (instance.beatsPerTarget ?? 1))
-                    ? targetMidis(t).map((m) => [m, 'target' as const] as const)
-                    : [],
+    // Show and play this exact sequence before the count-in, the first time only.
+    // A retry goes straight to the count-in; "watch again" calls forgetDemo().
+    // Reading without key hints never demonstrates: the demo would play the answer.
+    if (wantsDemo(instance)) {
+      // Input during the demonstration never reaches a matcher or a recording.
+      set({
+        phase: 'preview',
+        instance,
+        bpm: instance.def.bpm ?? 80,
+        targetIndex: 0,
+        targets: new Map(),
+        judgments: new Map(),
+        targetVerdicts: new Map(),
+        fingerMap,
+        beatIndex: null,
+        beatsPerBar: instance.beatsPerBar ?? 4,
+        anchorT0Perf: null,
+        listening: true,
+        result: null,
+        lastTake: null,
+      });
+      await unlockAudio();
+      await ensureSamplerLoaded();
+      if (generation !== runGeneration) return;
+      const demo = exerciseDemo(instance);
+      const demoBeatMs = 60_000 / (instance.def.bpm ?? 80);
+      schedulePreview({ notes: demo, bpm: instance.def.bpm ?? 80 }, set);
+      instance.targets.forEach((target, index) => {
+        previewTimers.push(
+          setTimeout(
+            () => {
+              set({
+                targetIndex: index,
+                beatIndex: Math.floor(target.atBeat ?? index * (instance.beatsPerTarget ?? 1)),
+                targets: new Map(
+                  instance.targets.flatMap((t, i) =>
+                    (t.atBeat ?? i * (instance.beatsPerTarget ?? 1)) ===
+                    (target.atBeat ?? index * (instance.beatsPerTarget ?? 1))
+                      ? targetMidis(t).map((m) => [m, 'target' as const] as const)
+                      : [],
+                  ),
                 ),
-              ),
-            });
-          },
-          150 + (target.atBeat ?? index * (instance.beatsPerTarget ?? 1)) * demoBeatMs,
-        ),
-      );
-    });
-    await new Promise<void>((resolve) => {
-      finishDemo = resolve;
-      previewTimers.push(setTimeout(resolve, Math.max(0, previewUntilPerf - performance.now()) + 350));
-    });
-    if (generation !== runGeneration) return;
-    clearPreview();
-    recorder = new TakeRecorder(performance.now());
+              });
+            },
+            150 + (target.atBeat ?? index * (instance.beatsPerTarget ?? 1)) * demoBeatMs,
+          ),
+        );
+      });
+      await new Promise<void>((resolve) => {
+        finishDemo = resolve;
+        previewTimers.push(setTimeout(resolve, Math.max(0, previewUntilPerf - performance.now()) + 350));
+      });
+      if (generation !== runGeneration) return;
+      // Only a demonstration that played to the end counts as seen.
+      demoSeen.add(demoKey(instance));
+      clearPreview();
+      recorder = new TakeRecorder(performance.now());
+    }
 
     // Tempo mode: metronome + count-in.
     const bpm = instance.def.bpm ?? 80;
@@ -248,6 +290,7 @@ export const useRunStore = create<RunState>((set, get) => ({
       targetIndex: 0,
       targets: new Map(),
       judgments: new Map(),
+      targetVerdicts: new Map(),
       fingerMap,
       beatIndex: null,
       anchorT0Perf: anchor.t0Perf,
@@ -297,6 +340,7 @@ export const useRunStore = create<RunState>((set, get) => ({
       targetIndex: 0,
       targets: new Map(),
       judgments: new Map(),
+      targetVerdicts: new Map(),
       fingerMap: new Map(),
       beatIndex: null,
       anchorT0Perf: null,
@@ -337,6 +381,11 @@ function processEvents(events: MatchEvent[], set: Set, get: Get): void {
   for (const ev of events) {
     if (ev.type === 'noteJudged') {
       flashJudgment(ev.judgment.midi, ev.judgment.verdict, set, get);
+      if (ev.judgment.targetIndex >= 0) {
+        const verdicts = new Map(get().targetVerdicts);
+        verdicts.set(ev.judgment.targetIndex, ev.judgment.verdict);
+        set({ targetVerdicts: verdicts });
+      }
     } else if (ev.type === 'targetFocused') {
       const { instance } = get();
       if (instance) {

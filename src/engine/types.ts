@@ -58,12 +58,32 @@ export interface PromptItem {
   detail?: string;
 }
 
+/**
+ * One written symbol: a note, a chord (several midis), or a rest (empty).
+ * Lengths are in quarter-note beats: 4 whole, 2 half, 1 quarter, 0.5 eighth, 1.5 dotted quarter.
+ */
+export interface StaffItem {
+  midis: MidiNumber[];
+  beats: number;
+}
+
+/** A phrase written on one staff. Items fill whole bars, except an optional pickup bar first. */
+export interface StaffModel {
+  clef: 'treble' | 'bass';
+  beatsPerBar: number;
+  items: StaffItem[];
+  /** Length of an incomplete first bar, in beats. 0 or absent: no pickup. */
+  pickupBeats?: number;
+}
+
 export interface PromptModel {
   title: string;
   detail?: string;
   /** Per-target prompt items, aligned with targets (optional). */
   perTarget?: PromptItem[];
   key?: KeyContext;
+  /** Reading exercises: the staff is the prompt. Sounding items align with targets, in order. */
+  staff?: StaffModel;
 }
 
 export interface DemoNote {

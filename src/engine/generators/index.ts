@@ -50,8 +50,9 @@ export function generate(def: ExerciseDef, seed: number): ExerciseInstance {
     targets: instance.targets
       .slice(start, end)
       .map((t, i) => ({ ...t, atBeat: (t.atBeat ?? (start + i) * spacing) - origin })),
+    // A focused slice drops the staff: it is a short fix-up with the note names shown.
     prompt: {
-      ...instance.prompt,
+      ...withoutStaff(instance.prompt),
       title: tr('Focused practice: {v0}', { v0: instance.prompt.title }),
       ...(instance.prompt.perTarget ? { perTarget: instance.prompt.perTarget.slice(start, end) } : {}),
     },
@@ -60,4 +61,10 @@ export function generate(def: ExerciseDef, seed: number): ExerciseInstance {
       ? { ideal: instance.voiceLeading.ideal.slice(start, end) }
       : undefined,
   };
+}
+
+function withoutStaff(prompt: ExerciseInstance['prompt']): ExerciseInstance['prompt'] {
+  const rest = { ...prompt };
+  delete rest.staff;
+  return rest;
 }

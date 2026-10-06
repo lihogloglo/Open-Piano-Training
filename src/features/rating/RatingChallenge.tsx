@@ -30,9 +30,8 @@ import { Button } from '@/ui/Button';
 import { Icon } from '@/ui/Icon';
 import { RatingDial } from '@/ui/RatingDial';
 import { TransportBar } from '@/ui/TransportBar';
-import { StaffSnippet } from '@/ui/StaffSnippet';
+import { PromptStaff } from '@/ui/PromptStaff';
 import { PlayerNotices } from '@/ui/PlayerNotices';
-import { snippetNotes } from '@/engine/generators/readSnippet';
 import { toast } from '@/ui/Toast';
 import styles from './RatingChallenge.module.css';
 
@@ -320,13 +319,9 @@ function Challenge({
           <p className={styles['sub']}>
             {itemIdx + 1}/{items.length} · {item.label}
           </p>
-          {instance?.def.generator === 'read-snippet' && instance.prompt.key ? (
-            <StaffSnippet
-              midis={snippetNotes(instance)}
-              keyContext={instance.prompt.key}
-              clef={instance.def.params['clef'] === 'bass' ? 'bass' : 'treble'}
-              highlightIndex={targetIndex}
-            />
+          {instance?.prompt.staff ? (
+            // Reading: the staff IS the prompt.
+            <PromptStaff instance={instance} />
           ) : (
             <h2 className={styles['promptMain']}>
               {perTarget?.label ?? instance?.prompt.detail ?? instance?.prompt.title ?? ''}

@@ -1,5 +1,6 @@
 import { tr } from '@/i18n';
 import { z } from 'zod';
+import { staffFromNotes } from '../staff';
 import type { ExerciseDef, ExerciseInstance, Target } from '../types';
 
 const paramsSchema = z.object({
@@ -17,6 +18,12 @@ const paramsSchema = z.object({
     )
     .min(1),
   ear: z.boolean().default(false),
+  /** Write the phrase on a staff. The staff then replaces the note names. */
+  clef: z.enum(['treble', 'bass']).optional(),
+  /** Key for the staff's key signature and note spelling. */
+  key: z.object({ tonic: z.string(), mode: z.enum(['major', 'minor']) }).optional(),
+  /** Length of an incomplete first bar (a pickup), in beats. */
+  pickupBeats: z.number().nonnegative().default(0),
 });
 
 export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance {
@@ -49,6 +56,16 @@ export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance
     beatsPerBar: p.beatsPerBar,
     prompt: {
       title: tr(p.title),
+      ...(p.key ? { key: p.key } : {}),
+      ...(p.clef
+        ? {
+            staff: staffFromNotes(p.notes, {
+              clef: p.clef,
+              beatsPerBar: p.beatsPerBar,
+              pickupBeats: p.pickupBeats,
+            }),
+          }
+        : {}),
       detail: p.ear ? tr('Listen, then play from memory') : tr('Follow the phrase'),
       perTarget: targets.map((t) => ({
         label: p.ear
@@ -59,7 +76,9 @@ export function generatePhrase(def: ExerciseDef, seed: number): ExerciseInstance
                 v1: Math.floor(t.midi / 12) - 1,
               })
             : tr('Hands together'),
-        detail: tr('Beat {v0}', { v0: ((t.atBeat ?? 0) % p.beatsPerBar) + 1 }),
+        detail: tr('Beat {v0}', {
+          v0: ((((t.atBeat ?? 0) - p.pickupBeats) % p.beatsPerBar) + p.beatsPerBar) % p.beatsPerBar + 1,
+        }),
       })),
     },
   };
